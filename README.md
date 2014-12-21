@@ -27,4 +27,4 @@ The only thing you need is to copy all `*.js` files on your site's root and add 
   * Declarative dependency graph to force all the members to be all together up to date.
   * Fine control about bustings.
   * Metadata through indexed DB.
-  * ...[add yours](https://github.com/lodr/offliner/issues)!
+  * ...[add yours](https://github.com/lodr/offliner/issues/new)!
