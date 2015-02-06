@@ -8,7 +8,7 @@ Offliner is a project aimed to provide a service worker intended to be as transp
 
 ## Before using
 
-Please, be aware about this technology is only available in some few browsers and not all the implementations behave the same way. Offliner is intended to be used in [Chrome Canary](https://www.google.com/chrome/browser/canary.html?platform=win64) right now. If you are on Linux, try [Chrome Unsatble](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) instead. **Remeber you need to [enable them](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
+Please, be aware about this technology is only available in some few browsers and not all the implementations behave the same way. Offliner is intended to be used in [Chrome Canary](https://www.google.com/chrome/browser/canary.html?platform=win64) right now. If you are on Linux, try [Chrome Unstable](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) instead. **Remember you need to [enable them](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
 
 Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
 

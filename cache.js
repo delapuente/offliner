@@ -1,7 +1,7 @@
 
 /**
- * An object with the urls to be fetched only if there is network as values
- * and the fallbacks for when there is no network as keys. If you don't want
+ * An object with the urls to be fetched only if there is network as keys
+ * and the fallbacks for when there is no network as values. If you don't want
  * a fallback, leave it as true.
  *
  * Examples:
