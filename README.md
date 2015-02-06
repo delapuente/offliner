@@ -13,11 +13,24 @@ Please, be aware about this technology is only available in some few browsers an
 Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
 
 ## Usage
-The only thing you need is to copy all `*.js` files on your site's root and add this tag at the beginning of your `index.html` document:
+The only thing you need is to copy all files in this repository on your site's root and add this tag at the beginning of your `index.html` document:
 
 ```html
 <script src="offline-cache-setup.js"></script>
 ```
+
+Add the attribute `data-root` if your application is not in the root of your hosting. This is useful for `gh-pages` hosted apps.
+
+```html
+<script data-root="my-awesome-app" src="offline-cache-setup.js"></script>
+```
+
+## Configuring offliner
+
+The file `cache.js` contains some useful variables you can customize if want to tweak offliner. See inside the file for more info but here you have a summary of each of them:
+
+  * `NETWORK_ONLY`: it's an object with those things that never will be fetched from the cache as keys. Each key can be set to `true` or another URL to point a fallback if there is a network error.
+  * `PREFETCH`: it's a list of URLs to be automatically fetched. The list accepts objects with some interesting properties. Currently, the only object supported is `{ type: 'zip', url: '/an/url/to/a.zip' }`. With this entry, _offliner_ will download the ZIP file and use the contents to prefetch everything. The ZIP should contain only those files you want to prefetch and the root must be the directory holding the application.
 
 ## Whishlist
 

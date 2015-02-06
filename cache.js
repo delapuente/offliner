@@ -26,8 +26,6 @@ var NETWORK_ONLY = {};
  * If it is an URL, it can absolute or relative and the resource in that URL
  * will be stored in the offline cache during the worker installation.
  *
- * Not supported rigth now!
- *
  * You can specify objects instead to pre-fetch following other strategies.
  * The following are supported:
  *
