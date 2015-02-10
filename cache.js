@@ -29,9 +29,12 @@ var NETWORK_ONLY = {};
  * You can specify objects instead to pre-fetch following other strategies.
  * The following are supported:
  *
- *   * { type: 'zip', url }: get and decompress the ZIP pointed in url and use
- *   it to prepopulate the cache. Remember the ZIP file should be located under
- *   the same origin or without CORS.
+ *   * { type: 'zip', url, [prefix] }: get and decompress the ZIP pointed in
+ *   url and use it to prepopulate the cache. Remember the ZIP file should be
+ *   located under the same origin or in another server with proper CORS policy.
+ *   The ZIP must contain the files for the app directly, not the folder
+ *   containing the files. If the creation of the ZIP is not under your control
+ *   and it adds a directory, use prefix to strip it out.
  */
 var PREFETCH = [];
 
