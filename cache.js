@@ -34,3 +34,8 @@ var NETWORK_ONLY = {};
  *   the same origin or without CORS.
  */
 var PREFETCH = [];
+
+/**
+ * Stablishes the update policy.
+ */
+var UPDATE = { type: 'gh-pages' };

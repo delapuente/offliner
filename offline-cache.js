@@ -17,7 +17,6 @@ var root = (function () {
 // Import plugins
 importScripts('offliner-plugins/XMLHttpRequest.js');
 importScripts('offliner-plugins/zip.js/zip.js'); // exports zip
-importScripts('offliner-plugins/zip.js/zip-ext.js');
 importScripts('offliner-plugins/zip.js/deflate.js');
 importScripts('offliner-plugins/zip.js/inflate.js');
 zip.useWebWorkers = false;
@@ -53,22 +52,27 @@ catch (e) {
   }
   PREFETCH = PREFETCH.map(function (option) {
     if (typeof option === 'object' && option.type === 'gh-pages') {
+      var zipData = getZipDataFromGHPages(self.location);
       option.type = 'zip';
-      option.url = getZipURLFromGHPages(self.location);
+      option.url = zipData.url;
+      option.prefix = zipData.prefix;
       return option;
     }
     return option;
   });
 
-  function getZipURLFromGHPages(url) {
+  function getZipDataFromGHPages(url) {
     var username = url.host.split('.')[0];
     var repo = url.pathname.split('/')[1];
-    return getZipFromGHData(username, repo, 'gh-pages');
+    return {
+      url: getZipFromGHData(username, repo, 'gh-pages'),
+      prefix: repo + '-gh-pages/'
+    };
   }
 
   function getZipFromGHData(username, repo, branch) {
-    var path = [username, repo, 'zip', branch].join('/');
-    return 'https://codeload.github.com/' + path;
+    var path = ['archive', username, repo, branch].join('/');
+    return 'http://cacheator.com:4000/' + path;
   }
 }());
 
@@ -149,18 +153,19 @@ function cacheNetworkOnly() {
 }
 
 // Creates a chain of promises to populate the cache
-// TODO: Add support for single files.
 function digestPreFetch() {
   var digestion = Promise.resolve();
   PREFETCH.forEach(function (option) {
     if (typeof option === 'string') {
       var url = absoluteURL(option);
-      populateFromURL(url);
+      digestion = digestion.then(function () {
+        return populateFromURL(url);
+      });
     }
     else if (option.type === 'zip') {
       var zipURL = absoluteURL(option.url);
       digestion = digestion.then(function () {
-        return populateFromRemoteZip(zipURL);
+        return populateFromRemoteZip(zipURL, option.prefix);
       });
     }
   });
@@ -175,24 +180,33 @@ function populateFromURL(url) {
 }
 
 // Fetch a remote ZIP, deflates it and add the routes to the cache
-function populateFromRemoteZip(zipURL) {
+function populateFromRemoteZip(zipURL, prefixToStrip) {
   log('Populating from ' + zipURL);
+  prefixToStrip = prefixToStrip || '';
   var readZip = new Promise(function (accept, reject) {
-    zip.createReader(new zip.HttpReader(zipURL), function(reader) {
-      reader.getEntries(function(entries) {
-        deflateInCache(entries)
-          .then(reader.close.bind(reader, null)) // avoid callback for close
-          .then(accept);
+    fetch(zipURL).then(function (response) {
+      console.log(response.headers);
+      log('ETag: ', response.headers.get('ETag'));
+      log('Content-Length: ', response.headers.get('Content-Length'));
+      return response.blob();
+    }).then(function (blob) {
+      zip.createReader(new zip.BlobReader(blob), function(reader) {
+        reader.getEntries(function(entries) {
+          deflateInCache(entries, prefixToStrip)
+            .then(reader.close.bind(reader, null)) // avoid callback for close
+            .then(accept);
+        });
+      }, function(error) {
+        reject(error);
       });
-    }, function(error) {
-      reject(error);
     });
   });
   return readZip;
 }
 
 // Decompress each zipped file and add it to the cache
-function deflateInCache(entries) {
+function deflateInCache(entries, prefixToStrip) {
+  prefixToStrip = prefixToStrip || '';
   return caches.open(CACHE_NAME).then(function (offlineCache) {
     var logProgress = getProgressLogger(entries);
     return Promise.all(entries.map(function deflateFile(entry) {
@@ -204,7 +218,7 @@ function deflateInCache(entries) {
       else {
         promise = new Promise(function (accept) {
           entry.getData(new zip.BlobWriter(), function(content) {
-            var filename = entry.filename;
+            var filename = entry.filename.substr(prefixToStrip.length);
             var headers = new Headers();
             headers.append('Content-Type', getMIMEType(filename));
             var response = new Response(content, { headers: headers });
