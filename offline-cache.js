@@ -5,6 +5,21 @@ var CACHE_NAME = 'offliner-cache';
   self[method] = console[method].bind(console);
 });
 
+var ports = [];
+
+self.addEventListener('message', function (message) {
+  if (message.data === 'subscribe') {
+    ports.push(message.ports[0]);
+    log('Subscription message received!');
+  }
+});
+
+function broadcast(data) {
+  ports.forEach(function (port) {
+    port.postMessage(data);
+  });
+}
+
 // The root pathname
 var root = (function () {
   var currentPath = self.location.pathname;
@@ -15,12 +30,13 @@ var root = (function () {
 }());
 
 // Import plugins
+importScripts('offliner-plugins/asyncStorage.js');
+importScripts('offliner-plugins/asyncStoragePromise.js'); // exports asyncStorage
 importScripts('offliner-plugins/XMLHttpRequest.js');
 importScripts('offliner-plugins/zip.js/zip.js'); // exports zip
 importScripts('offliner-plugins/zip.js/deflate.js');
 importScripts('offliner-plugins/zip.js/inflate.js');
 zip.useWebWorkers = false;
-
 
 // Import the configuration file.
 try {
