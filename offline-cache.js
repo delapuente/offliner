@@ -1,4 +1,4 @@
-var CACHE_NAME = 'offliner-cache';
+var CACHE_NAME = 'cache-zero';
 
 // Convenient shortcuts
 ['log', 'warn', 'error'].forEach(function (method) {
@@ -68,29 +68,29 @@ catch (e) {
   }
   PREFETCH = PREFETCH.map(function (option) {
     if (typeof option === 'object' && option.type === 'gh-pages') {
-      var zipData = getZipDataFromGHPages(self.location);
+      var zipInfo = getZipInfoFromGHPages(self.location);
       option.type = 'zip';
-      option.url = zipData.url;
-      option.prefix = zipData.prefix;
+      option.url = zipInfo.url;
+      option.prefix = zipInfo.prefix;
       return option;
     }
     return option;
   });
-
-  function getZipDataFromGHPages(url) {
-    var username = url.host.split('.')[0];
-    var repo = url.pathname.split('/')[1];
-    return {
-      url: getZipFromGHData(username, repo, 'gh-pages'),
-      prefix: repo + '-gh-pages/'
-    };
-  }
-
-  function getZipFromGHData(username, repo, branch) {
-    var path = ['archive', username, repo, branch].join('/');
-    return 'http://cacheator.com:4000/' + path;
-  }
 }());
+
+function getZipInfoFromGHPages(url) {
+  var username = url.host.split('.')[0];
+  var repo = url.pathname.split('/')[1];
+  return {
+    url: getZipFromGHData(username, repo, 'gh-pages'),
+    prefix: repo + '-gh-pages/'
+  };
+}
+
+function getZipFromGHData(username, repo, branch) {
+  var path = ['archive', username, repo, branch].join('/');
+  return 'http://cacheator.com:4000/' + path;
+}
 
 function absoluteURL(url) {
   return new self.URL(url, self.location.origin).href;
@@ -131,8 +131,7 @@ function getMIMEType(filename) {
 // On install, we perform the prefetch process
 self.addEventListener('install', function (event) {
   event.waitUntil(
-    caches.delete(CACHE_NAME)
-      .then(prefetch)
+    update()
       .then(function () {
         log('Offline cache installed at ' + new Date() + '!');
       })
@@ -144,71 +143,139 @@ self.addEventListener('activate', function (event) {
   log('Offline cache activated at ' + new Date() + '!');
 });
 
-// Prefetch is the process to prepopulate the offline cache
-function prefetch() {
-  return cacheNetworkOnly().then(digestPreFetch);
+// Starts the update process
+function update() {
+  if (!self.updateProcess) {
+    self.updateProcess = getLatestVersionNumber()
+      .then(checkIfNewVersion)
+      .then(getCacheNameForVersion)
+      .then(caches.open.bind(caches))
+      .then(prefetch)
+      .then(updateMetaData)
+      .then(function () {
+        self.updateProcess = null;
+      });
+  }
+  return self.updateProcess;
 }
 
-// Caches the NETWORK_ONLY fallbacks
-function cacheNetworkOnly() {
-  return caches.open(CACHE_NAME).then(function (offlineCache) {
-    return Promise.all(Object.keys(NETWORK_ONLY).map(function (url) {
-      var promise;
-      var fallback = NETWORK_ONLY[url];
-      if (typeof fallback !== 'string') {
-        promise = Promise.resolve();
-      }
-      else {
-        var request = new Request(fallback, { mode: 'no-cors' });
-        promise = fetch(request)
-          .then(offlineCache.put.bind(offlineCache, request));
-      }
-      return promise;
-    }));
+function getLatestVersionNumber() {
+  var latestVersion;
+  if (!UPDATE) {
+    latestVersion = Promise.resolve(CACHE_NAME);
+  }
+  else if (UPDATE.type === 'gh-pages') {
+    var updateChannel = getZipInfoFromGHPages(self.location).url;
+    latestVersion = fetch(updateChannel, { method: "HEAD" })
+      .then(function (response) {
+        return response.headers.get('ETag').replace(/"/g, '');
+      });
+  }
+  else {
+    latestVersion = Promise.reject(new Error("Update method not supported!"));
+  }
+  return latestVersion;
+}
+
+function checkIfNewVersion(remoteVersion) {
+  return asyncStorage.get('current-version').then(function (localVersion) {
+    if (!localVersion || remoteVersion && remoteVersion !== localVersion) {
+      log('New version ' + remoteVersion + ' found!');
+      if (localVersion) { log('Updating from version ' + localVersion); }
+      else { log('First update'); }
+      return asyncStorage.set('next-version', remoteVersion)
+        .then(function () { return remoteVersion; });
+    }
+    else {
+      log('No update needed');
+    }
+    return null;
   });
 }
 
+function getCacheNameForVersion(version) {
+  return Promise.resolve('cache-' + version);
+}
+
+// Prefetch is the process to prepopulate the offline cache
+function prefetch(targetCache) {
+  return cacheNetworkOnly(targetCache)
+    .then(digestPreFetch.bind(undefined, targetCache));
+}
+
+// Caches the NETWORK_ONLY fallbacks
+function cacheNetworkOnly(offlineCache) {
+  return Promise.all(Object.keys(NETWORK_ONLY).map(function (url) {
+    var promise;
+    var fallback = NETWORK_ONLY[url];
+    if (typeof fallback !== 'string') {
+      promise = Promise.resolve();
+    }
+    else {
+      var request = new Request(fallback, { mode: 'no-cors' });
+      promise = fetch(request)
+        .then(offlineCache.put.bind(offlineCache, request));
+    }
+    return promise;
+  }));
+}
+
 // Creates a chain of promises to populate the cache
-function digestPreFetch() {
+function digestPreFetch(targetCache) {
+  var urls = [];
   var digestion = Promise.resolve();
   PREFETCH.forEach(function (option) {
     if (typeof option === 'string') {
       var url = absoluteURL(option);
-      digestion = digestion.then(function () {
-        return populateFromURL(url);
-      });
+      urls.push(url);
     }
     else if (option.type === 'zip') {
       var zipURL = absoluteURL(option.url);
       digestion = digestion.then(function () {
-        return populateFromRemoteZip(zipURL, option.prefix);
+        return populateFromRemoteZip(zipURL, option.prefix, targetCache);
       });
     }
+  });
+  // TODO: Should we stablish some specific order between entries?
+  digestion = digestion.then(function () {
+    return populateFromURL(urls, targetCache);
   });
   return digestion;
 }
 
-function populateFromURL(url) {
-  return caches.open(CACHE_NAME).then(function (offlineCache) {
-    var request = new Request(fetchingURL(url), { mode: 'no-cors' });
-    return fetch(request).then(offlineCache.put.bind(offlineCache, request));
+function openActiveCache(version) {
+  return asyncStorage.get('active-cache').then(caches.open.bind(caches));
+}
+
+function updateMetaData(newCache) {
+  return asyncStorage.get('next-version').then(function (version) {
+    return Promise.all([
+      asyncStorage.set('current-version', version),
+      getCacheNameForVersion(version)
+        .then(asyncStorage.set.bind(asyncStorage, 'active-cache'))
+    ]);
   });
 }
 
+function populateFromURL(urls, offlineCache) {
+  urls = Array.isArray(urls) ? urls : [urls];
+  return Promise.all(urls.map(function (url) {
+    var request = new Request(fetchingURL(url), { mode: 'no-cors' });
+    return fetch(request).then(offlineCache.put.bind(offlineCache, request));
+  }));
+}
+
 // Fetch a remote ZIP, deflates it and add the routes to the cache
-function populateFromRemoteZip(zipURL, prefixToStrip) {
+function populateFromRemoteZip(zipURL, prefixToStrip, targetCache) {
   log('Populating from ' + zipURL);
   prefixToStrip = prefixToStrip || '';
   var readZip = new Promise(function (accept, reject) {
     fetch(zipURL).then(function (response) {
-      console.log(response.headers);
-      log('ETag: ', response.headers.get('ETag'));
-      log('Content-Length: ', response.headers.get('Content-Length'));
       return response.blob();
     }).then(function (blob) {
       zip.createReader(new zip.BlobReader(blob), function(reader) {
         reader.getEntries(function(entries) {
-          deflateInCache(entries, prefixToStrip)
+          deflateInCache(entries, prefixToStrip, targetCache)
             .then(reader.close.bind(reader, null)) // avoid callback for close
             .then(accept);
         });
@@ -221,33 +288,31 @@ function populateFromRemoteZip(zipURL, prefixToStrip) {
 }
 
 // Decompress each zipped file and add it to the cache
-function deflateInCache(entries, prefixToStrip) {
+function deflateInCache(entries, prefixToStrip, offlineCache) {
   prefixToStrip = prefixToStrip || '';
-  return caches.open(CACHE_NAME).then(function (offlineCache) {
-    var logProgress = getProgressLogger(entries);
-    return Promise.all(entries.map(function deflateFile(entry) {
-      var promise;
-      if (entry.directory) {
-        logProgress();
-        promise = Promise.resolve();
-      }
-      else {
-        promise = new Promise(function (accept) {
-          entry.getData(new zip.BlobWriter(), function(content) {
-            var filename = entry.filename.substr(prefixToStrip.length);
-            var headers = new Headers();
-            headers.append('Content-Type', getMIMEType(filename));
-            var response = new Response(content, { headers: headers });
-            var url = absoluteURL(join(root, filename));
-            offlineCache.put(url, response)
-              .then(logProgress)
-              .then(accept);
-          });
+  var logProgress = getProgressLogger(entries);
+  return Promise.all(entries.map(function deflateFile(entry) {
+    var promise;
+    if (entry.directory) {
+      logProgress();
+      promise = Promise.resolve();
+    }
+    else {
+      promise = new Promise(function (accept) {
+        entry.getData(new zip.BlobWriter(), function(content) {
+          var filename = entry.filename.substr(prefixToStrip.length);
+          var headers = new Headers();
+          headers.append('Content-Type', getMIMEType(filename));
+          var response = new Response(content, { headers: headers });
+          var url = absoluteURL(join(root, filename));
+          offlineCache.put(url, response)
+            .then(logProgress)
+            .then(accept);
         });
-      }
-      return promise;
-    }));
-  });
+      });
+    }
+    return promise;
+  }));
 
   function getProgressLogger(entries) {
     var total = entries.length;
@@ -262,6 +327,7 @@ function deflateInCache(entries, prefixToStrip) {
 // Intercept requests to network.
 self.addEventListener('fetch', function (event) {
   var request = event.request;
+  update();
   event.respondWith(offlineResolver(request));
 });
 
@@ -293,7 +359,7 @@ function responseThroughNetworkOnly(request) {
 
 // Try to fetch from cache or fails.
 function responseThroughCache(request) {
-  return caches.open(CACHE_NAME).then(function (offlineCache) {
+  return openActiveCache().then(function (offlineCache) {
     return offlineCache.match(request).catch(function (error) {
       console.log(error);
     });
@@ -303,7 +369,7 @@ function responseThroughCache(request) {
 // The best effort consists into try to fetch from remote. If possible, save
 // into the cache. If not, retrieve from cache. If not even possible, it fails.
 function doBestEffort(request) {
-  return caches.open(CACHE_NAME).then(function (offlineCache) {
+  return openActiveCache().then(function (offlineCache) {
     var localRequest = offlineCache.match(request).catch(function (error) {
       console.log(error);
     });
