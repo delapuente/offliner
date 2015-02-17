@@ -148,15 +148,23 @@ function update() {
   if (!self.updateProcess) {
     self.updateProcess = getLatestVersionNumber()
       .then(checkIfNewVersion)
-      .then(getCacheNameForVersion)
-      .then(caches.open.bind(caches))
-      .then(prefetch)
-      .then(updateMetaData)
-      .then(function () {
-        self.updateProcess = null;
-      });
+      .then(function (newVersion) {
+        if (newVersion) {
+          return getCacheNameForVersion(newVersion)
+            .then(caches.open.bind(caches))
+            .then(prefetch)
+            .then(updateMetaData);
+        }
+      })
+      .then(endUpdateProcess)
+      .catch(error)
+      .then(endUpdateProcess); // XXX: equivalent to .finally();
   }
   return self.updateProcess;
+
+  function endUpdateProcess() {
+    self.updateProcess = null;
+  }
 }
 
 function getLatestVersionNumber() {
@@ -169,6 +177,10 @@ function getLatestVersionNumber() {
     latestVersion = fetch(updateChannel, { method: "HEAD" })
       .then(function (response) {
         return response.headers.get('ETag').replace(/"/g, '');
+      })
+      .catch(function (reason) {
+        error('Update channel is unreachable, aborting.');
+        throw new Error('Update channel unreachable');
       });
   }
   else {
