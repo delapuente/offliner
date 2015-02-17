@@ -78,6 +78,7 @@ catch (e) {
   });
 }());
 
+// Gets the package from the information available in a gh-pages location.
 function getZipInfoFromGHPages(url) {
   var username = url.host.split('.')[0];
   var repo = url.pathname.split('/')[1];
@@ -87,15 +88,19 @@ function getZipInfoFromGHPages(url) {
   };
 }
 
+// Gets the package for a given branch. Due to CORS, it need to be tunneled
+// through a server with a more relaxed CORS policy.
 function getZipFromGHData(username, repo, branch) {
   var path = ['archive', username, repo, branch].join('/');
   return 'http://cacheator.com:4000/' + path;
 }
 
+// Normalize any URL into an absolute URL.
 function absoluteURL(url) {
   return new self.URL(url, self.location.origin).href;
 }
 
+// Join parts of the URL's filepath.
 function join() {
   var joint = '';
   for (var i = 0, path; (path = arguments[i]); i++) {
@@ -107,6 +112,7 @@ function join() {
   return joint;
 }
 
+// Return MIME type according to the extension.
 function getMIMEType(filename) {
   var MIMEMap = {
     'css': 'text/css',
@@ -128,7 +134,7 @@ function getMIMEType(filename) {
   return mimetype;
 }
 
-// On install, we perform the prefetch process
+// On install, we perform a first update.
 self.addEventListener('install', function (event) {
   event.waitUntil(
     update()
@@ -143,8 +149,11 @@ self.addEventListener('activate', function (event) {
   log('Offline cache activated at ' + new Date() + '!');
 });
 
-// Starts the update process
+// The update process consists into get the new version tag an repeat the
+// prefetch process. Notice how update does not fetch any package, just query
+// about the latest version of the software through an update channel.
 function update() {
+  // XXX: Only one update process is allowed at time.
   if (!self.updateProcess) {
     self.updateProcess = getLatestVersionNumber()
       .then(checkIfNewVersion)
@@ -167,15 +176,22 @@ function update() {
   }
 }
 
+// Gets the latest version tag through the update channel.
 function getLatestVersionNumber() {
   var latestVersion;
+
+  // Update channel is disabled, fallback to default version.
   if (!UPDATE) {
+    // TODO: Change CACHE_NAME by ZERO_VERSION
     latestVersion = Promise.resolve(CACHE_NAME);
   }
+
+  // Update channel is gh-pages, compare through the HEAD commit of that branch.
   else if (UPDATE.type === 'gh-pages') {
     var updateChannel = getZipInfoFromGHPages(self.location).url;
     latestVersion = fetch(updateChannel, { method: "HEAD" })
       .then(function (response) {
+        // XXX: The hash is in the ETag header of the branch's ZIP.
         return response.headers.get('ETag').replace(/"/g, '');
       })
       .catch(function (reason) {
@@ -183,18 +199,23 @@ function getLatestVersionNumber() {
         throw new Error('Update channel unreachable');
       });
   }
+
+  // Not supported.
   else {
     latestVersion = Promise.reject(new Error("Update method not supported!"));
   }
+
   return latestVersion;
 }
 
+// A simple comparison between current version and the new one.
 function checkIfNewVersion(remoteVersion) {
   return asyncStorage.get('current-version').then(function (localVersion) {
     if (!localVersion || remoteVersion && remoteVersion !== localVersion) {
       log('New version ' + remoteVersion + ' found!');
       if (localVersion) { log('Updating from version ' + localVersion); }
       else { log('First update'); }
+      // Update next version after determining that an update is needed.
       return asyncStorage.set('next-version', remoteVersion)
         .then(function () { return remoteVersion; });
     }
@@ -205,6 +226,7 @@ function checkIfNewVersion(remoteVersion) {
   });
 }
 
+// Return the CACHE name for a version given.
 function getCacheNameForVersion(version) {
   return Promise.resolve('cache-' + version);
 }
@@ -255,10 +277,14 @@ function digestPreFetch(targetCache) {
   return digestion;
 }
 
+// Uses dynamic information to open the active CACHE.
 function openActiveCache(version) {
   return asyncStorage.get('active-cache').then(caches.open.bind(caches));
 }
 
+// Updates the current version with the contents of next version and the
+// active cache.
+// TODO: Improve the name.
 function updateMetaData(newCache) {
   return asyncStorage.get('next-version').then(function (version) {
     return Promise.all([
@@ -269,6 +295,7 @@ function updateMetaData(newCache) {
   });
 }
 
+// Get a list (or a solely item) of URLs and put into the cache passed.
 function populateFromURL(urls, offlineCache) {
   urls = Array.isArray(urls) ? urls : [urls];
   return Promise.all(urls.map(function (url) {

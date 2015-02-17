@@ -39,6 +39,14 @@ var NETWORK_ONLY = {};
 var PREFETCH = [];
 
 /**
- * Stablishes the update policy.
+ * Stablishes the update policy. Currently only two are supported:
+ *   * Or disabled by setting it to `false`.
+ *   * Or set to `{ type: 'gh-pages' }`
+ *
+ * The second one use the gh-pages' HEAD commit hash to stablish when an
+ * update is required.
+ *
+ * In any case, if an update is required, the prefetch process is triggered
+ * again according with the PREFETCH configuration.
  */
 var UPDATE = { type: 'gh-pages' };

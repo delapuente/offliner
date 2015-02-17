@@ -30,7 +30,8 @@ Add the attribute `data-root` if your application is not in the root of your hos
 The file `cache.js` contains some useful variables you can customize if want to tweak offliner. See inside the file for more info but here you have a summary of each of them:
 
   * `NETWORK_ONLY`: it's an object with those things that never will be fetched from the cache as keys. Each key can be set to `true` or another URL to point a fallback if there is a network error.
-  * `PREFETCH`: it's a list of URLs to be automatically fetched. The list accepts objects with some interesting properties. Currently, the only object supported is `{ type: 'zip', url: '/an/url/to/a.zip' }`. With this entry, _offliner_ will download the ZIP file and use the contents to prefetch everything. The ZIP should contain only those files you want to prefetch and the root must be the directory holding the application.
+  * `PREFETCH`: it's a list of URLs to be automatically fetched. The list accepts objects with some interesting properties. Set to the object `{ type: 'zip', url: '/an/url/to/a.zip' }`, _offliner_ will download the ZIP file and use the contents to prefetch everything. The ZIP should contain only those files you want to prefetch and the root must be the directory holding the application. Set to `{ type: 'gh-pages' }`, __offliner__ will use the packaged zip from the `gh-pages` branch of your project. Use it if your application is hosted under __gh-pages__.
+  * `UPDATE`: stablishes the update policy. In case of update, the prefetch process is re-triggered. If set to false, no updating test is performed at all. If set to `{ type: 'gh-pages' }`, the hash of the `gh-pages` branch's HEAD commit is used.
 
 ## Whishlist
 
