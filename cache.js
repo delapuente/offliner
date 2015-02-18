@@ -49,4 +49,16 @@ var PREFETCH = [];
  * In any case, if an update is required, the prefetch process is triggered
  * again according with the PREFETCH configuration.
  */
-var UPDATE = { type: 'gh-pages' };
+var UPDATE = false;
+
+/**
+ * If your web application is hosted in gh-pages and you enable some of the
+ * GitHub integration features in the options below, you will need a tunnel
+ * due to CORS restrictions between gh-pages hosted applications and the archive
+ * where ZIPs packages reside. You will need a server to tunnel these
+ * requests and overcome CORS.
+ *
+ * You can find such a server on the server folder and you can run it with
+ * node: node.js main.js
+ */
+var GH_PAGES_TUNNEL_SERVER = 'localhost:4000/';

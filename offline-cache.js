@@ -1,4 +1,4 @@
-var CACHE_NAME = 'cache-zero';
+var NO_VERSION = 'zero';
 
 // Convenient shortcuts
 ['log', 'warn', 'error'].forEach(function (method) {
@@ -92,7 +92,7 @@ function getZipInfoFromGHPages(url) {
 // through a server with a more relaxed CORS policy.
 function getZipFromGHData(username, repo, branch) {
   var path = ['archive', username, repo, branch].join('/');
-  return 'http://cacheator.com:4000/' + path;
+  return GH_PAGES_TUNNEL_SERVER + path;
 }
 
 // Normalize any URL into an absolute URL.
@@ -182,8 +182,7 @@ function getLatestVersionNumber() {
 
   // Update channel is disabled, fallback to default version.
   if (!UPDATE) {
-    // TODO: Change CACHE_NAME by ZERO_VERSION
-    latestVersion = Promise.resolve(CACHE_NAME);
+    latestVersion = Promise.resolve(NO_VERSION);
   }
 
   // Update channel is gh-pages, compare through the HEAD commit of that branch.
