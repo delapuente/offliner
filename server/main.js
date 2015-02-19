@@ -25,7 +25,8 @@ function getZip(req, res, next) {
     writeHead.apply(res, arguments);
   };
   var ghRequest = request[req.method.toLowerCase()](url);
-  ghRequest.on('error', function () {
+  ghRequest.on('error', function (reason) {
+    console.error(reason);
     console.error('codeload.github.com is unavailable!');
     res.status(502).end();
   });

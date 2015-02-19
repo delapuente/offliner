@@ -61,4 +61,4 @@ var UPDATE = false;
  * You can find such a server on the server folder and you can run it with
  * node: node.js main.js
  */
-var GH_PAGES_TUNNEL_SERVER = 'localhost:4000/';
+var GH_PAGES_TUNNEL_SERVER = 'http://localhost:4000/';

@@ -2,7 +2,7 @@ var NO_VERSION = 'zero';
 
 // Convenient shortcuts
 ['log', 'warn', 'error'].forEach(function (method) {
-  self[method] = console[method].bind(console);
+  self[method] = console[method === 'error' ? 'warn' : method].bind(console);
 });
 
 var ports = [];
@@ -38,16 +38,21 @@ importScripts('offliner-plugins/zip.js/deflate.js');
 importScripts('offliner-plugins/zip.js/inflate.js');
 zip.useWebWorkers = false;
 
-// Import the configuration file.
-try {
-  importScripts('cache.js');
-}
-catch (e) {
-  var NETWORK_ONLY = {};
-  var PREFETCH = [];
+function reloadCacheConfig() {
+  try {
+    importScripts(fetchingURL(absoluteURL(join(root, 'cache.js'))));
+  }
+  catch (e) {
+    self.NETWORK_ONLY = self.NETWORK_ONLY || {};
+    self.PREFETCH = self.PREFETCH || [];
+    self.UPDATE = self.UPDATE || false;
+    self.GH_PAGES_TUNNEL_SERVER =
+      self.GH_PAGES_TUNNEL_SERVER || 'http://localhost:4000/';
+  }
+  return Promise.resolve();
 }
 
-(function digestConfigFile() {
+function digestConfig() {
   var origin = self.location.origin;
 
   // Convert relative to global URLs.
@@ -76,7 +81,8 @@ catch (e) {
     }
     return option;
   });
-}());
+  return Promise.resolve();
+}
 
 // Gets the package from the information available in a gh-pages location.
 function getZipInfoFromGHPages(url) {
@@ -155,19 +161,22 @@ self.addEventListener('activate', function (event) {
 function update() {
   // XXX: Only one update process is allowed at time.
   if (!self.updateProcess) {
-    self.updateProcess = getLatestVersionNumber()
+    self.updateProcess = reloadCacheConfig()
+      .then(digestConfig)
+      .then(getLatestVersionNumber)
       .then(checkIfNewVersion)
       .then(function (newVersion) {
         if (newVersion) {
           return getCacheNameForVersion(newVersion)
             .then(caches.open.bind(caches))
             .then(prefetch)
-            .then(updateMetaData);
+            .then(swapCaches)
+            .then(updateCurrentVersion);
         }
       })
-      .then(endUpdateProcess)
-      .catch(error)
-      .then(endUpdateProcess); // XXX: equivalent to .finally();
+      .then(endUpdateProcess)  // XXX:
+      .catch(error)            //
+      .then(endUpdateProcess); // equivalent to .finally();
   }
   return self.updateProcess;
 
@@ -191,11 +200,17 @@ function getLatestVersionNumber() {
     latestVersion = fetch(updateChannel, { method: "HEAD" })
       .then(function (response) {
         // XXX: The hash is in the ETag header of the branch's ZIP.
-        return response.headers.get('ETag').replace(/"/g, '');
+        if (response.status === 200) {
+          var newVersion = response.headers.get('ETag').replace(/"/g, '');
+          return Promise.resolve(newVersion);
+        }
+        else {
+          return Promise.reject();
+        }
       })
       .catch(function (reason) {
         error('Update channel is unreachable, aborting.');
-        throw new Error('Update channel unreachable');
+        return Promise.reject(new Error('Update channel unreachable'));
       });
   }
 
@@ -281,17 +296,33 @@ function openActiveCache(version) {
   return asyncStorage.get('active-cache').then(caches.open.bind(caches));
 }
 
-// Updates the current version with the contents of next version and the
-// active cache.
-// TODO: Improve the name.
-function updateMetaData(newCache) {
-  return asyncStorage.get('next-version').then(function (version) {
-    return Promise.all([
-      asyncStorage.set('current-version', version),
-      getCacheNameForVersion(version)
-        .then(asyncStorage.set.bind(asyncStorage, 'active-cache'))
-    ]);
-  });
+// Update the active cache and delete the former one.
+function swapCaches() {
+  return Promise.all([
+    getCurrentCache(),
+    getNextCache()
+  ]).then(swap);
+
+  function getCurrentCache() {
+    return asyncStorage.get('active-cache');
+  }
+
+  function getNextCache() {
+    return asyncStorage.get('next-version').then(getCacheNameForVersion);
+  }
+
+  function swap(names) {
+    var currentCache = names[0],
+        nextCache = names[1];
+    return asyncStorage.set('active-cache', nextCache)
+    .then(caches.delete.bind(caches, currentCache));
+  }
+}
+
+// Updates the current version with next version.
+function updateCurrentVersion() {
+  return asyncStorage.get('next-version')
+  .then(asyncStorage.set.bind(asyncStorage, 'current-version'));
 }
 
 // Get a list (or a solely item) of URLs and put into the cache passed.
