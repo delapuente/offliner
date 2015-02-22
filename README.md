@@ -22,7 +22,7 @@ The only thing you need is to copy all files in this repository on your site's r
 Add the attribute `data-root` if your application is not in the root of your hosting. This is useful for `gh-pages` hosted apps.
 
 ```html
-<script data-root="my-awesome-app" src="offline-cache-setup.js"></script>
+<script data-root="/my-awesome-app/" src="offline-cache-setup.js"></script>
 ```
 
 ## Configuring offliner
