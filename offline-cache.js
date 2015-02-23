@@ -38,60 +38,43 @@ importScripts('offliner-plugins/zip.js/deflate.js');
 importScripts('offliner-plugins/zip.js/inflate.js');
 zip.useWebWorkers = false;
 
-function reloadCacheConfig() {
-  try {
-    importScripts(fetchingURL(absoluteURL(join(root, 'cache.js'))));
-  }
-  catch (e) {
-    self.NETWORK_ONLY = self.NETWORK_ONLY || {};
-    self.PREFETCH = self.PREFETCH || [];
-    self.UPDATE = self.UPDATE || false;
-    self.GH_PAGES_TUNNEL_SERVER =
-      self.GH_PAGES_TUNNEL_SERVER || 'http://localhost:4000/';
-  }
-  return Promise.resolve();
+var defaults = {
+  'networkOnly': {},
+  'prefetch': [],
+  'update': false,
+  'ghPagesTunnelServer': 'http://localhost:4000'
+};
+
+var configMap = {
+  'NETWORK_ONLY': 'networkOnly',
+  'PREFETCH': 'prefetch',
+  'UPDATE': 'update',
+  'GH_PAGES_TUNNEL_SERVER': 'ghPagesTunnelServer'
+};
+
+loadDefaults();
+
+// Load default configuration.
+function loadDefaults() {
+  self.NETWORK_ONLY = defaults.networkOnly;
+  self.PREFETCH = defaults.prefetch;
+  self.UPDATE = defaults.update;
+  self.GH_PAGES_TUNNEL_SERVER = defaults.ghPagesTunnelServer;
 }
 
-function digestConfig() {
-  var origin = self.location.origin;
-
-  // Convert relative to global URLs.
-  Object.keys(NETWORK_ONLY).forEach(function (url) {
-    var fallback = NETWORK_ONLY[url];
-    url = absoluteURL(url);
-    if (typeof fallback === 'string') {
-      NETWORK_ONLY[url] = absoluteURL(fallback);
-    }
-  });
-
-  // Normalize prefetch
-  if (PREFETCH && !Array.isArray(PREFETCH)) {
-    PREFETCH = [PREFETCH];
+// Apply a configuration object.
+function applyConfig(configuration) {
+  for (var property in configMap) if (configMap.hasOwnProperty(property)) {
+    var configProperty = configMap[property];
+    self[property] = applyIfExist(configProperty, self[property]);
   }
-  else if (!PREFETCH) {
-    PREFETCH = [];
-  }
-  PREFETCH = PREFETCH.map(function (option) {
-    if (typeof option === 'object' && option.type === 'gh-pages') {
-      var zipInfo = getZipInfoFromGHPages(self.location);
-      option.type = 'zip';
-      option.url = zipInfo.url;
-      option.prefix = zipInfo.prefix;
-      return option;
-    }
-    return option;
-  });
-  return Promise.resolve();
-}
 
-// Gets the package from the information available in a gh-pages location.
-function getZipInfoFromGHPages(url) {
-  var username = url.host.split('.')[0];
-  var repo = url.pathname.split('/')[1];
-  return {
-    url: getZipFromGHData(username, repo, 'gh-pages'),
-    prefix: repo + '-gh-pages/'
-  };
+  function applyIfExist(property, fallback) {
+    if (configuration.hasOwnProperty(property)) {
+      return configuration[property];
+    }
+    return fallback;
+  }
 }
 
 // Gets the package for a given branch. Due to CORS, it need to be tunneled
@@ -184,6 +167,59 @@ function update() {
     self.updateProcess = null;
   }
 }
+
+function reloadCacheConfig() {
+  var configURL = fetchingURL(absoluteURL(join(root, 'cache.json')));
+  var configRequest = new Request(configURL);
+  return doBestEffort(configRequest).then(function (response) {
+    if (response.status === 200) {
+      return response.json().then(applyConfig);
+    }
+  });
+}
+
+function digestConfig() {
+  var origin = self.location.origin;
+
+  // Convert relative to global URLs.
+  Object.keys(NETWORK_ONLY).forEach(function (url) {
+    var fallback = NETWORK_ONLY[url];
+    url = absoluteURL(url);
+    if (typeof fallback === 'string') {
+      NETWORK_ONLY[url] = absoluteURL(fallback);
+    }
+  });
+
+  // Normalize prefetch
+  if (PREFETCH && !Array.isArray(PREFETCH)) {
+    PREFETCH = [PREFETCH];
+  }
+  else if (!PREFETCH) {
+    PREFETCH = [];
+  }
+  PREFETCH = PREFETCH.map(function (option) {
+    if (typeof option === 'object' && option.type === 'gh-pages') {
+      var zipInfo = getZipInfoFromGHPages(self.location);
+      option.type = 'zip';
+      option.url = zipInfo.url;
+      option.prefix = zipInfo.prefix;
+      return option;
+    }
+    return option;
+  });
+  return Promise.resolve();
+}
+
+// Gets the package from the information available in a gh-pages location.
+function getZipInfoFromGHPages(url) {
+  var username = url.host.split('.')[0];
+  var repo = url.pathname.split('/')[1];
+  return {
+    url: getZipFromGHData(username, repo, 'gh-pages'),
+    prefix: repo + '-gh-pages/'
+  };
+}
+
 
 // Gets the latest version tag through the update channel.
 function getLatestVersionNumber() {

@@ -13,7 +13,7 @@ Please, be aware about this technology is only available in some few browsers an
 Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
 
 ## Usage
-The only thing you need is to copy all files in this repository on your site's root and add this tag at the beginning of your `index.html` document:
+The only thing you need is to copy all files on this repository except the `server` folder on your site's root and add this script at the beginning of your `index.html` document:
 
 ```html
 <script src="offline-cache-setup.js"></script>
@@ -27,11 +27,57 @@ Add the attribute `data-root` if your application is not in the root of your hos
 
 ## Configuring offliner
 
-The file `cache.js` contains some useful variables you can customize if want to tweak offliner. See inside the file for more info but here you have a summary of each of them:
+The file `cache.json` contains some useful options you can customize for tweaking **offliner**.
 
-  * `NETWORK_ONLY`: it's an object with those things that never will be fetched from the cache as keys. Each key can be set to `true` or another URL to point a fallback if there is a network error.
-  * `PREFETCH`: it's a list of URLs to be automatically fetched. The list accepts objects with some interesting properties. Set to the object `{ type: 'zip', url: '/an/url/to/a.zip' }`, _offliner_ will download the ZIP file and use the contents to prefetch everything. The ZIP should contain only those files you want to prefetch and the root must be the directory holding the application. Set to `{ type: 'gh-pages' }`, __offliner__ will use the packaged zip from the `gh-pages` branch of your project. Use it if your application is hosted under __gh-pages__.
-  * `UPDATE`: stablishes the update policy. In case of update, the prefetch process is re-triggered. If set to false, no updating test is performed at all. If set to `{ type: 'gh-pages' }`, the hash of the `gh-pages` branch's HEAD commit is used.
+### networkOnly
+
+An object with the urls to be fetched only if network is available as keys and the fallbacks for when there is no network as values. If you don't want a fallback, leave it as `true`.
+
+Examples:
+
+```js
+"networkOnly": {
+  "online.png": "offline.png"
+}
+```
+
+Try to fetch a remote copy of `online.png`. If not possible answer with `offline.png` instead.
+
+```js
+"networkOnly": {
+  "online.png": true
+}
+```
+
+Try to fetch a remote copy. If not possible the request will fail.
+
+### prefetch
+
+List with resources to be prefetched. Each item can be an URL or an object. If it is an URL, it can be absolute or relative and the resource in that URL will be stored in the offline cache during the worker installation.
+
+You can specify objects instead to pre-fetch following other strategies. The following are supported:
+
+  * `{ "type": "zip", "url", ["prefix"] }`: get and decompress the ZIP pointed in `url` and use it to prepopulate the cache. Remember the ZIP file should be located under the same origin or in another server with a proper CORS policy. The ZIP should contain the files for the app directly, not the folder containing the files. If the creation of the ZIP is not under your control and it adds a directory, use prefix to strip it out.
+
+## update
+
+Stablishes the update policy. Currently only two are supported:
+  * Or disabled by setting it to `false`.
+  * Or set to `{ "type": "gh-pages" }`.
+
+The second one use the gh-pages' HEAD commit hash to stablish when an update is required.
+
+In any case, if an update is required, the prefetch process is triggered again according with the `prefetch` option.
+
+## ghPagesTunnelServer
+
+If your web application is hosted in gh-pages and you enable some of the GitHub integration features in the options below, you will need a tunnel due to CORS restrictions between gh-pages hosted applications and the archive where ZIPs packages reside. You will need a server to tunnel these requests and overcome CORS.
+
+You can find such a server on the server folder and you can run it with node:
+
+```bash
+$ node.js main.js
+```
 
 ## Whishlist
 
