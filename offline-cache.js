@@ -2,7 +2,7 @@ var NO_VERSION = 'zero';
 
 // Convenient shortcuts
 ['log', 'warn', 'error'].forEach(function (method) {
-  self[method] = console[method === 'error' ? 'warn' : method].bind(console);
+  self[method] = console[method].bind(console);
 });
 
 var ports = [];
@@ -202,14 +202,15 @@ function getLatestVersionNumber() {
         // XXX: The hash is in the ETag header of the branch's ZIP.
         if (response.status === 200) {
           var newVersion = response.headers.get('ETag').replace(/"/g, '');
-          return Promise.resolve(newVersion);
+          return newVersion;
         }
         else {
-          return Promise.reject();
+          throw new Error('Bad status: ' + response.status);
         }
       })
       .catch(function (reason) {
-        error('Update channel is unreachable, aborting.');
+        warn('Update channel is unreachable, aborting.');
+        warn('Details: ', reason);
         return Promise.reject(new Error('Update channel unreachable'));
       });
   }
