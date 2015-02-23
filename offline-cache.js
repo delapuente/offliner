@@ -172,7 +172,7 @@ function reloadCacheConfig() {
   var configURL = fetchingURL(absoluteURL(join(root, 'cache.json')));
   var configRequest = new Request(configURL);
   return doBestEffort(configRequest).then(function (response) {
-    if (response.status === 200) {
+    if (response && response.status === 200) {
       return response.json().then(applyConfig);
     }
   });
@@ -407,13 +407,21 @@ function deflateInCache(entries, prefixToStrip, offlineCache) {
       promise = new Promise(function (accept) {
         entry.getData(new zip.BlobWriter(), function(content) {
           var filename = entry.filename.substr(prefixToStrip.length);
+          var indexFinder = /\bindex.html?$/i;
+          var isIndex = indexFinder.test(filename);
           var headers = new Headers();
           headers.append('Content-Type', getMIMEType(filename));
           var response = new Response(content, { headers: headers });
           var url = absoluteURL(join(root, filename));
-          offlineCache.put(url, response)
-            .then(logProgress)
-            .then(accept);
+          var putInCache = offlineCache.put(url, response);
+          if (isIndex) {
+            var rootURL = url.replace(indexFinder, '');
+            var rootResponse = new Response(content, { headers: headers });
+            putInCache.then(function () {
+              return offlineCache.put(rootURL, rootResponse);
+            });
+          }
+          putInCache.then(logProgress).then(accept);
         });
       });
     }
