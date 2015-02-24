@@ -169,7 +169,7 @@ function update() {
 }
 
 function reloadCacheConfig() {
-  var configURL = fetchingURL(absoluteURL(join(root, 'cache.json')));
+  var configURL = absoluteURL(join(root, 'cache.json'));
   var configRequest = new Request(configURL);
   return doBestEffort(configRequest).then(function (response) {
     if (response && response.status === 200) {
