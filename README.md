@@ -109,7 +109,7 @@ This is roughly equivalen to:
 "prefetch": { "type": "zip", "url": "https://codeload.github.com/<user>/<repo>/zip/gh-pages", "prefix": "gh-pages-<repo>/" }
 ```
 
-But due to some CORS limitations, the item above won't work. See [corsProxy](#corsProxy) section for more about this.
+But due to some CORS limitations, the item above won't work. See [corsProxy](#corsproxy) section for more about this.
 
 ### update
 
