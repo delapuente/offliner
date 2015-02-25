@@ -4,10 +4,9 @@ Offliner is a proof of concept about bringing offline web applications through [
 
 ## Remember
 
-This technology is only available in [Chrome Canary](https://www.google.com/chrome/browser/canary.html) right now.
+This technology is only available in [Chrome Canary](https://www.google.com/chrome/browser/canary.html) right now. **Remember you need to [enable service workers](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
 
-  > Linux users can try [Chrome Unstable](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) or [Chrome Beta](https://www.google.com/chrome/browser/beta.html) instead. **Remember you need to [enable service workers](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
-
+  > Linux users can try [Chrome Unstable](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) or [Chrome Beta](https://www.google.com/chrome/browser/beta.html) instead.
 You need to serve your web under **`https`**. You can try with [GitHub `gh-pages`](https://pages.github.com/).
 
 Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
