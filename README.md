@@ -150,6 +150,22 @@ Examples:
 ```
 
 Will check for an update each 30 minutes.
+  
+  > It's impportant to notice that querying GitHub API for non authenticated origins has a restriction of 60 queries per hour so try to not set an update period too low.
+
+### corsProxy
+
+**Default**: `"http://crossorigin.me"`
+
+Due to CORS restrictions, it is not possible to access the contents of the ZIP package downloaded from `codeload.github.com` so this URL points to a free Internet service to enable CORS from any origin. The service hosted at [`crossorigin.me` can be found on GitHub](https://github.com/technoboy10/crossorigin.me) and you can deploy your own if you are generating a lot of traffic or your package is quite big but this should suffice for testing purposes.
+
+CORS proxies URL must follow the same API than `crossorigin.me`. This is to accept the target URL as the URL's path. I.e, for the default proxy, the request for My Awesome App `gh-pages` ZIP is:
+
+```bash
+http://crossorigin.me/https://codeload.github.com/lodr/my-awesome-app/zip/gh-pages
+```
+
+  > I hope I will convince GitHub to enable CORS in `codeload.github.com` to allow origins on `*.github.io` to access content but meanwhile this does the trick.
 
 ## Whishlist
 

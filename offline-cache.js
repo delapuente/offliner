@@ -42,24 +42,26 @@ var defaults = {
   'networkOnly': {},
   'prefetch': [],
   'update': false,
-  'ghPagesTunnelServer': 'http://localhost:4000'
+  'updatePeriod': 'once',
+  'corsProxy': 'http://crossorigin.me'
 };
 
 var configMap = {
   'NETWORK_ONLY': 'networkOnly',
   'PREFETCH': 'prefetch',
   'UPDATE': 'update',
-  'GH_PAGES_TUNNEL_SERVER': 'ghPagesTunnelServer'
+  'UPDATE_PERIOD': 'updatePeriod',
+  'CORS_PROXY': 'corsProxy'
 };
 
 loadDefaults();
 
 // Load default configuration.
 function loadDefaults() {
-  self.NETWORK_ONLY = defaults.networkOnly;
-  self.PREFETCH = defaults.prefetch;
-  self.UPDATE = defaults.update;
-  self.GH_PAGES_TUNNEL_SERVER = defaults.ghPagesTunnelServer;
+  for (var globalName in configMap) if (configMap.hasOwnProperty(globalName)) {
+    var configName = configMap[globalName];
+    self[globalName] = defaults[configName];
+  }
 }
 
 // Apply a configuration object.
@@ -80,8 +82,9 @@ function applyConfig(configuration) {
 // Gets the package for a given branch. Due to CORS, it need to be tunneled
 // through a server with a more relaxed CORS policy.
 function getZipFromGHData(username, repo, branch) {
-  var path = ['archive', username, repo, branch].join('/');
-  return GH_PAGES_TUNNEL_SERVER + path;
+  var codeloadURL =
+    'https://codeload.github.com' + join(username, repo, 'zip', branch);
+  return CORS_PROXY ? CORS_PROXY + join(codeloadURL) : codeloadURL;
 }
 
 // Normalize any URL into an absolute URL.
@@ -127,6 +130,7 @@ function getMIMEType(filename) {
 self.addEventListener('install', function (event) {
   event.waitUntil(
     update()
+      .then(schedulePeriodicUpdates)
       .then(function () {
         log('Offline cache installed at ' + new Date() + '!');
       })
@@ -138,13 +142,37 @@ self.addEventListener('activate', function (event) {
   log('Offline cache activated at ' + new Date() + '!');
 });
 
+var updates = {
+  enabled: false,
+  alreadyRunOnce: false,
+  intervalId: null,
+  inProgressProcess: null
+};
+
+function schedulePeriodicUpdates() {
+  if (!self.updates.enabled) {
+    if (!self.updates.alreadyRunOnce && !self.updates.inProgressProcess) {
+      log('Just activated update.');
+      update();
+    }
+    if (typeof UPDATE_PERIOD === 'number' ) {
+      log('Next update in', UPDATE_PERIOD / 1000, 'seconds.');
+      self.updates.intervalId = setInterval(function () {
+        log('Periodic update. Next in', UPDATE_PERIOD / 1000, 'seconds.');
+        update();
+      }, UPDATE_PERIOD);
+    }
+    self.updates.enabled = true;
+  }
+}
+
 // The update process consists into get the new version tag an repeat the
 // prefetch process. Notice how update does not fetch any package, just query
 // about the latest version of the software through an update channel.
 function update() {
-  // XXX: Only one update process is allowed at time.
-  if (!self.updateProcess) {
-    self.updateProcess = reloadCacheConfig()
+  // XXX: Only one update process is allowed at a time.
+  if (!self.updates.inProgressProcess) {
+    self.update.inProgressProcess = reloadCacheConfig()
       .then(digestConfig)
       .then(getLatestVersionNumber)
       .then(checkIfNewVersion)
@@ -161,10 +189,11 @@ function update() {
       .catch(error)            //
       .then(endUpdateProcess); // equivalent to .finally();
   }
-  return self.updateProcess;
+  return self.update.inProgressProcess;
 
   function endUpdateProcess() {
-    self.updateProcess = null;
+    updates.alreadyRunOnce = true;
+    self.updates.inProgressProcess = null;
   }
 }
 
@@ -180,6 +209,16 @@ function reloadCacheConfig() {
 
 function digestConfig() {
   var origin = self.location.origin;
+
+  // Normalize corsProxy
+  try {
+    var url = new URL(CORS_PROXY);
+    CORS_PROXY = url.protocol + '//' + url.host;
+  }
+  catch (e) {
+    warn('Option `corsProxy` must be a FQDN.');
+    CORS_PROXY = '';
+  }
 
   // Convert relative to global URLs.
   Object.keys(NETWORK_ONLY).forEach(function (url) {
@@ -207,6 +246,28 @@ function digestConfig() {
     }
     return option;
   });
+
+  // Normalize updatePeriod
+  if (typeof UPDATE_PERIOD !== 'number') {
+    var normalized = 'once';
+    var msPerUnit = {
+      's': 1000,
+      'm': 60000,
+      'h': 3600000
+    };
+    if (UPDATE_PERIOD !== 'once' && typeof UPDATE_PERIOD === 'string') {
+      var amount = parseFloat(UPDATE_PERIOD);
+      var unit = UPDATE_PERIOD[UPDATE_PERIOD.length - 1];
+      if (!msPerUnit.hasOwnProperty(unit)) {
+        warn('Format for `updatePeriod` not supported.');
+      }
+      else {
+        normalized = amount * msPerUnit[unit];
+      }
+    }
+    UPDATE_PERIOD = normalized;
+  }
+
   return Promise.resolve();
 }
 
@@ -258,7 +319,7 @@ function getLatestVersionNumber() {
     })
     .catch(function (reason) {
       warn('Update channel is unreachable, aborting.');
-      warn('Details: ', reason);
+      warn('Details:', reason);
       return Promise.reject(new Error('Update channel unreachable'));
     });
   }
@@ -452,8 +513,8 @@ function deflateInCache(entries, prefixToStrip, offlineCache) {
 
 // Intercept requests to network.
 self.addEventListener('fetch', function (event) {
+  schedulePeriodicUpdates();
   var request = event.request;
-  update();
   event.respondWith(offlineResolver(request));
 });
 

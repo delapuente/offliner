@@ -2,5 +2,6 @@
   "networkOnly": {},
   "prefetch": [],
   "update": false,
-  "ghPagesTunnelServer": "http://localhost:4000/"
+  "updatePeriod": "once",
+  "corsProxy": "http://crossorigin.me/"
 }
