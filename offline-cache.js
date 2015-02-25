@@ -212,14 +212,19 @@ function digestConfig() {
 
 // Gets the package from the information available in a gh-pages location.
 function getZipInfoFromGHPages(url) {
-  var username = url.host.split('.')[0];
-  var repo = url.pathname.split('/')[1];
+  var info = getGHInfoFromGHPages(url);
   return {
-    url: getZipFromGHData(username, repo, 'gh-pages'),
-    prefix: repo + '-gh-pages/'
+    url: getZipFromGHData(info.username, info.repo, 'gh-pages'),
+    prefix: info.repo + '-gh-pages/'
   };
 }
 
+function getGHInfoFromGHPages(url) {
+  return {
+    username: url.host.split('.')[0],
+    repo: url.pathname.split('/')[1]
+  };
+}
 
 // Gets the latest version tag through the update channel.
 function getLatestVersionNumber() {
@@ -232,23 +237,30 @@ function getLatestVersionNumber() {
 
   // Update channel is gh-pages, compare through the HEAD commit of that branch.
   else if (UPDATE.type === 'gh-pages') {
-    var updateChannel = getZipInfoFromGHPages(self.location).url;
-    latestVersion = fetch(updateChannel, { method: "HEAD" })
-      .then(function (response) {
-        // XXX: The hash is in the ETag header of the branch's ZIP.
-        if (response.status === 200) {
-          var newVersion = response.headers.get('ETag').replace(/"/g, '');
-          return newVersion;
-        }
-        else {
-          throw new Error('Bad status: ' + response.status);
-        }
-      })
-      .catch(function (reason) {
-        warn('Update channel is unreachable, aborting.');
-        warn('Details: ', reason);
-        return Promise.reject(new Error('Update channel unreachable'));
-      });
+    var info = getGHInfoFromGHPages(self.location);
+    var filepath = join(
+      'repos',
+      info.username,
+      info.repo,
+      'commits',
+      'gh-pages'
+    );
+    var updateChannel = 'https://api.github.com' + filepath;
+    latestVersion = fetch(updateChannel).then(function (response) {
+      if (response.status === 200) {
+        return response.json().then(function (body) {
+          return body.sha;
+        });
+      }
+      else {
+        throw new Error('Bad status: ' + response.status);
+      }
+    })
+    .catch(function (reason) {
+      warn('Update channel is unreachable, aborting.');
+      warn('Details: ', reason);
+      return Promise.reject(new Error('Update channel unreachable'));
+    });
   }
 
   // Not supported.
