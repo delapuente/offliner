@@ -1,4 +1,5 @@
 var NO_VERSION = 'zero';
+var CONFIG_IS_LOADED = false;
 
 // Convenient shortcuts
 ['log', 'warn', 'error'].forEach(function (method) {
@@ -152,7 +153,7 @@ var updates = {
 function schedulePeriodicUpdates() {
   if (!self.updates.enabled) {
     if (!self.updates.alreadyRunOnce && !self.updates.inProgressProcess) {
-      log('Just activated update.');
+      log('SW awake update.');
       update();
     }
     if (typeof UPDATE_PERIOD === 'number' ) {
@@ -173,7 +174,6 @@ function update() {
   // XXX: Only one update process is allowed at a time.
   if (!self.updates.inProgressProcess) {
     self.update.inProgressProcess = reloadCacheConfig()
-      .then(digestConfig)
       .then(getLatestVersionNumber)
       .then(checkIfNewVersion)
       .then(function (newVersion) {
@@ -198,6 +198,12 @@ function update() {
 }
 
 function reloadCacheConfig() {
+  return fetchCacheConfig().then(digestConfig).then(function () {
+    CONFIG_IS_LOADED = true;
+  });
+}
+
+function fetchCacheConfig() {
   var configURL = absoluteURL(join(root, 'cache.json'));
   var configRequest = new Request(configURL);
   return doBestEffort(configRequest).then(function (response) {
@@ -289,6 +295,7 @@ function getGHInfoFromGHPages(url) {
 
 // Gets the latest version tag through the update channel.
 function getLatestVersionNumber() {
+  var updateChannel;
   var latestVersion;
 
   // Update channel is disabled, fallback to default version.
@@ -306,7 +313,7 @@ function getLatestVersionNumber() {
       'commits',
       'gh-pages'
     );
-    var updateChannel = 'https://api.github.com' + filepath;
+    updateChannel = 'https://api.github.com' + filepath;
     latestVersion = fetch(updateChannel).then(function (response) {
       if (response.status === 200) {
         return response.json().then(function (body) {
@@ -321,6 +328,14 @@ function getLatestVersionNumber() {
       warn('Update channel is unreachable, aborting.');
       warn('Details:', reason);
       return Promise.reject(new Error('Update channel unreachable'));
+    });
+  }
+
+  // Is an URL
+  else if (typeof UPDATE === 'string') {
+    updateChannel = fetchingURL(absoluteURL(UPDATE));
+    latestVersion = fetch(updateChannel).then(function (response) {
+      return response.text();
     });
   }
 
@@ -513,10 +528,17 @@ function deflateInCache(entries, prefixToStrip, offlineCache) {
 
 // Intercept requests to network.
 self.addEventListener('fetch', function (event) {
-  schedulePeriodicUpdates();
+  ensureConfigIsLoaded().then(schedulePeriodicUpdates);
   var request = event.request;
   event.respondWith(offlineResolver(request));
 });
+
+function ensureConfigIsLoaded() {
+  if (!CONFIG_IS_LOADED) {
+    return reloadCacheConfig();
+  }
+  return Promise.resolve();
+}
 
 // Apply NETWORK_ONLY policy or do the best effort to keep resources always
 // up to date.
