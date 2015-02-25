@@ -2,18 +2,19 @@
 # Offliner
 Offliner is a proof of concept about bringing offline web applications through [service workers](http://www.html5rocks.com/en/tutorials/service-worker/introduction/?redirect_from_locale=ja).
 
-Service workers allows the developer to intercept resource requests to the network and take control of the fetching process. In addition with caches, service workers enable the Web to success where AppCache failed.
+## Remember
 
-Offliner is a project aimed to provide a service worker intended to be as transparent and automatic as possible while keeping a lot of customization power. It tries to always fetch from network and fallbacks to cache when remote resource are unreachable for any reason. Try it now!
+This technology is only available in [Chrome Canary](https://www.google.com/chrome/browser/canary.html) right now.
 
-## Before using
+  > Linux users can try [Chrome Unstable](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) or [Chrome Beta](https://www.google.com/chrome/browser/beta.html) instead. **Remember you need to [enable service workers](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
 
-Please, be aware about this technology is only available in some few browsers and not all the implementations behave the same way. Offliner is intended to be used in [Chrome Canary](https://www.google.com/chrome/browser/canary.html?platform=win64) right now. If you are on Linux, try [Chrome Unstable](https://www.google.com/chrome/browser/desktop/index.html?platform=linux&extra=devchannel) instead. **Remember you need to [enable them](http://jakearchibald.com/2014/using-serviceworker-today/#in-canary-today) before using!**
+You need to serve your web under **`https`**. You can try with [GitHub `gh-pages`](https://pages.github.com/).
 
 Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
 
 ## Usage
-The only thing you need is to copy all files on this repository except the `server` folder on your site's root and add this script at the beginning of your `index.html` document:
+
+The only thing you need is to copy all files from this repository on your site's root and add this script at the beginning of your `index.html` document:
 
 ```html
 <script src="offline-cache-setup.js"></script>
@@ -24,6 +25,8 @@ Add the attribute `data-root` if your application is not in the root of your hos
 ```html
 <script data-root="/my-awesome-app/" src="offline-cache-setup.js"></script>
 ```
+
+  > I'm working on a minified isolated file for production. Stay tuned!
 
 ## Configuring offliner
 
@@ -104,8 +107,10 @@ To ask GiHub for a packaged version of your gh-pages branch.
 This is roughly equivalen to:
 
 ```js
-"prefetch": { "type": "zip", "url": "https://api.github.com/<user>/<repo>/zipfile/gh-pages", "prefix": "gh-pages-<repo>/" }
+"prefetch": { "type": "zip", "url": "https://codeload.github.com/<user>/<repo>/zip/gh-pages", "prefix": "gh-pages-<repo>/" }
 ```
+
+But due to some CORS limitations, the item above won't work. See [corsProxy](#corsProxy) section for more about this.
 
 ### update
 
