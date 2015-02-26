@@ -30,13 +30,12 @@ var root = (function () {
   return currentDir + '/';
 }());
 
-// Import plugins
-importScripts('offliner-plugins/asyncStorage.js');
-importScripts('offliner-plugins/asyncStoragePromise.js'); // exports asyncStorage
-importScripts('offliner-plugins/XMLHttpRequest.js');
-importScripts('offliner-plugins/zip.js/zip.js'); // exports zip
-importScripts('offliner-plugins/zip.js/deflate.js');
-importScripts('offliner-plugins/zip.js/inflate.js');
+importScripts('offliner-lib/asyncStorage.js');
+importScripts('offliner-lib/asyncStoragePromise.js'); // exports asyncStorage
+importScripts('offliner-lib/XMLHttpRequest.js');
+importScripts('offliner-lib/zip.js/zip.js'); // exports zip
+importScripts('offliner-lib/zip.js/deflate.js');
+importScripts('offliner-lib/zip.js/inflate.js');
 zip.useWebWorkers = false;
 
 var defaults = {
