@@ -1,7 +1,0 @@
-{
-  "networkOnly": {},
-  "prefetch": [],
-  "update": false,
-  "updatePeriod": "once",
-  "corsProxy": "http://crossorigin.me/"
-}
