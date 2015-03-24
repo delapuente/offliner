@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>offliner.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/FetchConfig.html">FetchConfig</a></li>
+                                <li><a href="../classes/Fetcher.html">Fetcher</a></li>
+                                <li><a href="../classes/Offliner.html">Offliner</a></li>
+                                <li><a href="../classes/PrefetchConfig.html">PrefetchConfig</a></li>
+                                <li><a href="../classes/Resource.html">Resource</a></li>
+                                <li><a href="../classes/SourceHandler.html">SourceHandler</a></li>
+                                <li><a href="../classes/UpdateConfig.html">UpdateConfig</a></li>
+                                <li><a href="../classes/UpdateControl.html">UpdateControl</a></li>
+                                <li><a href="../classes/UpdateImplementation.html">UpdateImplementation</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/fetchers.html">fetchers</a></li>
+                                <li><a href="../modules/sources.html">sources</a></li>
+                                <li><a href="../modules/updaters.html">updaters</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: offliner.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+(function (self) {
+  [&#x27;log&#x27;, &#x27;warn&#x27;, &#x27;error&#x27;].forEach(function (method) {
+    self[method] = console[method].bind(console);
+  });
+
+  var DEFAULT_VERSION = &#x27;$zero$&#x27;;
+
+  /**
+   * @class UpdateControl
+   * @private
+   */
+
+  /**
+   * Indicates if updates are enabled.
+   * @property enabled
+   * @type boolean
+   */
+
+  /**
+   * Set to &#x60;true&#x60; when the update has run once.
+   * @property alreadyRunOnce
+   * @type boolean
+   */
+
+  /**
+   * Holds the reference to the timer for the next update.
+   * @property intervalId
+   * @type Number
+   */
+
+  /**
+   * Holds the reference to the promise representing the currently running
+   * update process.
+   * @property inProgressProcess
+   * @type Object
+   */
+
+  /**
+   * Creates a new Offliner instance.
+   * @param {String} - a unique name representing the offline handler. This
+   * allow you to instantiate several offliners for the same or different
+   * workers without causing collisions between the configuration and cache
+   * names.
+   *
+   * @class Offliner
+   */
+  function Offliner(uniquename) {
+    Object.defineProperty(this, &#x27;_uniquename&#x27;, {
+      get: function () { return uniquename ? uniquename + &#x27;:&#x27; : &#x27;&#x27;; }
+    });
+
+    /**
+     * Prevent the worker to be installed twice.
+     *
+     * @type boolean
+     * @property _isStarted
+     * @private
+     */
+    this._isStarted = false;
+
+    /**
+     * The global update control.
+     *
+     * @type UpdateControl
+     * @property _updateControl
+     * @private
+     */
+    this._updateControl = {
+      enabled: false,
+      alreadyRunOnce: false,
+      intervalId: null,
+      inProgressProcess: null
+    };
+
+    /**
+     * Set to &#x60;true&#x60; when the worker is waiting for the first fetch.
+     *
+     * @type Booleaan
+     * @property _firstFetch
+     * @private
+     */
+    this._firstFetch = true;
+
+    /**
+     * API to configure the fetching pipeline.
+     *
+     * @type FetchConfig
+     * @property fetch
+     */
+    this.fetch = new FetchConfig();
+
+    /**
+     * API to configure the prefetch process.
+     *
+     * @type PrefetchConfig
+     * @property prefetch
+     */
+    this.prefetch = new PrefetchConfig();
+
+    /**
+     * API to configure the update process.
+     *
+     * @type UpdateConfig
+     * @property update
+     */
+    this.update = new UpdateConfig();
+  }
+
+  /**
+   * Installs the service worker in stand-alone mode.
+   * @method standalone
+   */
+  Offliner.prototype.standalone = function () {
+
+    if (this._isStarted) { return; }
+
+    self.addEventListener(&#x27;install&#x27;, function (e) {
+      e.waitUntil(
+        this._install()
+          .then(function () { log(&#x27;Offliner installed&#x27;); })
+      );
+    }.bind(this));
+
+    self.addEventListener(&#x27;activate&#x27;, function (e) {
+      e.waitUntil(
+        this._activateNextCache()
+          .then(function () { log(&#x27;Offliner activated!&#x27;); })
+      );
+    }.bind(this));
+
+    self.addEventListener(&#x27;fetch&#x27;, function (e)  {
+      if (e.request.method !== &#x27;GET&#x27;) {
+        e.respondWith(fetch(e.request));
+      }
+      else {
+        if (this.update.option(&#x27;enabled&#x27;)) {
+          this._schedulePeriodicUpdates();
+        }
+        e.respondWith(this._fetchAfterCacheActivation(e.request));
+      }
+    }.bind(this));
+
+    this._isStarted = true;
+  };
+
+  /**
+   * Gets a setting for the offliner handler.
+   *
+   * @method get
+   * @param {String} key The setting to be retrieved.
+   * @private
+   */
+  Offliner.prototype.get = function (key) {
+    var configURL = this._getConfigURL(key);
+    return caches.open(&#x27;__offliner-config&#x27;).then(function (cache) {
+      return cache.match(configURL).then(function (response) {
+        if (!response) { return Promise.resolve(null); }
+        else { return response.json(); }
+      });
+    });
+  };
+
+  /**
+   * Sets a setting for the offliner handler.
+   *
+   * @method set
+   * @param {String} key The setting.
+   * @param {any} value The value to be set.
+   * @private
+   */
+  Offliner.prototype.set = function (key, value) {
+    var configURL = this._getConfigURL(key);
+    var response = new Response(JSON.stringify(value));
+    return caches.open(&#x27;__offliner-config&#x27;).then(function (cache) {
+      return cache.put(configURL, response);
+    });
+  };
+
+  /**
+   * Return a fake URL scheme for a setting.
+   *
+   * @method _getConfigURL
+   * @param {String} key The setting.
+   * @return a fake URL scheme for the setting.
+   * @private
+   */
+  Offliner.prototype._getConfigURL = function (key) {
+    return &#x27;http://config/&#x27; + this._uniquename + key;
+  };
+
+  /**
+   * Install the timers for periodic updates.
+   *
+   * @method _schedulePeriodicUpdates
+   * @param {Boolean} fromInstall Indicates if the call comes from the
+   * {{#crossLink &quot;Offliner/_install:method&quot;}}{{/crossLink}} method.
+   * @private
+   */
+  Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
+    if (!this._updateControl.enabled) {
+      if (!this._updateControl.alreadyRunOnce &amp;&amp;
+          !this._updateControl.inProgressProcess) {
+        log(&#x27;SW awake update.&#x27;);
+        this._update(fromInstall);
+      }
+      var updatePeriod = offliner.update.option(&#x27;period&#x27;);
+      if (typeof updatePeriod === &#x27;number&#x27; ) {
+        log(&#x27;Next update in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
+        this._updateControl.intervalId = setInterval(function () {
+          log(&#x27;Periodic update. Next in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
+          this._update();
+        }.bind(this), updatePeriod);
+      }
+      this._updateControl.enabled = true;
+    }
+  };
+
+  /**
+   * Determine if the worker should prefetch or update after (re)installing the
+   * service worker.
+   *
+   * @method _install
+   * @private
+   */
+  Offliner.prototype._install = function () {
+    var fromInstall = true;
+    return this.get(&#x27;current-version&#x27;).then(function (currentVersion) {
+      var isUpdateEnabled = this.update.option(&#x27;enabled&#x27;);
+      if (currentVersion) {
+        return isUpdateEnabled ?
+               this._schedulePeriodicUpdates(fromInstall) : Promise.resolve();
+      }
+      return this._initialize().then(this._prefetch.bind(this));
+    }.bind(this), error);
+  };
+
+  /**
+   * Initializes the current version and active cache for the first time.
+   *
+   * @method _initialize
+   * @private
+   */
+  Offliner.prototype._initialize = function () {
+    return this._getCacheNameForVersion(DEFAULT_VERSION)
+      .then(this.set.bind(this, &#x27;active-cache&#x27;))
+      .then(this.set.bind(this, &#x27;current-version&#x27;, DEFAULT_VERSION));
+  };
+
+  /**
+   * Performs a generic update process. It consists into:
+   *
+   *   1. Check for a new version using a middleware.
+   *   2. Prepare the new version database.
+   *   3. Evolve the offline cache using the middleware.
+   *   4. Clean-up.
+   *
+   * @method _update
+   * @param {Boolean} fromInstall Indicates if the call comes from the
+   * {{#crossLink &quot;Offliner/_install:method&quot;}}{{/crossLink}} method.
+   *  @private
+   */
+  Offliner.prototype._update = function (fromInstall) {
+    // XXX: Only one update process is allowed at a time.
+    if (!this._updateControl.inProgressProcess) {
+      this.update.flags = { isCalledFromInstall: fromInstall };
+      this._updateControl.inProgressProcess = this._getLatestVersion()
+        .then(this._checkIfNewVersion.bind(this))
+        .then(updateCache.bind(this))
+        .then(endUpdateProcess.bind(this))  // XXX:
+        .catch(error)                       //
+        .then(endUpdateProcess.bind(this)); // equivalent to .finally();
+    }
+    return this._updateControl.inProgressProcess;
+
+    function updateCache(newVersion) {
+      if (newVersion) {
+        return this._getCacheNameForVersion(newVersion)
+          .then(caches.open.bind(caches))
+          .then(this._evolveCache.bind(this));
+      }
+    }
+
+    function endUpdateProcess() {
+      this._updateControl.alreadyRunOnce = true;
+      this._updateControl.inProgressProcess = null;
+    }
+  };
+
+  /**
+   * Return the CACHE name for a version given.
+   *
+   * @method _getCacheNameForVersion
+   * @param {String} version The version to calculate the name for.
+   * @return {Promise&lt;String&gt;} A promise resolving with the name for the
+   * version.
+   * @private
+   */
+  Offliner.prototype._getCacheNameForVersion = function (version) {
+    return Promise.resolve(this._uniquename + &#x27;cache-&#x27; + version);
+  };
+
+  /**
+   * Opens current active cache and starts prefetch.
+   *
+   * @method _prefetch
+   * @private
+   */
+  Offliner.prototype._prefetch = function () {
+    return this._openActiveCache().then(this._doPrefetch.bind(this));
+  };
+
+  /**
+   * Processes prefetch declared resources using the registered middlewares.
+   *
+   * @method _doPrefetch
+   * @param {Cache} cache The cache for the middlewares to populate.
+   * @private
+   */
+  Offliner.prototype._doPrefetch = function (cache) {
+    var allResources = this.prefetch.resources();
+    var fetchers = this.prefetch.fetchers();
+    var resourcesByType = groupResources(fetchers, allResources);
+    return fetchers.reduce(function (process, fetcher) {
+      return process.then(function () {
+        var resources = resourcesByType[fetcher.type];
+        return fetcher.prefetch(resources, cache);
+      });
+    }, Promise.resolve());
+
+    function groupResources(fetchers, resources) {
+      var resourceGatherers = fetchers.reduce(function (gatherers, fetcher) {
+        gatherers[fetcher.type] = [];
+        return gatherers;
+      }, {});
+      resources.forEach(function (resource) {
+        var resourcesByType = resourceGatherers[resource.type];
+        if (resourcesByType) { resourcesByType.push(resource); }
+      });
+      return resourceGatherers;
+    }
+  };
+
+  /**
+   * Obtains the latest version using the update middleware.
+   *
+   * @method _getLatestVersion
+   * @return {Promise&lt;String&gt;} Tag representing the latest version. The tag will
+   * be used as suffix for the new cache.
+   * @private
+   */
+  Offliner.prototype._getLatestVersion = function () {
+    return this.update.check();
+  };
+
+  /**
+   * Determine if there is a new version based on the latest version and the
+   * current one by using the update middleware.
+   *
+   * @method _checkIfNewVersion
+   * @return {Promise&lt;String&gt;} remoteVersion The new version tag is returned
+   * if there is a new version or &#x60;null&#x60; otherwise.
+   * @private
+   */
+  Offliner.prototype._checkIfNewVersion = function (remoteVersion) {
+    return this.get(&#x27;current-version&#x27;).then(function (localVersion) {
+      var isNewVersion =
+        this.update.isNewVersion(localVersion, remoteVersion);
+
+      if (isNewVersion) {
+        log(&#x27;New version &#x27; + remoteVersion + &#x27; found!&#x27;);
+        if (localVersion) { log(&#x27;Updating from version &#x27; + localVersion); }
+        else { log(&#x27;First update&#x27;); }
+
+        return this.set(&#x27;next-version&#x27;, remoteVersion)
+          .then(function () { return remoteVersion; });
+      }
+      else {
+        log(&#x27;No update needed&#x27;);
+      }
+      return null;
+    }.bind(this));
+  };
+
+  /**
+   * Evolves the current cache to the new cache by using the update middleware.
+   *
+   * @method _evolveCache
+   * @param {Cache} newCache The new cache.
+   * @private
+   */
+  Offliner.prototype._evolveCache = function (newCache) {
+    return this._openActiveCache().then(function (currentCache) {
+      var exportedPrefetch = this._doPrefetch.bind(this, newCache);
+      return this.update.evolve(currentCache, newCache, exportedPrefetch);
+    }.bind(this));
+  };
+
+  /**
+   * Uses dynamic information to open the active CACHE.
+   *
+   * @method _openActiveCache
+   * @return {Promise&lt;Cache&gt;} A promise resolving to the active cache.
+   * @private
+   */
+  Offliner.prototype._openActiveCache = function () {
+    return this.get(&#x27;active-cache&#x27;).then(caches.open.bind(caches));
+  };
+
+  /**
+   * Change the active cache to be the evolved cache if available. Once the
+   * active cache has been updated, the former one is lost.
+   *
+   * @method _activateNextCache
+   * @private
+   */
+  Offliner.prototype._activateNextCache = function () {
+    return Promise.all([
+      this.get(&#x27;current-version&#x27;),
+      this.get(&#x27;next-version&#x27;)
+    ])
+    .then(function (versions) {
+      var currentVersion = versions[0];
+      var nextVersion = versions[1];
+      if (nextVersion &amp;&amp; currentVersion !== nextVersion) {
+        return this._swapCaches().then(this._updateCurrentVersion.bind(this));
+      }
+    }.bind(this));
+  };
+
+  /**
+   * Makes active cache to be the next-version cache populated during a past
+   * update process. After swapping, the previous cache is lost.
+   *
+   * @method _swapCaches
+   * @private
+   */
+  Offliner.prototype._swapCaches = function () {
+    return Promise.all([
+      getCurrentCache.call(this),
+      getNextCache.call(this)
+    ]).then(swap.bind(this));
+
+    function getCurrentCache() {
+      return this.get(&#x27;active-cache&#x27;);
+    }
+
+    function getNextCache() {
+      return this.get(&#x27;next-version&#x27;)
+        .then(this._getCacheNameForVersion.bind(this));
+    }
+
+    function swap(names) {
+      var currentCache = names[0],
+          nextCache = names[1];
+      return this.set(&#x27;active-cache&#x27;, nextCache)
+        .then(caches.delete.bind(caches, currentCache));
+    }
+  };
+
+  /**
+   * Updates the current version.
+   *
+   * @method _updateCurrentVersion
+   * @private
+   */
+  Offliner.prototype._updateCurrentVersion = function () {
+    return this.get(&#x27;next-version&#x27;)
+      .then(this.set.bind(this, &#x27;current-version&#x27;));
+  };
+
+  /**
+   * Before serving anything from cache, this method emulates an activation
+   * and triggers {{#crossLink &quot;Offliner/_activateNextCache:method&quot;}}
+   * {{/crossLink}} to convert the evolved into the current active cache.
+   *
+   * Notice the evolved cache was created in a previous update process, now
+   * is ready but it did not replace yet the active cache.
+   *
+   * @method _fetchAfterCacheActivation
+   * @param {Request} request The request to be fetched.
+   * @private
+   */
+  Offliner.prototype._fetchAfterCacheActivation = function (request) {
+    if (this._firstFetch) {
+      this._firstFetch = false;
+      return this._activateNextCache()
+        .then(this._fetch.bind(this, request))
+        .catch(error);
+    }
+    return this._fetch(request);
+  };
+
+  /**
+   * Use configured middlewares to perform the fetch process.
+   *
+   * @method _fetch
+   * @param {Request} request The request to be fetched.
+   * @private
+   */
+  Offliner.prototype._fetch = function (request) {
+    return new Promise(function (resolve, reject) {
+      this._openActiveCache().then(function (cache) {
+        var sources = this.fetch.pipeline();
+        trySources(sources);
+
+        function trySources(sources, from) {
+          from = from || 0;
+          var sourcesCount = sources.length;
+          if (from === sources.length) { reject(); }
+          else {
+            sources[from](request, cache).then(resolve, function () {
+              trySources(sources, from + 1);
+            });
+          }
+        }
+      }.bind(this));
+    }.bind(this));
+  };
+
+  /**
+   * A resource is an object with a type and other fields to be retrieved by
+   * the {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}} with the same type.
+   * @class Resource
+   */
+
+  /**
+   * The type to associate the resource with an specific
+   * {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}}.
+   *
+   * @property type
+   * @type String
+   * @readonly
+   */
+
+  /**
+   * A fetcher is an object for handling resouces during the prefetching
+   * prefetch process. A fetcher must include a &#x60;type&#x60; and normalize and
+   * prefetch implementations.
+   *
+   * @class Fetcher
+   * @private
+   */
+
+  /**
+   * While prefetching resources, each resource has a &#x60;type&#x60;. The resource
+   * is handled by the fetcher whose &#x60;type&#x60; match it.
+   *
+   * @property type
+   * @type String
+   * @readonly
+   */
+
+  /**
+   * Normalizes a resource not following the {{#crossLink Resource}}
+   * {{/crossLink}} convention.
+   *
+   * @method normalize
+   * @param {any} resource The denormalized resource.
+   */
+
+  /**
+   * Retrieve a set of resources.
+   *
+   * @method prefetch
+   * @param {Resource[]} resource The denormalized resource.
+   * @param {Cache} cache The cache to populate.
+   */
+
+  /**
+   * Prefetch process consists into recovering from the Web those
+   * resources configured in offliner. To do so, you call
+   * {{#crossLink &quot;PrefetchConfig/use:method&quot;}}{{/crossLink}}, then list the
+   * resources by calling {{#crossLink &quot;PrefetchConfig/resources:method&quot;}}
+   * {{/crossLink}}.
+   *
+   * @class PrefetchConfig
+   */
+  function PrefetchConfig() {
+    this._resourceFetchers = {};
+    this._resources = [];
+  }
+
+  /**
+   * Register a {{#crossLink Fetcher}}{{/crossLink}}. The fetcher will be used
+   * to retrieve the resources of the fetcher&#x27;s type.
+   *
+   * @method use
+   * @param {Fetcher} fetcher The fetcher to be used for resources of fetcher&#x27;s
+   * type.
+   * @chainable
+   */
+  PrefetchConfig.prototype.use = function (fetcher) {
+    this._resourceFetchers[fetcher.type] = fetcher;
+    this._activeFetcher = fetcher;
+    return this;
+  };
+
+  /**
+   * Add resources to the prefetch list of resources.
+   *
+   * @method resources
+   * @param {Resource|Resource[]} resources The list of resources to be added.
+   * Each resource in the list is normalized by the last registered fetcher so
+   * some fetchers allows a short syntax for its resources.
+   * @chainable
+   */
+  PrefetchConfig.prototype.resources = function (resources) {
+    if (arguments.length === 0) { return this._resources; }
+
+    if (!Array.isArray(resources)) { resources = [resources]; }
+    for (var i = 0, resource; (resource = resources[i]); i++) {
+      var normalized;
+      if (typeof resource !== &#x27;object&#x27; || !resource || !resource.type) {
+        try {
+          normalized = this._activeFetcher.normalize(resource);
+        }
+        catch (e) {}
+      }
+      if (!normalized) {
+        warn(resource, &#x27;can not be normalized by&#x27;, this._activeFetcher.type);
+      }
+      else {
+        this._resources.push(normalized);
+      }
+    }
+    return this;
+  };
+
+  /**
+   * @method fetchers
+   * @return {Fetcher[]} the registered fetchers.
+   */
+  PrefetchConfig.prototype.fetchers = function () {
+    return Object.keys(this._resourceFetchers).map(function (type) {
+      return this._resourceFetchers[type];
+    }.bind(this));
+  };
+
+  /**
+   * An object implementing methods to check for new version and update the
+   * activate cache.
+   *
+   * @class UpdateImplementation
+   */
+
+  /**
+   * Checks for a new version.
+   *
+   * @method check
+   * @return {Promise&lt;String&gt;} A promise resolving in the new version.
+   */
+
+  /**
+   * Determines if the checked new version is actually a new version.
+   *
+   * @method isNewVersion
+   * @param {String} currentVersion The current version.
+   * @param {String} latestVersion The version from
+   * {{#crossLink &quot;UpdateImplementation/check:method&quot;}}{{/crossLink}}.
+   * @return {Promise&lt;String&gt;} A promise resolving to a non empty string if
+   * &#x60;latestVersion&#x60; is new compared to &#x60;currentVersion&#x60; or a &#x60;falsy&#x60; if not.
+   * The string must be different from &#x60;currentVersion&#x60;.
+   */
+
+  /**
+   * Populate the updated cache.
+   *
+   * @method evolve
+   * @param {Cache} currentCache The current active cache. **Do not modify this
+   * cache!**
+   * @param {Cache} nextCache The cache to be populated.
+   * @param {Function} prefetch A function to trigger the prefetch process. Some
+   * update algorithms just want to prefetch again.
+   * @return {Promise} A promise resolving after finishing the update process.
+   * If you simply wants to trigget prefetch, return the value from &#x60;prefetch&#x60;
+   * invocation.
+   */
+
+  /**
+   * Update consists into determine if there is a new version and
+   * then evolve the current cache to be up to date. To register an update
+   * algorithm you provide a {{#crossLink &quot;UpdateImplementation&quot;}}
+   * {{/crossLink}} instance by using {{#crossLink &quot;UpdateConfig/use:method&quot;}}
+   * {{/crossLink}}.
+   *
+   * @class UpdateConfig
+   */
+  function UpdateConfig() {
+    this._options = {};
+  }
+
+  /**
+   * Gets or set an option.
+   *
+   * @method option
+   * @param {String} optname The name of the option to be set or get.
+   * @param {any} [value] If provided, the value to be set for the passed option.
+   * @chainable
+   * @return {any} The value of the option when getting.
+   */
+  UpdateConfig.prototype.option = function (optname, value) {
+    if (arguments.length === 2) {
+      this._options[optname] = value;
+      return this;
+    }
+    if (arguments.length === 1) {
+      return this._options[optname];
+    }
+  };
+
+  /**
+   * Register the update implementation.
+   *
+   * @method use
+   * @param {UpdateImplementation} impl The update implementation to be used.
+   * @chainable
+   */
+  UpdateConfig.prototype.use = function (impl) {
+    this.option(&#x27;enabled&#x27;, true);
+    this._impl = impl;
+    return this;
+  };
+
+  /**
+   * Flags set at the beginning of the update process. They include:
+   *
+   * @property flags
+   * @type UpdateFlags
+   */
+  Object.defineProperty(UpdateConfig.prototype, &#x27;flags&#x27;, {
+    set: function (value) {
+      this._impl.flags = value;
+    },
+    get: function () {
+      return this._impl.flags;
+    }
+  });
+
+  /**
+   * Triggers the {{#crossLink &quot;UpdateImplementation/check:method&quot;}}
+   * {{/crossLink}} algorithm of the registered update implementation.
+   *
+   * @method check
+   */
+  UpdateConfig.prototype.check = function () {
+    return this._impl.check();
+  };
+
+  /**
+   * Calls the {{#crossLink &quot;UpdateImplementation/isNewVersion:method&quot;}}
+   * {{/crossLink}} check of the registered update implementation.
+   *
+   * @method isNewVersion
+   */
+  UpdateConfig.prototype.isNewVersion = function (localVersion, remoteVersion) {
+    return this._impl.isNewVersion(localVersion, remoteVersion);
+  };
+
+  /**
+   * Performs the {{#crossLink &quot;UpdateImplementation/evolve:method&quot;}}
+   * {{/crossLink}} process of the registered update implementation.
+   *
+   * @method evolve
+   */
+  UpdateConfig.prototype.evolve = function (currentCache, newCache, prefetch) {
+    return this._impl.evolve(currentCache, newCache, prefetch);
+  };
+
+  /**
+   * A source handler is a **function** that accepts a request and the
+   * active cache and return a Promise resolving into the proper Response. It&#x27;s
+   * used with {{#crossLink &quot;FetchConfig/use:method&quot;}}{{/crossLink}} of
+   * {{#crossLink &quot;FetchConfig&quot;}}{{/crossLink}}.
+   *
+   * &#x60;sourceHandler(request, activeCache)&#x60;
+   *
+   * @class SourceHandler
+   */
+
+  /**
+   * The fetch process consists into pass the request along a list
+   * of source handlers. You call {{#crossLink &quot;FetchConfig/use:method&quot;}}
+   * {{/crossLink}} to add a new source handler to the pipeline.
+   *
+   * @class FetchConfig
+   */
+  function FetchConfig() {
+    this._pipeline = [];
+  }
+
+  /**
+   * Adds a new {{#crossLink &quot;SourceHandler&quot;}}{{/crossLink}} to the fetching
+   * pipeline.
+   *
+   * @method use
+   * @param {SourceHandler} source The handler to be added to the pipeline.
+   * @chainable
+   */
+  FetchConfig.prototype.use = function (source) {
+    this._pipeline.push(source);
+    return this;
+  };
+
+  /**
+   * Gets the current pipeline of sources.
+   *
+   * @method pipeline
+   * @return {SourceHandler[]} The current pipeline of source handlers.
+   */
+  FetchConfig.prototype.pipeline = function () {
+    return this._pipeline;
+  };
+
+  /**
+   * Adds an always failing source handler to the pipeline.
+   *
+   * @method orFail
+   */
+  FetchConfig.prototype.orFail = function () {
+    this.use(function () {
+      return Promise.reject(new Error(&#x27;End of fetch pipeline!&#x27;));
+    });
+  };
+
+  self.offliner = Offliner;
+
+  /**
+   * A collection of {{#crossLink &quot;FetchSource&quot;}}{{/crossLink}} constructors to
+   * configure offliner.
+   * @module sources
+   */
+  self.sources = {};
+
+  /**
+   * A collection of {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}} constructors to
+   * configure offliner.
+   * @module fetchers
+   */
+  self.fetchers = {};
+
+  /**
+   * A collection of {{#crossLink &quot;UpdateImplementation&quot;}}{{/crossLink}}
+   * constructors to configure offliner.
+   * @module updaters
+   */
+  self.updaters = {};
+
+}(typeof self === &#x27;undefined&#x27; ? this : self));
+
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
