@@ -28,12 +28,12 @@
         <article>
             <pre class="prettyprint source linenums"><code>/** @module offliner */
 
-importScripts('./asyncStoragePromise.js');
-
 (function (self) {
   ['log', 'warn', 'error'].forEach(function (method) {
     self[method] = console[method].bind(console);
   });
+
+  var DEFAULT_VERSION = '$zero$';
 
   /**
    * Creates a new Offliner instance.
@@ -68,6 +68,21 @@ importScripts('./asyncStoragePromise.js');
      * @private
      */
     this._firstFetch = true;
+
+    /**
+     * API to configure the fetching pipeline.
+     */
+    this.fetch = new FetchConfig();
+
+    /**
+     * API to configure the prefetch process.
+     */
+    this.prefetch = new PrefetchConfig();
+
+    /**
+     * API to configure the update process.
+     */
+    this.update = new UpdateConfig();
   }
 
   /**
@@ -109,7 +124,9 @@ importScripts('./asyncStoragePromise.js');
         e.respondWith(fetch(e.request));
       }
       else {
-        this._schedulePeriodicUpdates();
+        if (this.update.option('enabled')) {
+          this._schedulePeriodicUpdates();
+        }
         e.respondWith(this._fetchAfterCacheActivation(e.request));
       }
     }.bind(this));
@@ -123,7 +140,13 @@ importScripts('./asyncStoragePromise.js');
    * @private
    */
   Offliner.prototype.get = function (key) {
-    return asyncStorage.get(this._uniquename + key);
+    var configURL = this._getConfigURL(key);
+    return caches.open('__offliner-config').then(function (cache) {
+      return cache.match(configURL).then(function (response) {
+        if (!response) { return Promise.resolve(null); }
+        else { return response.json(); }
+      });
+    });
   };
 
   /**
@@ -133,19 +156,33 @@ importScripts('./asyncStoragePromise.js');
    * @private
    */
   Offliner.prototype.set = function (key, value) {
-    return asyncStorage.set(this._uniquename + key, value);
+    var configURL = this._getConfigURL(key);
+    var response = new Response(JSON.stringify(value));
+    return caches.open('__offliner-config').then(function (cache) {
+      return cache.put(configURL, response);
+    });
+  };
+
+  /**
+   * Return a fake URL scheme for a setting.
+   * @param {String} - the setting.
+   *
+   * @private
+   */
+  Offliner.prototype._getConfigURL = function (key) {
+    return 'http://config/' + this._uniquename + key;
   };
 
   /**
    * Install the timers for periodic updates.
    * @private
    */
-  Offliner.prototype._schedulePeriodicUpdates = function () {
+  Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
     if (!this._updateControl.enabled) {
       if (!this._updateControl.alreadyRunOnce &amp;&amp;
           !this._updateControl.inProgressProcess) {
         log('SW awake update.');
-        this._update();
+        this._update(fromInstall);
       }
       var updatePeriod = offliner.update.option('period');
       if (typeof updatePeriod === 'number' ) {
@@ -165,10 +202,26 @@ importScripts('./asyncStoragePromise.js');
    * @private
    */
   Offliner.prototype._install = function () {
+    var fromInstall = true;
     return this.get('current-version').then(function (currentVersion) {
-      if (currentVersion) { return this._update(); }
-      else { return this.prefetch(); }
+      var isUpdateEnabled = this.update.option('enabled');
+      if (currentVersion) {
+        return isUpdateEnabled ?
+               this._schedulePeriodicUpdates(fromInstall) : Promise.resolve();
+      }
+      return this._initialize().then(this._prefetch.bind(this));
     }.bind(this), error);
+  };
+
+  /**
+   * Initializes the current version and active cache for the first time.
+   *
+   * @private
+   */
+  Offliner.prototype._initialize = function () {
+    return this._getCacheNameForVersion(DEFAULT_VERSION)
+      .then(this.set.bind(this, 'active-cache'))
+      .then(this.set.bind(this, 'current-version', DEFAULT_VERSION));
   };
 
   /**
@@ -181,9 +234,10 @@ importScripts('./asyncStoragePromise.js');
    *
    *  @private
    */
-  Offliner.prototype._update = function () {
+  Offliner.prototype._update = function (fromInstall) {
     // XXX: Only one update process is allowed at a time.
     if (!this._updateControl.inProgressProcess) {
+      this.update.flags = { isCalledFromInstall: fromInstall };
       this._updateControl.inProgressProcess = this._getLatestVersion()
         .then(this._checkIfNewVersion.bind(this))
         .then(updateCache.bind(this))
@@ -216,33 +270,41 @@ importScripts('./asyncStoragePromise.js');
   };
 
   /**
-   * Processes prefetch declared resources using the registered middlewares.
+   * Opens current active cache and starts prefetch.
+   *
+   * @private
    */
-  Offliner.prototype.prefetch = function () {
-    var allResources = offliner.prefetch.resources();
-    var resourcesByType = groupResources(allResources);
-    return offliner.prefetch.handlers().reduce(function (process, handler) {
-      process.then(function () {
-        var resources = resourcesByType[handler.type];
-        return handler(resources);
+  Offliner.prototype._prefetch = function () {
+    return this._openActiveCache().then(this._doPrefetch.bind(this));
+  };
+
+  /**
+   * Processes prefetch declared resources using the registered middlewares.
+   * @param {Cache} - the cache for the middlewares to populate.
+   *
+   * @private
+   */
+  Offliner.prototype._doPrefetch = function (cache) {
+    var allResources = this.prefetch.resources();
+    var fetchers = this.prefetch.fetchers();
+    var resourcesByType = groupResources(fetchers, allResources);
+    return fetchers.reduce(function (process, fetcher) {
+      return process.then(function () {
+        var resources = resourcesByType[fetcher.type];
+        return fetcher.prefetch(resources, cache);
       });
     }, Promise.resolve());
 
-    function groupResources(resources) {
-      var resourceGatherers =
-        offliner.prefetch.handlers().reduce(function (gatherers, handler) {
-          gatherers[handler.type] = [];
-        }, {});
+    function groupResources(fetchers, resources) {
+      var resourceGatherers = fetchers.reduce(function (gatherers, fetcher) {
+        gatherers[fetcher.type] = [];
+        return gatherers;
+      }, {});
       resources.forEach(function (resource) {
-        var normalize = offliner.prefetch.option('normalizer');
-        if (typeof resource !== 'object') {
-          resource = normalize(resource);
-        }
-        if (typeof resource === 'object' &amp;&amp; typeof resource.type === 'string') {
-          var resourcesByType = gatherers[resource.type];
-          if (resourcesByType) { resourcesByType.push(resource); }
-        }
+        var resourcesByType = resourceGatherers[resource.type];
+        if (resourcesByType) { resourcesByType.push(resource); }
       });
+      return resourceGatherers;
     }
   };
 
@@ -254,7 +316,7 @@ importScripts('./asyncStoragePromise.js');
    * @private
    */
   Offliner.prototype._getLatestVersion = function () {
-    return offliner.update.check();
+    return this.update.check();
   };
 
   /**
@@ -268,7 +330,7 @@ importScripts('./asyncStoragePromise.js');
   Offliner.prototype._checkIfNewVersion = function (remoteVersion) {
     return this.get('current-version').then(function (localVersion) {
       var isNewVersion =
-        offliner.update.isNewVersion(localVersion, remoteVersion);
+        this.update.isNewVersion(localVersion, remoteVersion);
 
       if (isNewVersion) {
         log('New version ' + remoteVersion + ' found!');
@@ -282,7 +344,7 @@ importScripts('./asyncStoragePromise.js');
         log('No update needed');
       }
       return null;
-    });
+    }.bind(this));
   };
 
   /**
@@ -293,8 +355,9 @@ importScripts('./asyncStoragePromise.js');
    */
   Offliner.prototype._evolveCache = function (newCache) {
     return this._openActiveCache().then(function (currentCache) {
-      return offliner.update.evolve(currentCache, newCache);
-    });
+      var exportedPrefetch = this._doPrefetch.bind(this, newCache);
+      return this.update.evolve(currentCache, newCache, exportedPrefetch);
+    }.bind(this));
   };
 
   /**
@@ -384,10 +447,10 @@ importScripts('./asyncStoragePromise.js');
     if (this._firstFetch) {
       this._firstFetch = false;
       return this._activateNextCache()
-        .then(this._doFetch.bind(this, request))
+        .then(this._fetch.bind(this, request))
         .catch(error);
     }
-    return this._doFetch(request);
+    return this._fetch(request);
   };
 
   /**
@@ -396,17 +459,130 @@ importScripts('./asyncStoragePromise.js');
    *
    * @private
    */
-  Offliner.prototype._doFetch = function (request) {
+  Offliner.prototype._fetch = function (request) {
     return new Promise(function (resolve, reject) {
-      var process = Promise.reject();
-      offliner.fetch.pipeline.reduce(function (promise, middleware) {
-        return process.then(resolve, middleware.bind(undefined, request));
-      }, Promise.reject());
-      process.catch(reject);
+      this._openActiveCache().then(function (cache) {
+        var sources = this.fetch.pipeline();
+        trySources(sources);
+
+        function trySources(sources, from) {
+          from = from || 0;
+          var sourcesCount = sources.length;
+          if (from === sources.length) { reject(); }
+          else {
+            sources[from](request, cache).then(resolve, function () {
+              trySources(sources, from + 1);
+            });
+          }
+        }
+      }.bind(this));
+    }.bind(this));
+  };
+
+  function PrefetchConfig() {
+    this._resourceFetchers = {};
+    this._resources = [];
+  }
+
+  PrefetchConfig.prototype.use = function (fetcher) {
+    this._resourceFetchers[fetcher.type] = fetcher;
+    this._activeFetcher = fetcher;
+    return this;
+  };
+
+  PrefetchConfig.prototype.resources = function (resources) {
+    if (arguments.length === 0) { return this._resources; }
+
+    if (!Array.isArray(resources)) { resources = [resources]; }
+    for (var i = 0, resource; (resource = resources[i]); i++) {
+      var normalized;
+      if (typeof resource !== 'object' || !resource || !resource.type) {
+        try {
+          normalized = this._activeFetcher.normalize(resource);
+        }
+        catch (e) {}
+      }
+      if (!normalized) {
+        warn(resource, 'can not be normalized by', this._activeFetcher.type);
+      }
+      else {
+        this._resources.push(normalized);
+      }
+    }
+    return this;
+  };
+
+  PrefetchConfig.prototype.fetchers = function () {
+    return Object.keys(this._resourceFetchers).map(function (type) {
+      return this._resourceFetchers[type];
+    }.bind(this));
+  };
+
+  function UpdateConfig() {
+    this._options = {};
+  }
+
+  UpdateConfig.prototype.option = function (optname, value) {
+    if (arguments.length === 2) {
+      this._options[optname] = value;
+      return this;
+    }
+    if (arguments.length === 1) {
+      return this._options[optname];
+    }
+  };
+
+  UpdateConfig.prototype.use = function (updateImplementation) {
+    this.option('enabled', true);
+    this._impl = updateImplementation;
+    return this;
+  };
+
+  Object.defineProperty(UpdateConfig.prototype, 'flags', {
+    set: function (value) {
+      this._impl.flags = value;
+    },
+    get: function () {
+      return this._impl.flags;
+    }
+  });
+
+  UpdateConfig.prototype.check = function () {
+    return this._impl.check();
+  };
+
+  UpdateConfig.prototype.isNewVersion = function (localVersion, remoteVersion) {
+    return this._impl.isNewVersion(localVersion, remoteVersion);
+  };
+
+  UpdateConfig.prototype.evolve = function (currentCache, newCache, prefetch) {
+    return this._impl.evolve(currentCache, newCache, prefetch);
+  };
+
+  function FetchConfig() {
+    this._pipeline = [];
+  }
+
+  FetchConfig.prototype.use = function (source) {
+    this._pipeline.push(source);
+    return this;
+  };
+
+  FetchConfig.prototype.pipeline = function () {
+    return this._pipeline;
+  };
+
+  FetchConfig.prototype.orFail = function () {
+    return this.use(function () {
+      return Promise.reject(new Error('End of fetch pipeline!'));
     });
   };
 
-  self.offliner = new Offliner();
+  self.Offliner = Offliner;
+
+  self.sources = {};
+  self.fetchers = {};
+  self.updaters = {};
 
 }(typeof self === 'undefined' ? this : self));
 
@@ -426,7 +602,7 @@ importScripts('./asyncStoragePromise.js');
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta2</a> on Fri Mar 20 2015 12:24:35 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta2</a> on Tue Mar 24 2015 11:33:03 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
