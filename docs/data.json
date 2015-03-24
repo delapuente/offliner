@@ -739,13 +739,13 @@
                     "type": "Cache"
                 },
                 {
-                    "name": "prefetch",
+                    "name": "reinstall",
                     "description": "A function to trigger the prefetch process. Some\nupdate algorithms just want to prefetch again.",
                     "type": "Function"
                 }
             ],
             "return": {
-                "description": "A promise resolving after finishing the update process.\nIf you simply wants to trigget prefetch, return the value from `prefetch`\ninvocation.",
+                "description": "A promise resolving after finishing the update process.\nIf you simply wants to simply reinstall, return the value from `reinstall`\ninvocation.",
                 "type": "Promise"
             },
             "class": "UpdateImplementation"

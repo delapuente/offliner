@@ -669,10 +669,10 @@
    * @param {Cache} currentCache The current active cache. **Do not modify this
    * cache!**
    * @param {Cache} nextCache The cache to be populated.
-   * @param {Function} prefetch A function to trigger the prefetch process. Some
+   * @param {Function} reinstall A function to trigger the prefetch process. Some
    * update algorithms just want to prefetch again.
    * @return {Promise} A promise resolving after finishing the update process.
-   * If you simply wants to trigget prefetch, return the value from `prefetch`
+   * If you simply wants to simply reinstall, return the value from `reinstall`
    * invocation.
    */
 
