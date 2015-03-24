@@ -1,0 +1,37 @@
+{
+  "name": "offliner",
+  "version": "0.2.0",
+  "description": "A configurable ServiceWorker to bring offline capabilities to web applications.",
+  "main": "dist/offliner.min.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://lodr@github.com/lodr/offliner.git"
+  },
+  "keywords": [
+    "serviceworker",
+    "plugable",
+    "offline",
+    "web",
+    "application"
+  ],
+  "author": "Salvador de la Puente González <salva@unoyunodiez.com>",
+  "license": "Apache2",
+  "bugs": {
+    "url": "https://github.com/lodr/offliner/issues"
+  },
+  "homepage": "https://github.com/lodr/offliner",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-jshint": "^1.9.4",
+    "gulp-uglify": "^1.1.0",
+    "gulp-watch": "^4.2.0",
+    "gulp-webserver": "^0.9.0",
+    "gulp-yuidoc": "^0.1.2"
+  }
+}
