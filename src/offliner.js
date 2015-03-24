@@ -822,7 +822,7 @@
     });
   };
 
-  self.offliner = Offliner;
+  self.Offliner = Offliner;
 
   /**
    * A collection of {{#crossLink "FetchSource"}}{{/crossLink}} constructors to
