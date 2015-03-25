@@ -33,7 +33,7 @@ importScripts('dist/offliner.min.js');
 var offliner = new off.Offliner();
 ```
 
-**Offliner** provides a generic lifecycle for web applications. To configure its installation, you use the `[prefetch API]()`:
+**Offliner** provides a generic lifecycle for web applications. To configure its installation, you use the [`prefetch API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/PrefetchConfig.html):
 
 ```js
 offliner.prefetch
@@ -41,7 +41,7 @@ offliner.prefetch
   .resources([/* ... */]);
 ```
 
-Prefetch happens only once in your application lifecycle, when the worker is installed for the first time. Prefetch process will populate an offline cache for serving files. How the web resources are served is configurable by using the `[fetch API]()`:
+Prefetch happens only once in your application lifecycle, when the worker is installed for the first time. Prefetch process will populate an offline cache for serving files. How the web resources are served is configurable by using the [`fetch API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/FetchConfig.html):
 
 ```js
 offliner.fetch
@@ -52,7 +52,7 @@ offliner.fetch
 
 Fetching is something that happens every time the web requires a resource.
 
-Lastly, an update is triggered every time the worker is stopped and resumed after. To handle how the update should be performed, use the `[update API]()`:
+Lastly, an update is triggered, at least, every time the worker is stopped and resumed later. To handle how the update should be performed, use the [`update API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
 
 ```js
 offliner.update
@@ -60,7 +60,7 @@ offliner.update
   .use(/* ... */) // you will find update strategies in the off.updaters collection
 ```
 
-You have a [complete and running worker]() inside the `/demo` folder.
+You have a [complete and running worker](https://github.com/lodr/offliner/blob/concept/demo/worker.js) inside the `/demo` folder with examples of fetchers, sources and an update strategy inside [`/demo/js`](https://github.com/lodr/offliner/tree/concept/demo/js).
 
 ### Running multiple instances of offliner
 
@@ -88,8 +88,8 @@ Notice this will install a worker called `offliner-worker.js` which is expected 
 
 ### Documentation
 
-Read the complete (private and public interfaces) [documentation online]().
+Read the complete (private and public interfaces) [documentation online](https://rawgit.com/lodr/offliner/concept/docs/index.html).
 
 ## Credits
 
-The refactor of the API was inspired by [serviceworkerware](https://github.com/arcturus/serviceworkerware).
+The refactor of the API was inspired by [serviceworkerware](https://github.com/arcturus/serviceworkerware). We are providing a middleware mode as well.
