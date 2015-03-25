@@ -1,4 +1,6 @@
 (function (self) {
+  'use strict';
+
   ['log', 'warn', 'error'].forEach(function (method) {
     self[method] = console[method].bind(console);
   });
@@ -204,6 +206,11 @@
         this._update(fromInstall);
       }
       var updatePeriod = offliner.update.option('period');
+      if (typeof updatePeriod === 'string') {
+        var unit = updatePeriod[updatePeriod.length - 1];
+        var number = parseFloat(updatePeriod);
+        var milliseconds = this._convertToMilliseconds(number, unit);
+      }
       if (typeof updatePeriod === 'number' ) {
         log('Next update in', updatePeriod / 1000, 'seconds.');
         this._updateControl.intervalId = setInterval(function () {
@@ -213,6 +220,22 @@
       }
       this._updateControl.enabled = true;
     }
+  };
+
+  /**
+   * Convert to milliseconds given a unit.
+   *
+   * @method _convertToMilliseconds
+   * @param {Number} value Number to be converted.
+   * @param {String} unit Can be `s`, `m` and `h`. If not recognized, no
+   * conversion is done.
+   * @return {Number} milliseconds for the given amount.
+   */
+  Offliner.prototype._convertToMilliseconds = function (value, unit) {
+    var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
+    var ratio = ratios[unit];
+    if (!ratio) { ratio = 1; }
+    return value * ratio;
   };
 
   /**
@@ -261,28 +284,29 @@
    */
   Offliner.prototype._update = function (fromInstall) {
     // XXX: Only one update process is allowed at a time.
+    var that = this;
     if (!this._updateControl.inProgressProcess) {
       this.update.flags = { isCalledFromInstall: fromInstall };
       this._updateControl.inProgressProcess = this._getLatestVersion()
         .then(this._checkIfNewVersion.bind(this))
-        .then(updateCache.bind(this))
-        .then(endUpdateProcess.bind(this))  // XXX:
-        .catch(error)                       //
-        .then(endUpdateProcess.bind(this)); // equivalent to .finally();
+        .then(updateCache)
+        .then(endUpdateProcess)  // XXX:
+        .catch(error)            //
+        .then(endUpdateProcess); // equivalent to .finally();
     }
     return this._updateControl.inProgressProcess;
 
     function updateCache(newVersion) {
       if (newVersion) {
-        return this._getCacheNameForVersion(newVersion)
+        return that._getCacheNameForVersion(newVersion)
           .then(caches.open.bind(caches))
-          .then(this._evolveCache.bind(this));
+          .then(that._evolveCache.bind(that));
       }
     }
 
     function endUpdateProcess() {
-      this._updateControl.alreadyRunOnce = true;
-      this._updateControl.inProgressProcess = null;
+      that._updateControl.alreadyRunOnce = true;
+      that._updateControl.inProgressProcess = null;
     }
   };
 
@@ -435,24 +459,25 @@
    * @private
    */
   Offliner.prototype._swapCaches = function () {
+    var that = this;
     return Promise.all([
-      getCurrentCache.call(this),
-      getNextCache.call(this)
+      getCurrentCache(),
+      getNextCache()
     ]).then(swap.bind(this));
 
     function getCurrentCache() {
-      return this.get('active-cache');
+      return that.get('active-cache');
     }
 
     function getNextCache() {
-      return this.get('next-version')
-        .then(this._getCacheNameForVersion.bind(this));
+      return that.get('next-version')
+        .then(that._getCacheNameForVersion.bind(that));
     }
 
     function swap(names) {
       var currentCache = names[0],
           nextCache = names[1];
-      return this.set('active-cache', nextCache)
+      return that.set('active-cache', nextCache)
         .then(caches.delete.bind(caches, currentCache));
     }
   };
@@ -822,28 +847,34 @@
     });
   };
 
-  self.Offliner = Offliner;
+  /**
+   * The exported module for offliner.
+   * @module off
+   */
+  self.off = {};
+
+  self.off.Offliner = Offliner;
 
   /**
-   * A collection of {{#crossLink "FetchSource"}}{{/crossLink}} constructors to
-   * configure offliner.
-   * @module sources
+   * A collection of {{#crossLink "SourceHandler"}}{{/crossLink}}
+   * constructors to configure offliner.
+   * @submodule sources
    */
-  self.sources = {};
+  self.off.sources = {};
 
   /**
    * A collection of {{#crossLink "Fetcher"}}{{/crossLink}} constructors to
    * configure offliner.
-   * @module fetchers
+   * @submodule fetchers
    */
-  self.fetchers = {};
+  self.off.fetchers = {};
 
   /**
    * A collection of {{#crossLink "UpdateImplementation"}}{{/crossLink}}
    * constructors to configure offliner.
-   * @module updaters
+   * @submodule updaters
    */
-  self.updaters = {};
+  self.off.updaters = {};
 
 }(typeof self === 'undefined' ? this : self));
 

@@ -13,6 +13,7 @@ YUI.add("yuidoc-meta", function(Y) {
     ],
     "modules": [
         "fetchers",
+        "off",
         "sources",
         "updaters"
     ],
@@ -23,9 +24,14 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "A collection of {{#crossLink \"Fetcher\"}}{{/crossLink}} constructors to\nconfigure offliner."
         },
         {
+            "displayName": "off",
+            "name": "off",
+            "description": "The exported module for offliner."
+        },
+        {
             "displayName": "sources",
             "name": "sources",
-            "description": "A collection of {{#crossLink \"FetchSource\"}}{{/crossLink}} constructors to\nconfigure offliner."
+            "description": "A collection of {{#crossLink \"SourceHandler\"}}{{/crossLink}}\nconstructors to configure offliner."
         },
         {
             "displayName": "updaters",

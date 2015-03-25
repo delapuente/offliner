@@ -14,6 +14,9 @@ gulp.task('dist', function() {
       .pipe(uglify())
       .pipe(rename('offliner.min.js'))
       .pipe(gulp.dest('./dist'));
+
+  gulp.src('src/offliner-setup.js')
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('docs', function() {

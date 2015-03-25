@@ -65,6 +65,8 @@
             
                 <li><a href="../modules/fetchers.html">fetchers</a></li>
             
+                <li><a href="../modules/off.html">off</a></li>
+            
                 <li><a href="../modules/sources.html">sources</a></li>
             
                 <li><a href="../modules/updaters.html">updaters</a></li>
@@ -112,13 +114,13 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l38"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:38</code></a>
+            Defined in: <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l40"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:40</code></a>
         </div>
     
 
     
         
-            Module: <a href="../modules/sources.html">sources</a>
+            Module: <a href="../modules/off.html">off</a>
         
     
 
@@ -167,6 +169,13 @@
                         
                             <li class="index-item method private">
                                 <a href="#method__checkIfNewVersion">_checkIfNewVersion</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method__convertToMilliseconds">_convertToMilliseconds</a>
 
                                 
                                 
@@ -398,7 +407,7 @@
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l409"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:409</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l433"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:433</code></a>
         
         </p>
 
@@ -460,7 +469,7 @@ active cache has been updated, the former one is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l355"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:355</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l379"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:379</code></a>
         
         </p>
 
@@ -489,6 +498,136 @@ current one by using the update middleware.</p>
                     
                     <p>remoteVersion The new version tag is returned
 if there is a new version or <code>null</code> otherwise.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method__convertToMilliseconds" class="method item">
+    <h3 class="name"><code>_convertToMilliseconds</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>value</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>unit</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l225"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:225</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convert to milliseconds given a unit.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">value</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Number to be converted.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">unit</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Can be <code>s</code>, <code>m</code> and <code>h</code>. If not recognized, no
+conversion is done.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                    <p>milliseconds for the given amount.</p>
 
                 
             </div>
@@ -543,7 +682,7 @@ if there is a new version or <code>null</code> otherwise.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l312"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:312</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l336"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:336</code></a>
         
         </p>
 
@@ -634,7 +773,7 @@ if there is a new version or <code>null</code> otherwise.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l384"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:384</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l408"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:408</code></a>
         
         </p>
 
@@ -725,7 +864,7 @@ if there is a new version or <code>null</code> otherwise.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l493"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:493</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l518"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:518</code></a>
         
         </p>
 
@@ -816,7 +955,7 @@ if there is a new version or <code>null</code> otherwise.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l471"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:471</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l496"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:496</code></a>
         
         </p>
 
@@ -914,7 +1053,7 @@ is ready but it did not replace yet the active cache.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l289"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:289</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l313"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:313</code></a>
         
         </p>
 
@@ -1024,7 +1163,7 @@ version.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l179"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:179</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l181"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:181</code></a>
         
         </p>
 
@@ -1121,7 +1260,7 @@ version.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l343"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:343</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l367"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:367</code></a>
         
         </p>
 
@@ -1193,7 +1332,7 @@ be used as suffix for the new cache.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l237"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:237</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l260"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:260</code></a>
         
         </p>
 
@@ -1250,7 +1389,7 @@ be used as suffix for the new cache.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l218"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:218</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l241"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:241</code></a>
         
         </p>
 
@@ -1312,7 +1451,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l398"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:398</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l422"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:422</code></a>
         
         </p>
 
@@ -1383,7 +1522,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l302"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:302</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l326"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:326</code></a>
         
         </p>
 
@@ -1450,7 +1589,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l191"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:191</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l193"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:193</code></a>
         
         </p>
 
@@ -1532,7 +1671,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l430"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:430</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l454"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:454</code></a>
         
         </p>
 
@@ -1600,7 +1739,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l249"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:249</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l272"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:272</code></a>
         
         </p>
 
@@ -1688,7 +1827,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l460"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:460</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l485"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:485</code></a>
         
         </p>
 
@@ -1755,7 +1894,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l146"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:146</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l148"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:148</code></a>
         
         </p>
 
@@ -1852,7 +1991,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l163"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:163</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l165"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:165</code></a>
         
         </p>
 
@@ -1947,7 +2086,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l109"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:109</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l111"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:111</code></a>
         
         </p>
 
@@ -2003,7 +2142,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l75"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:75</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l77"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:77</code></a>
         
         </p>
 
@@ -2050,7 +2189,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l52"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:52</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l54"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:54</code></a>
         
         </p>
 
@@ -2097,7 +2236,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l61"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:61</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l63"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:63</code></a>
         
         </p>
 
@@ -2142,7 +2281,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l84"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:84</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l86"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:86</code></a>
         
         </p>
 
@@ -2187,7 +2326,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l92"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:92</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l94"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:94</code></a>
         
         </p>
 
@@ -2232,7 +2371,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l100"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:100</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l102"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:102</code></a>
         
         </p>
 

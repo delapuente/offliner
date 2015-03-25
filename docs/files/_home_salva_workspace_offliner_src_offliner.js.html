@@ -65,6 +65,8 @@
             
                 <li><a href="../modules/fetchers.html">fetchers</a></li>
             
+                <li><a href="../modules/off.html">off</a></li>
+            
                 <li><a href="../modules/sources.html">sources</a></li>
             
                 <li><a href="../modules/updaters.html">updaters</a></li>
@@ -109,6 +111,8 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 (function (self) {
+  &#x27;use strict&#x27;;
+
   [&#x27;log&#x27;, &#x27;warn&#x27;, &#x27;error&#x27;].forEach(function (method) {
     self[method] = console[method].bind(console);
   });
@@ -314,6 +318,11 @@
         this._update(fromInstall);
       }
       var updatePeriod = offliner.update.option(&#x27;period&#x27;);
+      if (typeof updatePeriod === &#x27;string&#x27;) {
+        var unit = updatePeriod[updatePeriod.length - 1];
+        var number = parseFloat(updatePeriod);
+        var milliseconds = this._convertToMilliseconds(number, unit);
+      }
       if (typeof updatePeriod === &#x27;number&#x27; ) {
         log(&#x27;Next update in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
         this._updateControl.intervalId = setInterval(function () {
@@ -323,6 +332,22 @@
       }
       this._updateControl.enabled = true;
     }
+  };
+
+  /**
+   * Convert to milliseconds given a unit.
+   *
+   * @method _convertToMilliseconds
+   * @param {Number} value Number to be converted.
+   * @param {String} unit Can be &#x60;s&#x60;, &#x60;m&#x60; and &#x60;h&#x60;. If not recognized, no
+   * conversion is done.
+   * @return {Number} milliseconds for the given amount.
+   */
+  Offliner.prototype._convertToMilliseconds = function (value, unit) {
+    var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
+    var ratio = ratios[unit];
+    if (!ratio) { ratio = 1; }
+    return value * ratio;
   };
 
   /**
@@ -371,28 +396,29 @@
    */
   Offliner.prototype._update = function (fromInstall) {
     // XXX: Only one update process is allowed at a time.
+    var that = this;
     if (!this._updateControl.inProgressProcess) {
       this.update.flags = { isCalledFromInstall: fromInstall };
       this._updateControl.inProgressProcess = this._getLatestVersion()
         .then(this._checkIfNewVersion.bind(this))
-        .then(updateCache.bind(this))
-        .then(endUpdateProcess.bind(this))  // XXX:
-        .catch(error)                       //
-        .then(endUpdateProcess.bind(this)); // equivalent to .finally();
+        .then(updateCache)
+        .then(endUpdateProcess)  // XXX:
+        .catch(error)            //
+        .then(endUpdateProcess); // equivalent to .finally();
     }
     return this._updateControl.inProgressProcess;
 
     function updateCache(newVersion) {
       if (newVersion) {
-        return this._getCacheNameForVersion(newVersion)
+        return that._getCacheNameForVersion(newVersion)
           .then(caches.open.bind(caches))
-          .then(this._evolveCache.bind(this));
+          .then(that._evolveCache.bind(that));
       }
     }
 
     function endUpdateProcess() {
-      this._updateControl.alreadyRunOnce = true;
-      this._updateControl.inProgressProcess = null;
+      that._updateControl.alreadyRunOnce = true;
+      that._updateControl.inProgressProcess = null;
     }
   };
 
@@ -545,24 +571,25 @@
    * @private
    */
   Offliner.prototype._swapCaches = function () {
+    var that = this;
     return Promise.all([
-      getCurrentCache.call(this),
-      getNextCache.call(this)
+      getCurrentCache(),
+      getNextCache()
     ]).then(swap.bind(this));
 
     function getCurrentCache() {
-      return this.get(&#x27;active-cache&#x27;);
+      return that.get(&#x27;active-cache&#x27;);
     }
 
     function getNextCache() {
-      return this.get(&#x27;next-version&#x27;)
-        .then(this._getCacheNameForVersion.bind(this));
+      return that.get(&#x27;next-version&#x27;)
+        .then(that._getCacheNameForVersion.bind(that));
     }
 
     function swap(names) {
       var currentCache = names[0],
           nextCache = names[1];
-      return this.set(&#x27;active-cache&#x27;, nextCache)
+      return that.set(&#x27;active-cache&#x27;, nextCache)
         .then(caches.delete.bind(caches, currentCache));
     }
   };
@@ -932,28 +959,34 @@
     });
   };
 
-  self.Offliner = Offliner;
+  /**
+   * The exported module for offliner.
+   * @module off
+   */
+  self.off = {};
+
+  self.off.Offliner = Offliner;
 
   /**
-   * A collection of {{#crossLink &quot;FetchSource&quot;}}{{/crossLink}} constructors to
-   * configure offliner.
-   * @module sources
+   * A collection of {{#crossLink &quot;SourceHandler&quot;}}{{/crossLink}}
+   * constructors to configure offliner.
+   * @submodule sources
    */
-  self.sources = {};
+  self.off.sources = {};
 
   /**
    * A collection of {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}} constructors to
    * configure offliner.
-   * @module fetchers
+   * @submodule fetchers
    */
-  self.fetchers = {};
+  self.off.fetchers = {};
 
   /**
    * A collection of {{#crossLink &quot;UpdateImplementation&quot;}}{{/crossLink}}
    * constructors to configure offliner.
-   * @module updaters
+   * @submodule updaters
    */
-  self.updaters = {};
+  self.off.updaters = {};
 
 }(typeof self === &#x27;undefined&#x27; ? this : self));
 

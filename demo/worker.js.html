@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>worker.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="./docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1>worker.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <p># Tutorial
+ First import the offliner library. This import exports the namespaces <code>off</code>
+ to the global. <code>off</code> has three submodules, empty by default.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="import">importScripts<span class="container">('../<span class="title">dist</span>/<span class="title">offliner</span>.<span class="title">min</span>.<span class="title">js'</span>)</span>;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-2">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <p>By convention, fetchers are put inside the <code>off.fetchers</code> submodule.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="import">importScripts<span class="container">('./<span class="title">js</span>/<span class="title">offliner</span>-<span class="title">fetcher</span>-<span class="title">urls</span>.<span class="title">js'</span>)</span>;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Sources are in the <code>off.sources</code> submodule.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="import">importScripts<span class="container">('./<span class="title">js</span>/<span class="title">offliner</span>-<span class="title">source</span>-<span class="title">cache</span>.<span class="title">js'</span>)</span>;</span>
+<span class="import">importScripts<span class="container">('./<span class="title">js</span>/<span class="title">offliner</span>-<span class="title">source</span>-<span class="title">network</span>.<span class="title">js'</span>)</span>;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>And updaters in the <code>off.updaters</code> one.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="import">importScripts<span class="container">('./<span class="title">js</span>/<span class="title">offliner</span>-<span class="title">updater</span>-<span class="title">reinstall</span>.<span class="title">js'</span>)</span>;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>You can create an offliner instance using <code>off.Offliner</code> as a constructor.
+ If you want several instances of offliner, pass a unique name for each one
+ in the constructor or the persistent state for each one could conflict.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="setting">offliner = <span class="value">new <span class="keyword">off</span>.Offliner();</span></span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>Offliner provides with a configurable strategy to prefetch resources. Each
+ resource is an object with a type and other data. Each fetcher has a type.
+ Offliner gathers all the resources with the same type and feeds the fetcher
+ with the matching type of those resources.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="filename">offliner.prefetch
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>You register a fetcher by calling <code>use()</code> with the fetcher.</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="variable">.use</span>(off<span class="variable">.fetchers</span><span class="variable">.urls</span>)
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>Then provide an array (you can pass a solely item as well) of resources
+ by using <code>resources()</code>. As you can see the resources <strong>are not objects</strong>,
+ if resources are not objects they are passed to the <code>normalize()</code> functions
+ of last fetcher <code>use()</code>d.</p>
+      </td>
+      <td class="code">
+      <pre><code >  .resources([
+    <span class="comment">'./',</span>
+    <span class="comment">'./docco.css',</span>
+    <span class="comment">'./index.html',</span>
+    <span class="comment">'./js/offliner-fetcher-urls.js.html',</span>
+    <span class="comment">'./js/offliner-source-cache.js.html',</span>
+    <span class="comment">'./js/offliner-source-network.js.html',</span>
+    <span class="comment">'./worker.js.html'</span>
+  ]);
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-9">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-9">#</a>
+        </div>
+      <p>Offliner has a plugable fetch strategy based on fallbacks. When a resource
+ is fetched, it traverse all the source pipeline until one is able to provide
+ a response. If the source returns a rejected promise or throws an exception,
+ the request pass to the next source until reaching the end of the pipeline.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="filename">offliner.fetch
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-10">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-10">#</a>
+        </div>
+      <p>You call <code>use()</code> to add a source to the pipeline.</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="variable">.use</span>(off<span class="variable">.sources</span><span class="variable">.cache</span>)
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-11">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-11">#</a>
+        </div>
+      <p>Order is important and so, <code>network</code> source will act if <code>cache</code> is not
+ able to answer the request.</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="variable">.use</span>(off<span class="variable">.sources</span><span class="variable">.network</span>)
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-12">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-12">#</a>
+        </div>
+      <p>You can use <code>orFail()</code> to quickly add an always failing strategy imitating
+ a network error but you are not restricted to this. You could return your
+ own custom 404 error o generate awesome error pages on the fly!</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="preprocessor">.orFail</span>()<span class="comment">;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-13">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-13">#</a>
+        </div>
+      <p>Last but not least, Offliner offers a generic update strategy. It is based
+ on the following steps:
+   1. Get the latest version. [hook]
+   2. Determine if it is a new version. [hook]
+   3. Prepare a new offline cache.
+   4. Populate the new cache updating the old one. [hook]
+   5. After the service worker is stopped and before the next <em>first fetch</em>,
+      activate the new cache.
+ As you can see, there are three [hook] marks indicating which steps can be
+ customized. These steps must be provided by the update implementation.</p>
+      </td>
+      <td class="code">
+      <pre><code >offliner.<span class="operator"><span class="keyword">update</span>
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-14">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-14">#</a>
+        </div>
+      <p>You can customize some aspects of the update such as the period at the
+ update is triggered again. For period, you can use milliseconds or a
+ string using <em>s</em>, <em>m</em> and <em>h</em> as units.</p>
+      </td>
+      <td class="code">
+      <pre><code >  .<span class="keyword">option</span>(<span class="comment">'period', '5m')</span>
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-15">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-15">#</a>
+        </div>
+      <p>You call <code>use()</code> to register the update implementation providing the
+ convinient hooks. Calling use implies calling <code>option('enabled', true)</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="preprocessor">.use</span>(off<span class="preprocessor">.updaters</span><span class="preprocessor">.reinstall</span>)<span class="comment">;</span>
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-16">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-16">#</a>
+        </div>
+      <p>Lastly, use <code>standalone()</code> to install offliner as a service worker. Other
+ options will be soon available...</p>
+      </td>
+      <td class="code">
+      <pre><code >offliner<span class="preprocessor">.standalone</span>()<span class="comment">;</span>
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+
