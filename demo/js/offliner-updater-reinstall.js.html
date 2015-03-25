@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>offliner-updater-reinstall.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;offliner-updater-reinstall.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <p><strong>How to write an update implementation</strong></p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-2">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <p>Remember including offliner will export the <code>off</code> module with a namespace
+ reserved for <code>updaters</code>. Put your update implementation inside.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="keyword">self</span><span class="variable">.off</span><span class="variable">.updaters</span><span class="variable">.reinstall</span> = {
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Should check for the latest version. It must return a promise resolving
+ with a version tag, which is a string representing the version.</p>
+      </td>
+      <td class="code">
+      <pre><code >  check: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>This case we always return a new version but in the real life. We could
+ ask a server for the latest version.</p>
+      </td>
+      <td class="code">
+      <pre><code >    <span class="keyword">return</span> Promise<span class="variable">.resolve</span>(<span class="string">'v'</span> + Date<span class="variable">.now</span>());
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>Should check if the version from the step above is a new version given the
+ current one. Notice <strong>offliner</strong> is not aware about the meaning of your
+ versions but you could write middleware understanding semver for instance.</p>
+      </td>
+      <td class="code">
+      <pre><code >  isNewVersion: <span class="function"><span class="keyword">function</span> <span class="params">(current, latest)</span> {</span>
+    <span class="keyword">return</span> <span class="literal">true</span>;
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>Should implement how to update the current cache.</p>
+      </td>
+      <td class="code">
+      <pre><code >  evolve: <span class="function"><span class="keyword">function</span> <span class="params">(previousCache, newCache, reinstall)</span> {</span>
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>The update process set some flags you can check in the <code>flags</code> property.
+ Flag <code>isCalledFromInstall</code> indicates the worker was already installed
+ but changed.</p>
+      </td>
+      <td class="code">
+      <pre><code >    <span class="keyword">if</span> (!<span class="keyword">this</span><span class="variable">.flags</span><span class="variable">.isCalledFromInstall</span> || <span class="keyword">this</span><span class="variable">._onInstallOnly</span>) {
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>The callback <code>reinstall</code> is provided to roughly trigger a prefetch
+ on the new cache. Several times, the only thing you need to update
+ is to reinstall all again.</p>
+      </td>
+      <td class="code">
+      <pre><code >      <span class="keyword">return</span> reinstall();
+    }
+    <span class="keyword">return</span> Promise<span class="variable">.resolve</span>();
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-9">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-9">#</a>
+        </div>
+      <p>Of course you can provide as many extra functions as you need.</p>
+      </td>
+      <td class="code">
+      <pre><code >  onInstallOnly: <span class="function"><span class="keyword">function</span> <span class="params">(isSet)</span> {</span>
+    <span class="keyword">this</span>._onInstallOnly = <span class="keyword">isSet</span>;
+    <span class="keyword">return</span> <span class="keyword">this</span>;
+  }
+};
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+

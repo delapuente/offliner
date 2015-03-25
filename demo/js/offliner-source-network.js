@@ -1,5 +1,5 @@
-// # How to write a network source
-//
+// **How to write a network source**
+
 // Remember including offliner will export the `off` module with a namespace
 // reserved for `sources`. Put your source inside.
 

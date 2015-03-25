@@ -1,8 +1,6 @@
-// # Tutorial
-//
 // First import the offliner library. This import exports the namespaces `off`
 // to the global. `off` has three submodules, empty by default.
-importScripts('../dist/offliner.min.js');
+importScripts('../src/offliner.js');
 
 // By convention, fetchers are put inside the `off.fetchers` submodule.
 importScripts('./js/offliner-fetcher-urls.js');
@@ -39,6 +37,7 @@ offliner.prefetch
     './js/offliner-fetcher-urls.js.html',
     './js/offliner-source-cache.js.html',
     './js/offliner-source-network.js.html',
+    './js/offliner-updater-reinstall.js.html',
     './worker.js.html'
   ]);
 
@@ -63,12 +62,12 @@ offliner.fetch
 // Last but not least, Offliner offers a generic update strategy. It is based
 // on the following steps:
 //
-//   1. Get the latest version. [hook]
-//   2. Determine if it is a new version. [hook]
-//   3. Prepare a new offline cache.
-//   4. Populate the new cache updating the old one. [hook]
-//   5. After the service worker is stopped and before the next _first fetch_,
-//      activate the new cache.
+// 1. Get the latest version. [hook]
+// 2. Determine if it is a new version. [hook]
+// 3. Prepare a new offline cache.
+// 4. Populate the new cache updating the old one. [hook]
+// 5. After the service worker is stopped and before the next _first fetch_,
+//    activate the new cache.
 //
 // As you can see, there are three [hook] marks indicating which steps can be
 // customized. These steps must be provided by the update implementation.
@@ -81,7 +80,12 @@ offliner.update
 
   // You call `use()` to register the update implementation providing the
   // convinient hooks. Calling use implies calling `option('enabled', true)`.
-  .use(off.updaters.reinstall);
+  .use(off.updaters.reinstall.onInstallOnly(true));
+
+  // With `onInstallOnly(true)` you need to alter the worker to trigger
+  // the update. Adding a comment will suffice. If you set it to `false`
+  // the update process will be launched each 5 minutes with the current
+  // configuration.
 
 // Lastly, use `standalone()` to install offliner as a service worker. Other
 // options will be soon available...

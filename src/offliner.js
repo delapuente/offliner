@@ -6,6 +6,7 @@
   });
 
   var DEFAULT_VERSION = '$zero$';
+  var CONFIG_CACHE = '__offliner-config';
 
   /**
    * @class UpdateControl
@@ -154,7 +155,7 @@
    */
   Offliner.prototype.get = function (key) {
     var configURL = this._getConfigURL(key);
-    return caches.open('__offliner-config').then(function (cache) {
+    return caches.open(CONFIG_CACHE).then(function (cache) {
       return cache.match(configURL).then(function (response) {
         if (!response) { return Promise.resolve(null); }
         else { return response.json(); }
@@ -173,7 +174,7 @@
   Offliner.prototype.set = function (key, value) {
     var configURL = this._getConfigURL(key);
     var response = new Response(JSON.stringify(value));
-    return caches.open('__offliner-config').then(function (cache) {
+    return caches.open(CONFIG_CACHE).then(function (cache) {
       return cache.put(configURL, response);
     });
   };
@@ -209,7 +210,7 @@
       if (typeof updatePeriod === 'string') {
         var unit = updatePeriod[updatePeriod.length - 1];
         var number = parseFloat(updatePeriod);
-        var milliseconds = this._convertToMilliseconds(number, unit);
+        updatePeriod = this._convertToMilliseconds(number, unit);
       }
       if (typeof updatePeriod === 'number' ) {
         log('Next update in', updatePeriod / 1000, 'seconds.');
@@ -266,7 +267,8 @@
   Offliner.prototype._initialize = function () {
     return this._getCacheNameForVersion(DEFAULT_VERSION)
       .then(this.set.bind(this, 'active-cache'))
-      .then(this.set.bind(this, 'current-version', DEFAULT_VERSION));
+      .then(this.set.bind(this, 'current-version', DEFAULT_VERSION))
+      .then(this.set.bind(this, 'activation-pending', false));
   };
 
   /**
@@ -290,6 +292,7 @@
       this._updateControl.inProgressProcess = this._getLatestVersion()
         .then(this._checkIfNewVersion.bind(this))
         .then(updateCache)
+        .then(this.set.bind(this, 'activation-pending', true))
         .then(endUpdateProcess)  // XXX:
         .catch(error)            //
         .then(endUpdateProcess); // equivalent to .finally();
@@ -414,8 +417,8 @@
    */
   Offliner.prototype._evolveCache = function (newCache) {
     return this._openActiveCache().then(function (currentCache) {
-      var exportedPrefetch = this._doPrefetch.bind(this, newCache);
-      return this.update.evolve(currentCache, newCache, exportedPrefetch);
+      var reinstall = this._doPrefetch.bind(this, newCache);
+      return this.update.evolve(currentCache, newCache, reinstall);
     }.bind(this));
   };
 
@@ -438,14 +441,9 @@
    * @private
    */
   Offliner.prototype._activateNextCache = function () {
-    return Promise.all([
-      this.get('current-version'),
-      this.get('next-version')
-    ])
-    .then(function (versions) {
-      var currentVersion = versions[0];
-      var nextVersion = versions[1];
-      if (nextVersion && currentVersion !== nextVersion) {
+    return this.get('activation-pending')
+    .then(function (isActivationPending) {
+      if (isActivationPending) {
         return this._swapCaches().then(this._updateCurrentVersion.bind(this));
       }
     }.bind(this));
@@ -463,7 +461,7 @@
     return Promise.all([
       getCurrentCache(),
       getNextCache()
-    ]).then(swap.bind(this));
+    ]).then(swap);
 
     function getCurrentCache() {
       return that.get('active-cache');
@@ -478,7 +476,20 @@
       var currentCache = names[0],
           nextCache = names[1];
       return that.set('active-cache', nextCache)
-        .then(caches.delete.bind(caches, currentCache));
+        .then(deleteOtherCaches([nextCache, CONFIG_CACHE]));
+    }
+
+    function deleteOtherCaches(exclude) {
+      return caches.keys().then(function (cacheNames) {
+        return Promise.all(
+          cacheNames.filter(function (cacheName) {
+            return exclude.indexOf(cacheName) < 0;
+          })
+          .map(function (cacheName) {
+            return caches.delete(cacheName);
+          })
+        );
+      });
     }
   };
 
@@ -490,7 +501,8 @@
    */
   Offliner.prototype._updateCurrentVersion = function () {
     return this.get('next-version')
-      .then(this.set.bind(this, 'current-version'));
+      .then(this.set.bind(this, 'current-version'))
+      .then(this.set.bind(this, 'activation-pending', false));
   };
 
   /**
@@ -682,9 +694,7 @@
    * @param {String} currentVersion The current version.
    * @param {String} latestVersion The version from
    * {{#crossLink "UpdateImplementation/check:method"}}{{/crossLink}}.
-   * @return {Promise<String>} A promise resolving to a non empty string if
-   * `latestVersion` is new compared to `currentVersion` or a `falsy` if not.
-   * The string must be different from `currentVersion`.
+   * @return {Boolean}
    */
 
   /**
@@ -768,7 +778,7 @@
    * @method check
    */
   UpdateConfig.prototype.check = function () {
-    return this._impl.check();
+    return this._impl && this._impl.check();
   };
 
   /**

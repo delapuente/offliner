@@ -1,5 +1,5 @@
-// # How to write an offline source
-//
+// **How to write an offline source**
+
 // Remember including offliner will export the `off` module with a namespace
 // reserved for `sources`. Put your source inside.
 

@@ -27,12 +27,11 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-1">#</a>
         </div>
-      <p># Tutorial
- First import the offliner library. This import exports the namespaces <code>off</code>
+      <p>First import the offliner library. This import exports the namespaces <code>off</code>
  to the global. <code>off</code> has three submodules, empty by default.</p>
       </td>
       <td class="code">
-      <pre><code ><span class="import">importScripts<span class="container">('../<span class="title">dist</span>/<span class="title">offliner</span>.<span class="title">min</span>.<span class="title">js'</span>)</span>;</span>
+      <pre><code ><span class="import">importScripts<span class="container">('../<span class="title">src</span>/<span class="title">offliner</span>.<span class="title">js'</span>)</span>;</span>
 
 </code></pre>
       </td>
@@ -153,6 +152,7 @@
     <span class="comment">'./js/offliner-fetcher-urls.js.html',</span>
     <span class="comment">'./js/offliner-source-cache.js.html',</span>
     <span class="comment">'./js/offliner-source-network.js.html',</span>
+    <span class="comment">'./js/offliner-updater-reinstall.js.html',</span>
     <span class="comment">'./worker.js.html'</span>
   ]);
 
@@ -234,12 +234,12 @@
         </div>
       <p>Last but not least, Offliner offers a generic update strategy. It is based
  on the following steps:
-   1. Get the latest version. [hook]
-   2. Determine if it is a new version. [hook]
-   3. Prepare a new offline cache.
-   4. Populate the new cache updating the old one. [hook]
-   5. After the service worker is stopped and before the next <em>first fetch</em>,
-      activate the new cache.
+ 1. Get the latest version. [hook]
+ 2. Determine if it is a new version. [hook]
+ 3. Prepare a new offline cache.
+ 4. Populate the new cache updating the old one. [hook]
+ 5. After the service worker is stopped and before the next <em>first fetch</em>,
+    activate the new cache.
  As you can see, there are three [hook] marks indicating which steps can be
  customized. These steps must be provided by the update implementation.</p>
       </td>
@@ -277,9 +277,9 @@
  convinient hooks. Calling use implies calling <code>option('enabled', true)</code>.</p>
       </td>
       <td class="code">
-      <pre><code >  <span class="preprocessor">.use</span>(off<span class="preprocessor">.updaters</span><span class="preprocessor">.reinstall</span>)<span class="comment">;</span>
+      <pre><code >  <span class="variable">.use</span>(off<span class="variable">.updaters</span><span class="variable">.reinstall</span><span class="variable">.onInstallOnly</span>(<span class="literal">true</span>));
 
-</code></pre>
+  </code></pre>
       </td>
     </tr>
     
@@ -288,6 +288,23 @@
       <td class="docs">
         <div class="octowrap">
           <a class="octothorpe" href="#section-16">#</a>
+        </div>
+      <p>With <code>onInstallOnly(true)</code> you need to alter the worker to trigger
+ the update. Adding a comment will suffice. If you set it to <code>false</code>
+ the update process will be launched each 5 minutes with the current
+ configuration.</p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-17">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-17">#</a>
         </div>
       <p>Lastly, use <code>standalone()</code> to install offliner as a service worker. Other
  options will be soon available...</p>

@@ -27,9 +27,7 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-1">#</a>
         </div>
-      <p># How to write an offline source
- Remember including offliner will export the <code>off</code> module with a namespace
- reserved for <code>sources</code>. Put your source inside.</p>
+      <p><strong>How to write an offline source</strong></p>
       </td>
       <td class="code">
       <pre><code >
@@ -42,6 +40,21 @@
       <td class="docs">
         <div class="octowrap">
           <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <p>Remember including offliner will export the <code>off</code> module with a namespace
+ reserved for <code>sources</code>. Put your source inside.</p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
         </div>
       <p>A source is a function that will be passed with a request and the active
  offline cache. The source must return a promise resolving with the proper
@@ -56,10 +69,10 @@
     </tr>
     
     
-    <tr id="section-3">
+    <tr id="section-4">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-3">#</a>
+          <a class="octothorpe" href="#section-4">#</a>
         </div>
       <p>Notice how we resolve with the response if there is a match in the
  cache of reject otherwise.</p>

@@ -1,8 +1,8 @@
-// # How to write a fetcher
-//
+// **How to write a fetcher**
+
 // Remember including offliner will export the `off` module with a namespace
 // reserved for `fetchers`. Put your fetcher inside.
-self.off.fetchers.url = {
+self.off.fetchers.urls = {
 
   // Provide a type for your fetcher. All resources with the specified type
   // will be handled by your fetcher.
