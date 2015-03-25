@@ -257,11 +257,12 @@
           <a class="octothorpe" href="#section-14">#</a>
         </div>
       <p>You can customize some aspects of the update such as the period at the
- update is triggered again. For period, you can use milliseconds or a
- string using <em>s</em>, <em>m</em> and <em>h</em> as units.</p>
+ update is triggered again. For period, you can use milliseconds, the
+ keywords <code>never</code> or <code>once</code> or an string using <em>s</em>, <em>m</em> and <em>h</em> as units
+ such as <code>'5m'</code> of <code>'6h'</code>.</p>
       </td>
       <td class="code">
-      <pre><code >  .<span class="keyword">option</span>(<span class="comment">'period', '5m')</span>
+      <pre><code >  .option(<span class="attribute">'period</span>', <span class="attribute">'once</span>')
 
   </code></pre>
       </td>

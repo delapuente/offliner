@@ -74,9 +74,10 @@ offliner.fetch
 offliner.update
 
   // You can customize some aspects of the update such as the period at the
-  // update is triggered again. For period, you can use milliseconds or a
-  // string using _s_, _m_ and _h_ as units.
-  .option('period', '5m')
+  // update is triggered again. For period, you can use milliseconds, the
+  // keywords `never` or `once` or an string using _s_, _m_ and _h_ as units
+  // such as `'5m'` of `'6h'`.
+  .option('period', 'once')
 
   // You call `use()` to register the update implementation providing the
   // convinient hooks. Calling use implies calling `option('enabled', true)`.

@@ -126,8 +126,8 @@
    */
 
   /**
-   * Indicates if updates are enabled.
-   * @property enabled
+   * Indicates if updates have been scheduled.
+   * @property scheduled
    * @type boolean
    */
 
@@ -181,20 +181,11 @@
      * @private
      */
     this._updateControl = {
-      enabled: false,
+      scheduled: false,
       alreadyRunOnce: false,
       intervalId: null,
       inProgressProcess: null
     };
-
-    /**
-     * Set to &#x60;true&#x60; when the worker is waiting for the first fetch.
-     *
-     * @type Booleaan
-     * @property _firstFetch
-     * @private
-     */
-    this._firstFetch = true;
 
     /**
      * API to configure the fetching pipeline.
@@ -251,7 +242,7 @@
         if (this.update.option(&#x27;enabled&#x27;)) {
           this._schedulePeriodicUpdates();
         }
-        e.respondWith(this._fetchAfterCacheActivation(e.request));
+        e.respondWith(this._fetch(e.request));
       }
     }.bind(this));
 
@@ -312,43 +303,49 @@
    * @private
    */
   Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
-    if (!this._updateControl.enabled) {
-      if (!this._updateControl.alreadyRunOnce &amp;&amp;
-          !this._updateControl.inProgressProcess) {
-        log(&#x27;SW awake update.&#x27;);
-        this._update(fromInstall);
+    if (!this._updateControl.scheduled) {
+      var updatePeriod = normalizePeriod(this.update.option(&#x27;period&#x27;));
+      if (updatePeriod &amp;&amp; updatePeriod !== &#x27;never&#x27;) {
+        log(&#x27;First update.&#x27;);
+        this._update(fromInstall).then(function () {
+          if (updatePeriod !== &#x27;once&#x27;) {
+            log(&#x27;Next update in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
+            // XXX: this is temporal as it should be replaced by the sync API
+            // as timers and intervals are bound to the worker life.
+            this._updateControl.intervalId = setInterval(function () {
+              var seconds = updatePeriod / 1000;
+              log(&#x27;Periodic update. Next in&#x27;, seconds, &#x27;seconds.&#x27;);
+              this._update();
+            }.bind(this), updatePeriod);
+          }
+        }.bind(this));
       }
-      var updatePeriod = offliner.update.option(&#x27;period&#x27;);
+      this._updateControl.scheduled = true;
+    }
+
+    function normalizePeriod(updatePeriod) {
+      if (typeof updatePeriod === &#x27;number&#x27; ||
+          [&#x27;never&#x27;,&#x27;once&#x27;].indexOf(updatePeriod) &gt;= 0) {
+        return updatePeriod;
+      }
+
       if (typeof updatePeriod === &#x27;string&#x27;) {
         var unit = updatePeriod[updatePeriod.length - 1];
         var number = parseFloat(updatePeriod);
-        updatePeriod = this._convertToMilliseconds(number, unit);
+        var milliseconds = convertToMilliseconds(number, unit);
+        if (milliseconds) { return milliseconds; }
       }
-      if (typeof updatePeriod === &#x27;number&#x27; ) {
-        log(&#x27;Next update in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
-        this._updateControl.intervalId = setInterval(function () {
-          log(&#x27;Periodic update. Next in&#x27;, updatePeriod / 1000, &#x27;seconds.&#x27;);
-          this._update();
-        }.bind(this), updatePeriod);
-      }
-      this._updateControl.enabled = true;
-    }
-  };
 
-  /**
-   * Convert to milliseconds given a unit.
-   *
-   * @method _convertToMilliseconds
-   * @param {Number} value Number to be converted.
-   * @param {String} unit Can be &#x60;s&#x60;, &#x60;m&#x60; and &#x60;h&#x60;. If not recognized, no
-   * conversion is done.
-   * @return {Number} milliseconds for the given amount.
-   */
-  Offliner.prototype._convertToMilliseconds = function (value, unit) {
-    var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
-    var ratio = ratios[unit];
-    if (!ratio) { ratio = 1; }
-    return value * ratio;
+      warn(&#x27;Update period&#x27;, updatePeriod, &#x27;has an invalid format.&#x27;);
+      return null;
+    }
+
+    function convertToMilliseconds(value, unit) {
+      var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
+      var ratio = ratios[unit];
+      if (!ratio) { return null; }
+      return value * ratio;
+    }
   };
 
   /**
@@ -615,28 +612,6 @@
     return this.get(&#x27;next-version&#x27;)
       .then(this.set.bind(this, &#x27;current-version&#x27;))
       .then(this.set.bind(this, &#x27;activation-pending&#x27;, false));
-  };
-
-  /**
-   * Before serving anything from cache, this method emulates an activation
-   * and triggers {{#crossLink &quot;Offliner/_activateNextCache:method&quot;}}
-   * {{/crossLink}} to convert the evolved into the current active cache.
-   *
-   * Notice the evolved cache was created in a previous update process, now
-   * is ready but it did not replace yet the active cache.
-   *
-   * @method _fetchAfterCacheActivation
-   * @param {Request} request The request to be fetched.
-   * @private
-   */
-  Offliner.prototype._fetchAfterCacheActivation = function (request) {
-    if (this._firstFetch) {
-      this._firstFetch = false;
-      return this._activateNextCache()
-        .then(this._fetch.bind(this, request))
-        .catch(error);
-    }
-    return this._fetch(request);
   };
 
   /**

@@ -14,8 +14,8 @@
    */
 
   /**
-   * Indicates if updates are enabled.
-   * @property enabled
+   * Indicates if updates have been scheduled.
+   * @property scheduled
    * @type boolean
    */
 
@@ -69,20 +69,11 @@
      * @private
      */
     this._updateControl = {
-      enabled: false,
+      scheduled: false,
       alreadyRunOnce: false,
       intervalId: null,
       inProgressProcess: null
     };
-
-    /**
-     * Set to `true` when the worker is waiting for the first fetch.
-     *
-     * @type Booleaan
-     * @property _firstFetch
-     * @private
-     */
-    this._firstFetch = true;
 
     /**
      * API to configure the fetching pipeline.
@@ -139,7 +130,7 @@
         if (this.update.option('enabled')) {
           this._schedulePeriodicUpdates();
         }
-        e.respondWith(this._fetchAfterCacheActivation(e.request));
+        e.respondWith(this._fetch(e.request));
       }
     }.bind(this));
 
@@ -200,43 +191,49 @@
    * @private
    */
   Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
-    if (!this._updateControl.enabled) {
-      if (!this._updateControl.alreadyRunOnce &&
-          !this._updateControl.inProgressProcess) {
-        log('SW awake update.');
-        this._update(fromInstall);
+    if (!this._updateControl.scheduled) {
+      var updatePeriod = normalizePeriod(this.update.option('period'));
+      if (updatePeriod && updatePeriod !== 'never') {
+        log('First update.');
+        this._update(fromInstall).then(function () {
+          if (updatePeriod !== 'once') {
+            log('Next update in', updatePeriod / 1000, 'seconds.');
+            // XXX: this is temporal as it should be replaced by the sync API
+            // as timers and intervals are bound to the worker life.
+            this._updateControl.intervalId = setInterval(function () {
+              var seconds = updatePeriod / 1000;
+              log('Periodic update. Next in', seconds, 'seconds.');
+              this._update();
+            }.bind(this), updatePeriod);
+          }
+        }.bind(this));
       }
-      var updatePeriod = offliner.update.option('period');
+      this._updateControl.scheduled = true;
+    }
+
+    function normalizePeriod(updatePeriod) {
+      if (typeof updatePeriod === 'number' ||
+          ['never','once'].indexOf(updatePeriod) >= 0) {
+        return updatePeriod;
+      }
+
       if (typeof updatePeriod === 'string') {
         var unit = updatePeriod[updatePeriod.length - 1];
         var number = parseFloat(updatePeriod);
-        updatePeriod = this._convertToMilliseconds(number, unit);
+        var milliseconds = convertToMilliseconds(number, unit);
+        if (milliseconds) { return milliseconds; }
       }
-      if (typeof updatePeriod === 'number' ) {
-        log('Next update in', updatePeriod / 1000, 'seconds.');
-        this._updateControl.intervalId = setInterval(function () {
-          log('Periodic update. Next in', updatePeriod / 1000, 'seconds.');
-          this._update();
-        }.bind(this), updatePeriod);
-      }
-      this._updateControl.enabled = true;
-    }
-  };
 
-  /**
-   * Convert to milliseconds given a unit.
-   *
-   * @method _convertToMilliseconds
-   * @param {Number} value Number to be converted.
-   * @param {String} unit Can be `s`, `m` and `h`. If not recognized, no
-   * conversion is done.
-   * @return {Number} milliseconds for the given amount.
-   */
-  Offliner.prototype._convertToMilliseconds = function (value, unit) {
-    var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
-    var ratio = ratios[unit];
-    if (!ratio) { ratio = 1; }
-    return value * ratio;
+      warn('Update period', updatePeriod, 'has an invalid format.');
+      return null;
+    }
+
+    function convertToMilliseconds(value, unit) {
+      var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
+      var ratio = ratios[unit];
+      if (!ratio) { return null; }
+      return value * ratio;
+    }
   };
 
   /**
@@ -503,28 +500,6 @@
     return this.get('next-version')
       .then(this.set.bind(this, 'current-version'))
       .then(this.set.bind(this, 'activation-pending', false));
-  };
-
-  /**
-   * Before serving anything from cache, this method emulates an activation
-   * and triggers {{#crossLink "Offliner/_activateNextCache:method"}}
-   * {{/crossLink}} to convert the evolved into the current active cache.
-   *
-   * Notice the evolved cache was created in a previous update process, now
-   * is ready but it did not replace yet the active cache.
-   *
-   * @method _fetchAfterCacheActivation
-   * @param {Request} request The request to be fetched.
-   * @private
-   */
-  Offliner.prototype._fetchAfterCacheActivation = function (request) {
-    if (this._firstFetch) {
-      this._firstFetch = false;
-      return this._activateNextCache()
-        .then(this._fetch.bind(this, request))
-        .catch(error);
-    }
-    return this._fetch(request);
   };
 
   /**
