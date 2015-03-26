@@ -230,7 +230,6 @@
     self.addEventListener(&#x27;activate&#x27;, function (e) {
       e.waitUntil(
         this._activateNextCache()
-          .then(clients.claim.bind(clients))
           .then(function () { log(&#x27;Offliner activated!&#x27;); })
       );
     }.bind(this));
@@ -240,9 +239,6 @@
         e.respondWith(fetch(e.request));
       }
       else {
-        if (this.update.option(&#x27;enabled&#x27;)) {
-          this._schedulePeriodicUpdates();
-        }
         e.respondWith(this._fetch(e.request));
       }
     }.bind(this));
@@ -261,8 +257,23 @@
    * @private
    */
   Offliner.prototype._processMessage = function (msg) {
-    if (msg === &#x27;activate&#x27;) {
-      this._activateNextCache();
+    switch (msg) {
+      case &#x27;activate&#x27;:
+        this._activateNextCache();
+        break;
+      case &#x27;update&#x27;:
+        this._update();
+        break;
+      case &#x27;requestActivationStatus&#x27;:
+        this.get(&#x27;activation-pending&#x27;).then(function (isActivationPending) {
+          if (isActivationPending) {
+            this._sendActivationPending();
+          }
+        }.bind(this));
+        break;
+      default:
+        warn(&#x27;Message not recognized:&#x27;, msg);
+        break;
     }
   };
 
@@ -312,60 +323,6 @@
   };
 
   /**
-   * Install the timers for periodic updates.
-   *
-   * @method _schedulePeriodicUpdates
-   * @param {Boolean} fromInstall Indicates if the call comes from the
-   * {{#crossLink &quot;Offliner/_install:method&quot;}}{{/crossLink}} method.
-   * @private
-   */
-  Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
-    if (!this._updateControl.scheduled) {
-      var updatePeriod = normalizePeriod(this.update.option(&#x27;period&#x27;));
-      var seconds = updatePeriod / 1000;
-      if (updatePeriod &amp;&amp; updatePeriod !== &#x27;never&#x27;) {
-        log(&#x27;First update.&#x27;);
-        this._update(fromInstall).then(function () {
-          if (updatePeriod !== &#x27;once&#x27;) {
-            log(&#x27;Next update in&#x27;, seconds, &#x27;seconds.&#x27;);
-            // XXX: this is temporal as it should be replaced by the sync API
-            // as timers and intervals are bound to the worker life.
-            this._updateControl.intervalId = setInterval(function () {
-              log(&#x27;Periodic update. Next in&#x27;, seconds, &#x27;seconds.&#x27;);
-              this._update();
-            }.bind(this), updatePeriod);
-          }
-        }.bind(this));
-      }
-      this._updateControl.scheduled = true;
-    }
-
-    function normalizePeriod(updatePeriod) {
-      if (typeof updatePeriod === &#x27;number&#x27; ||
-          [&#x27;never&#x27;,&#x27;once&#x27;].indexOf(updatePeriod) &gt;= 0) {
-        return updatePeriod;
-      }
-
-      if (typeof updatePeriod === &#x27;string&#x27;) {
-        var unit = updatePeriod[updatePeriod.length - 1];
-        var number = parseFloat(updatePeriod);
-        var milliseconds = convertToMilliseconds(number, unit);
-        if (milliseconds) { return milliseconds; }
-      }
-
-      warn(&#x27;Update period&#x27;, updatePeriod, &#x27;has an invalid format.&#x27;);
-      return null;
-    }
-
-    function convertToMilliseconds(value, unit) {
-      var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
-      var ratio = ratios[unit];
-      if (!ratio) { return null; }
-      return value * ratio;
-    }
-  };
-
-  /**
    * Determine if the worker should prefetch or update after (re)installing the
    * service worker.
    *
@@ -377,8 +334,7 @@
     return this.get(&#x27;current-version&#x27;).then(function (currentVersion) {
       var isUpdateEnabled = this.update.option(&#x27;enabled&#x27;);
       if (currentVersion) {
-        return isUpdateEnabled ?
-               this._schedulePeriodicUpdates(fromInstall) : Promise.resolve();
+        return isUpdateEnabled ? this._update(fromInstall) : Promise.resolve();
       }
       return this._initialize().then(this._prefetch.bind(this));
     }.bind(this), error);

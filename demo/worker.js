@@ -73,12 +73,6 @@ offliner.fetch
 // customized. These steps must be provided by the update implementation.
 offliner.update
 
-  // You can customize some aspects of the update such as the period at the
-  // update is triggered again. For period, you can use milliseconds, the
-  // keywords `never` or `once` or an string using _s_, _m_ and _h_ as units
-  // such as `'5m'` of `'6h'`.
-  .option('period', '50s')
-
   // You call `use()` to register the update implementation providing the
   // convinient hooks. Calling use implies calling `option('enabled', true)`.
   .use(off.updaters.reinstall.onInstallOnly(true));

@@ -118,7 +118,6 @@
     self.addEventListener('activate', function (e) {
       e.waitUntil(
         this._activateNextCache()
-          .then(clients.claim.bind(clients))
           .then(function () { log('Offliner activated!'); })
       );
     }.bind(this));
@@ -128,9 +127,6 @@
         e.respondWith(fetch(e.request));
       }
       else {
-        if (this.update.option('enabled')) {
-          this._schedulePeriodicUpdates();
-        }
         e.respondWith(this._fetch(e.request));
       }
     }.bind(this));
@@ -149,8 +145,23 @@
    * @private
    */
   Offliner.prototype._processMessage = function (msg) {
-    if (msg === 'activate') {
-      this._activateNextCache();
+    switch (msg) {
+      case 'activate':
+        this._activateNextCache();
+        break;
+      case 'update':
+        this._update();
+        break;
+      case 'requestActivationStatus':
+        this.get('activation-pending').then(function (isActivationPending) {
+          if (isActivationPending) {
+            this._sendActivationPending();
+          }
+        }.bind(this));
+        break;
+      default:
+        warn('Message not recognized:', msg);
+        break;
     }
   };
 
@@ -200,60 +211,6 @@
   };
 
   /**
-   * Install the timers for periodic updates.
-   *
-   * @method _schedulePeriodicUpdates
-   * @param {Boolean} fromInstall Indicates if the call comes from the
-   * {{#crossLink "Offliner/_install:method"}}{{/crossLink}} method.
-   * @private
-   */
-  Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
-    if (!this._updateControl.scheduled) {
-      var updatePeriod = normalizePeriod(this.update.option('period'));
-      var seconds = updatePeriod / 1000;
-      if (updatePeriod && updatePeriod !== 'never') {
-        log('First update.');
-        this._update(fromInstall).then(function () {
-          if (updatePeriod !== 'once') {
-            log('Next update in', seconds, 'seconds.');
-            // XXX: this is temporal as it should be replaced by the sync API
-            // as timers and intervals are bound to the worker life.
-            this._updateControl.intervalId = setInterval(function () {
-              log('Periodic update. Next in', seconds, 'seconds.');
-              this._update();
-            }.bind(this), updatePeriod);
-          }
-        }.bind(this));
-      }
-      this._updateControl.scheduled = true;
-    }
-
-    function normalizePeriod(updatePeriod) {
-      if (typeof updatePeriod === 'number' ||
-          ['never','once'].indexOf(updatePeriod) >= 0) {
-        return updatePeriod;
-      }
-
-      if (typeof updatePeriod === 'string') {
-        var unit = updatePeriod[updatePeriod.length - 1];
-        var number = parseFloat(updatePeriod);
-        var milliseconds = convertToMilliseconds(number, unit);
-        if (milliseconds) { return milliseconds; }
-      }
-
-      warn('Update period', updatePeriod, 'has an invalid format.');
-      return null;
-    }
-
-    function convertToMilliseconds(value, unit) {
-      var ratios = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000 };
-      var ratio = ratios[unit];
-      if (!ratio) { return null; }
-      return value * ratio;
-    }
-  };
-
-  /**
    * Determine if the worker should prefetch or update after (re)installing the
    * service worker.
    *
@@ -265,8 +222,7 @@
     return this.get('current-version').then(function (currentVersion) {
       var isUpdateEnabled = this.update.option('enabled');
       if (currentVersion) {
-        return isUpdateEnabled ?
-               this._schedulePeriodicUpdates(fromInstall) : Promise.resolve();
+        return isUpdateEnabled ? this._update(fromInstall) : Promise.resolve();
       }
       return this._initialize().then(this._prefetch.bind(this));
     }.bind(this), error);
