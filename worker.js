@@ -1,6 +1,6 @@
 // First import the offliner library. This import exports the namespaces `off`
 // to the global. `off` has three submodules, empty by default.
-importScripts('./src/offliner.js');
+importScripts('../src/offliner.js');
 
 // By convention, fetchers are put inside the `off.fetchers` submodule.
 importScripts('./js/offliner-fetcher-urls.js');
@@ -72,12 +72,6 @@ offliner.fetch
 // As you can see, there are three [hook] marks indicating which steps can be
 // customized. These steps must be provided by the update implementation.
 offliner.update
-
-  // You can customize some aspects of the update such as the period at the
-  // update is triggered again. For period, you can use milliseconds, the
-  // keywords `never` or `once` or an string using _s_, _m_ and _h_ as units
-  // such as `'5m'` of `'6h'`.
-  .option('period', '50s')
 
   // You call `use()` to register the update implementation providing the
   // convinient hooks. Calling use implies calling `option('enabled', true)`.
