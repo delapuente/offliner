@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>offliner-fetcher-urls.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;offliner-fetcher-urls.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <p><strong>How to write a fetcher</strong></p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-2">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <p>Remember including offliner will export the <code>off</code> module with a namespace
+ reserved for <code>fetchers</code>. Put your fetcher inside.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="keyword">self</span><span class="variable">.off</span><span class="variable">.fetchers</span><span class="variable">.urls</span> = {
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Provide a type for your fetcher. All resources with the specified type
+ will be handled by your fetcher.</p>
+      </td>
+      <td class="code">
+      <pre><code >  <span class="attribute">type</span>: <span class="string">'url',</span>
+
+<span class="undefined">  </span></code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>Provide a <code>normalize()</code> function if you want to provide a shortcut for
+ resources. This case we allow to simply pass a string and we normalize
+ it to a resource that can be handled by the <code>prefetch()</code> method.</p>
+      </td>
+      <td class="code">
+      <pre><code >  normalize: <span class="function"><span class="keyword">function</span> <span class="params">(resource)</span></span> {
+    <span class="keyword">return</span> { <span class="built_in">type</span>: this.<span class="built_in">type</span>, url: resource };
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>The <code>prefetch()</code> is passed with a list of resources of the fetcher's type
+ and the cache to be populated. It must return a Promise resolving when
+ prefetching is done.</p>
+      </td>
+      <td class="code">
+      <pre><code >  prefetch: <span class="function"><span class="keyword">function</span> <span class="params">(resources, cache)</span> {</span>
+    <span class="keyword">return</span> <span class="transposed_variable">Promise.</span>all(<span class="transposed_variable">resources.</span>map(<span class="function"><span class="keyword">function</span> <span class="params">(resource)</span> {</span>
+      var request = new Request(<span class="transposed_variable">resource.</span>url, <span class="cell">{ mode: <span class="string">'no-cors'</span> }</span>);
+      <span class="keyword">return</span> fetch(request).then(<span class="transposed_variable">cache.</span><span class="transposed_variable">put.</span>bind(cache, <span class="transposed_variable">resource.</span>url));
+    }));
+  }
+};
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+
