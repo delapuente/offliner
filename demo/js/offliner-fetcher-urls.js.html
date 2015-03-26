@@ -99,7 +99,8 @@
       <td class="code">
       <pre><code >  prefetch: <span class="function"><span class="keyword">function</span> <span class="params">(resources, cache)</span> {</span>
     <span class="keyword">return</span> <span class="transposed_variable">Promise.</span>all(<span class="transposed_variable">resources.</span>map(<span class="function"><span class="keyword">function</span> <span class="params">(resource)</span> {</span>
-      <span class="keyword">return</span> fetch(<span class="transposed_variable">resource.</span>url).then(<span class="transposed_variable">cache.</span><span class="transposed_variable">put.</span>bind(cache, <span class="transposed_variable">resource.</span>url));
+      var request = new Request(<span class="transposed_variable">resource.</span>url, <span class="cell">{ mode: <span class="string">'no-cors'</span> }</span>);
+      <span class="keyword">return</span> fetch(request).then(<span class="transposed_variable">cache.</span><span class="transposed_variable">put.</span>bind(cache, <span class="transposed_variable">resource.</span>url));
     }));
   }
 };

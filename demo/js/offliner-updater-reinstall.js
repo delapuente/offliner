@@ -16,7 +16,8 @@ self.off.updaters.reinstall = {
   // current one. Notice **offliner** is not aware about the meaning of your
   // versions but you could write middleware understanding semver for instance.
   isNewVersion: function (current, latest) {
-    return true;
+    // Let's avoid less-than-a-minute updates
+    return parseInt(latest.substr(1)) > (parseInt(current.substr(1)) + 60000);
   },
 
   // Should implement how to update the current cache.

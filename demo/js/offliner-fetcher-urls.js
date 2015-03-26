@@ -20,7 +20,8 @@ self.off.fetchers.urls = {
   // prefetching is done.
   prefetch: function (resources, cache) {
     return Promise.all(resources.map(function (resource) {
-      return fetch(resource.url).then(cache.put.bind(cache, resource.url));
+      var request = new Request(resource.url, { mode: 'no-cors' });
+      return fetch(request).then(cache.put.bind(cache, resource.url));
     }));
   }
 };

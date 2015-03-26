@@ -118,6 +118,7 @@
     self.addEventListener('activate', function (e) {
       e.waitUntil(
         this._activateNextCache()
+          .then(clients.claim.bind(clients))
           .then(function () { log('Offliner activated!'); })
       );
     }.bind(this));
@@ -134,7 +135,23 @@
       }
     }.bind(this));
 
+    self.addEventListener('message', function (e) {
+      this._processMessage(e.data);
+    }.bind(this));
+
     this._isStarted = true;
+  };
+
+  /**
+   * Process the different messages that can receive the worker.
+   *
+   * @method _processMessage
+   * @private
+   */
+  Offliner.prototype._processMessage = function (msg) {
+    if (msg === 'activate') {
+      this._activateNextCache();
+    }
   };
 
   /**
@@ -193,15 +210,15 @@
   Offliner.prototype._schedulePeriodicUpdates = function (fromInstall) {
     if (!this._updateControl.scheduled) {
       var updatePeriod = normalizePeriod(this.update.option('period'));
+      var seconds = updatePeriod / 1000;
       if (updatePeriod && updatePeriod !== 'never') {
         log('First update.');
         this._update(fromInstall).then(function () {
           if (updatePeriod !== 'once') {
-            log('Next update in', updatePeriod / 1000, 'seconds.');
+            log('Next update in', seconds, 'seconds.');
             // XXX: this is temporal as it should be replaced by the sync API
             // as timers and intervals are bound to the worker life.
             this._updateControl.intervalId = setInterval(function () {
-              var seconds = updatePeriod / 1000;
               log('Periodic update. Next in', seconds, 'seconds.');
               this._update();
             }.bind(this), updatePeriod);
@@ -289,7 +306,6 @@
       this._updateControl.inProgressProcess = this._getLatestVersion()
         .then(this._checkIfNewVersion.bind(this))
         .then(updateCache)
-        .then(this.set.bind(this, 'activation-pending', true))
         .then(endUpdateProcess)  // XXX:
         .catch(error)            //
         .then(endUpdateProcess); // equivalent to .finally();
@@ -300,13 +316,68 @@
       if (newVersion) {
         return that._getCacheNameForVersion(newVersion)
           .then(caches.open.bind(caches))
-          .then(that._evolveCache.bind(that));
+          .then(that._evolveCache.bind(that))
+          .then(that.set.bind(that, 'activation-pending', true))
+          .then(that._sendActivationPending.bind(that));
       }
     }
 
     function endUpdateProcess() {
       that._updateControl.alreadyRunOnce = true;
       that._updateControl.inProgressProcess = null;
+    }
+  };
+
+  /**
+   * Broadcast a message to all clients to indicate there is an update
+   * activation ready.
+   *
+   * @method _sendActivationPending
+   * @private
+   */
+  Offliner.prototype._sendActivationPending = function () {
+    this._broadcastMessage({ type: 'offliner:activationPending' });
+  };
+
+  /**
+   * Broadcast a message to all clients to indicate the activation of the
+   * new version ended properly.
+   *
+   * @method _sendActivationDone
+   * @private
+   */
+  Offliner.prototype._sendActivationDone = function () {
+    this._broadcastMessage({ type: 'offliner:activationDone' });
+  };
+
+  /**
+   * Broadcast a message to all clients to indicate there was a failure while
+   * activating the update.
+   *
+   * @method _sendActivationFailed
+   * @private
+   */
+  Offliner.prototype._sendActivationFailed = function () {
+    this._broadcastMessage({ type: 'offliner:activationFailed' });
+  };
+
+  /**
+   * Broadcast a message in the clients.
+   *
+   * @method _broadcastMessage
+   * @param msg {Any} the message to be broadcasted.
+   * @private
+   */
+  Offliner.prototype._broadcastMessage = function (msg) {
+    if (typeof BroadcastChannel === 'function') {
+      var channel = new BroadcastChannel('offliner-channel');
+      channel.postMessage(msg);
+      channel.close();
+    }
+    else {
+      clients.matchAll().then(function (controlled) {
+        controlled.forEach(function (client) { client.postMessage(msg); });
+      });
     }
   };
 
@@ -438,10 +509,12 @@
    * @private
    */
   Offliner.prototype._activateNextCache = function () {
-    return this.get('activation-pending')
-    .then(function (isActivationPending) {
+    return this.get('activation-pending').then(function (isActivationPending) {
       if (isActivationPending) {
-        return this._swapCaches().then(this._updateCurrentVersion.bind(this));
+        return this._swapCaches()
+          .then(this._updateCurrentVersion.bind(this))
+          .then(this._sendActivationDone.bind(this))
+          .catch(this._sendActivationFailed.bind(this));
       }
     }.bind(this));
   };
@@ -477,16 +550,18 @@
     }
 
     function deleteOtherCaches(exclude) {
-      return caches.keys().then(function (cacheNames) {
-        return Promise.all(
-          cacheNames.filter(function (cacheName) {
-            return exclude.indexOf(cacheName) < 0;
-          })
-          .map(function (cacheName) {
-            return caches.delete(cacheName);
-          })
-        );
-      });
+      return function () {
+          return caches.keys().then(function (cacheNames) {
+            return Promise.all(
+              cacheNames.filter(function (cacheName) {
+                return exclude.indexOf(cacheName) < 0;
+              })
+              .map(function (cacheName) {
+                return caches.delete(cacheName);
+              })
+            );
+        });
+      };
     }
   };
 

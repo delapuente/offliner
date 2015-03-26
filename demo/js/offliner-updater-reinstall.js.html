@@ -95,10 +95,7 @@
       </td>
       <td class="code">
       <pre><code >  isNewVersion: <span class="function"><span class="keyword">function</span> <span class="params">(current, latest)</span> {</span>
-    <span class="keyword">return</span> <span class="literal">true</span>;
-  },
-
-  </code></pre>
+    </code></pre>
       </td>
     </tr>
     
@@ -107,6 +104,22 @@
       <td class="docs">
         <div class="octowrap">
           <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>Let's avoid less-than-a-minute updates</p>
+      </td>
+      <td class="code">
+      <pre><code >    <span class="keyword">return</span> parseInt(latest.<span class="keyword">substr</span>(<span class="number">1</span>)) &gt; (parseInt(current.<span class="keyword">substr</span>(<span class="number">1</span>)) + <span class="number">60000</span>);
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
         </div>
       <p>Should implement how to update the current cache.</p>
       </td>
@@ -117,10 +130,10 @@
     </tr>
     
     
-    <tr id="section-7">
+    <tr id="section-8">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-7">#</a>
+          <a class="octothorpe" href="#section-8">#</a>
         </div>
       <p>The update process set some flags you can check in the <code>flags</code> property.
  Flag <code>isCalledFromInstall</code> indicates the worker was already installed
@@ -133,10 +146,10 @@
     </tr>
     
     
-    <tr id="section-8">
+    <tr id="section-9">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-8">#</a>
+          <a class="octothorpe" href="#section-9">#</a>
         </div>
       <p>The callback <code>reinstall</code> is provided to roughly trigger a prefetch
  on the new cache. Several times, the only thing you need to update
@@ -153,10 +166,10 @@
     </tr>
     
     
-    <tr id="section-9">
+    <tr id="section-10">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-9">#</a>
+          <a class="octothorpe" href="#section-10">#</a>
         </div>
       <p>Of course you can provide as many extra functions as you need.</p>
       </td>
