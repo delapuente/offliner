@@ -17,7 +17,8 @@ self.off.updaters.reinstall = {
   // versions but you could write middleware understanding semver for instance.
   isNewVersion: function (current, latest) {
     // Let's avoid less-than-a-minute updates
-    return parseInt(latest.substr(1)) > (parseInt(current.substr(1)) + 60000);
+    return this.flags.isFirstUpdate ||
+           parseInt(latest.substr(1)) > (parseInt(current.substr(1)) + 60000);
   },
 
   // Should implement how to update the current cache.
