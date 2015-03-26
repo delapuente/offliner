@@ -108,7 +108,8 @@
       <p>Let's avoid less-than-a-minute updates</p>
       </td>
       <td class="code">
-      <pre><code >    <span class="keyword">return</span> parseInt(latest.<span class="keyword">substr</span>(<span class="number">1</span>)) &gt; (parseInt(current.<span class="keyword">substr</span>(<span class="number">1</span>)) + <span class="number">60000</span>);
+      <pre><code >    <span class="keyword">return</span> <span class="keyword">this</span><span class="variable">.flags</span><span class="variable">.isFirstUpdate</span> ||
+           parseInt(latest<span class="variable">.substr</span>(<span class="number">1</span>)) &gt; (parseInt(current<span class="variable">.substr</span>(<span class="number">1</span>)) + <span class="number">60000</span>);
   },
 
   </code></pre>

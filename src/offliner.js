@@ -302,8 +302,14 @@
     // XXX: Only one update process is allowed at a time.
     var that = this;
     if (!this._updateControl.inProgressProcess) {
-      this.update.flags = { isCalledFromInstall: fromInstall };
-      this._updateControl.inProgressProcess = this._getLatestVersion()
+      this._updateControl.inProgressProcess = this.get('current-version')
+        .then(function (currentVersion) {
+          this.update.flags = {
+            isCalledFromInstall: fromInstall,
+            isFirstUpdate: (currentVersion === DEFAULT_VERSION)
+          };
+        }.bind(this))
+        .then(this._getLatestVersion.bind(this))
         .then(this._checkIfNewVersion.bind(this))
         .then(updateCache)
         .then(endUpdateProcess)  // XXX:
