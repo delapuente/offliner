@@ -118,9 +118,8 @@
     self.addEventListener('activate', function (e) {
       e.waitUntil(
         this._activateNextCache()
-          .then(clients.claim.bind(clients))
           .then(function () { log('Offliner activated!'); })
-      );
+        );
     }.bind(this));
 
     self.addEventListener('fetch', function (e)  {
@@ -213,17 +212,7 @@
       var seconds = updatePeriod / 1000;
       if (updatePeriod && updatePeriod !== 'never') {
         log('First update.');
-        this._update(fromInstall).then(function () {
-          if (updatePeriod !== 'once') {
-            log('Next update in', seconds, 'seconds.');
-            // XXX: this is temporal as it should be replaced by the sync API
-            // as timers and intervals are bound to the worker life.
-            this._updateControl.intervalId = setInterval(function () {
-              log('Periodic update. Next in', seconds, 'seconds.');
-              this._update();
-            }.bind(this), updatePeriod);
-          }
-        }.bind(this));
+        this._update(fromInstall);
       }
       this._updateControl.scheduled = true;
     }
@@ -376,8 +365,11 @@
    */
   Offliner.prototype._broadcastMessage = function (msg) {
     if (typeof BroadcastChannel === 'function') {
+      log('Preparando para broadcast');
       var channel = new BroadcastChannel('offliner-channel');
+      log('Preparando para postMessage');
       channel.postMessage(msg);
+      log('Cerrando');
       channel.close();
     }
     else {
@@ -563,7 +555,7 @@
                 return exclude.indexOf(cacheName) < 0;
               })
               .map(function (cacheName) {
-                return caches.delete(cacheName);
+                return caches.delete(cacheName).then(log.bind(undefined, cacheName + ' deleted'));
               })
             );
         });
