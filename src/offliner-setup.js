@@ -24,15 +24,23 @@
 
   function installMessageHandlers() {
     if (!installMessageHandlers.done) {
-      window.addEventListener('message', function (e) {
-        var msg = e.data;
-        var type = msg ? msg.type : '';
-        var typeAndSubType = type.split(':');
-        if (typeAndSubType[0] === 'offliner') {
-          handleMessage(typeAndSubType[1], msg);
-        }
-      });
+      if (typeof BroadcastChannel === 'function') {
+        var bc = new BroadcastChannel('offliner-channel');
+        bc.onmessage = onmessage;
+      }
+      else {
+        window.addEventListener('message', onmessage);
+      }
       installMessageHandlers.done = true;
+    }
+    
+    function onmessage(e) {
+      var msg = e.data;
+      var type = msg ? msg.type : '';
+      var typeAndSubType = type.split(':');
+      if (typeAndSubType[0] === 'offliner') {
+        handleMessage(typeAndSubType[1], msg);
+      }
     }
   }
 
