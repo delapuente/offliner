@@ -1,6 +1,8 @@
 (function (exports) {
   'use strict';
 
+  var nextPromiseId = 1;
+
   var originalOff = exports.off;
 
   var root = (function () {
@@ -106,13 +108,13 @@
       return false;
     },
 
-    _crossPromise: function (payload) {
+    _crossPromise: function (order) {
       return new Promise(function (accept, reject) {
-        var uniqueId = promiseID++;
+        var uniqueId = nextPromiseId++;
         var msg = {
           type: 'crossPromise',
           id: uniqueId,
-          payload: payload
+          order: order
         };
         this._xpromises[uniqueId] = [accept, reject];
         this._send(msg);

@@ -116,7 +116,9 @@
     }.bind(this));
 
     self.addEventListener('activate', function (e) {
-      var ok = function () { log('Offliner activated!'); };
+      var ok = function () {
+        log('Offliner activated!');
+      };
       e.waitUntil(
         this._activateNextCache().then(ok, ok)
       );
@@ -145,9 +147,9 @@
    * @private
    */
   Offliner.prototype._processMessage = function (msg) {
-    switch (msg) {
+    switch (msg.type) {
       case 'crossPromise':
-        this._receiveCrossPromise(msg);
+        this._receiveCrossPromise(msg.id, msg.order);
         break;
       default:
         warn('Message not recognized:', msg);
@@ -193,7 +195,7 @@
    * @private
    */
   Offliner.prototype._resolve = function (id, value) {
-    this._solvePromise('resolved', id, value);
+    this._solvePromise(id, 'resolved', value);
   };
 
   /**
@@ -205,7 +207,7 @@
    * @private
    */
   Offliner.prototype._reject = function (id, reason) {
-    this._solvePromise('rejected', id, reason);
+    this._solvePromise(id, 'rejected', reason);
   };
 
   /**
@@ -222,6 +224,7 @@
   Offliner.prototype._solvePromise = function (id, status, value) {
     this._broadcastMessage({
       type: 'crossPromise',
+      id: id,
       status: status,
       value: value
     });
@@ -331,7 +334,7 @@
         }.bind(this))
         .then(this._getLatestVersion.bind(this))
         .then(this._checkIfNewVersion.bind(this))
-        .then(updateCache, endUpdateProcess);
+        .then(updateCache);
     }
     return this._updateControl.inProgressProcess;
 
@@ -347,6 +350,7 @@
             return Promise.resolve(newVersion);
           });
       }
+      endUpdateProcess(); // XXX: Notice this call before ending!
       return Promise.reject('no-update-needed');
     }
 
@@ -499,7 +503,7 @@
         else { log('First update'); }
 
         return this.set('next-version', latestVersion)
-          .then(Promise.resolve(latestVersion));
+          .then(function () { return latestVersion; });
       }
       else {
         log('No update needed');

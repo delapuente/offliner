@@ -99,11 +99,55 @@
       <td class="code">
       <pre><code >  prefetch: <span class="function"><span class="keyword">function</span> <span class="params">(resources, cache)</span> {</span>
     <span class="keyword">return</span> <span class="transposed_variable">Promise.</span>all(<span class="transposed_variable">resources.</span>map(<span class="function"><span class="keyword">function</span> <span class="params">(resource)</span> {</span>
-      var request = new Request(<span class="transposed_variable">resource.</span>url, <span class="cell">{ mode: <span class="string">'no-cors'</span> }</span>);
-      <span class="keyword">return</span> fetch(request).then(<span class="transposed_variable">cache.</span><span class="transposed_variable">put.</span>bind(cache, <span class="transposed_variable">resource.</span>url));
-    }));
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>The HTTP cache is still working when leavin the service worker via
+ <code>fetch()</code> so it's neccessary to bust the URL to recover a fresh copy.</p>
+      </td>
+      <td class="code">
+      <pre><code >      <span class="comment">var</span> <span class="comment">bustedUrl</span> <span class="comment">=</span> <span class="comment">resource</span>.<span class="comment">url</span> <span class="literal">+</span> <span class="comment">'?__b='</span> <span class="literal">+</span> <span class="comment">Date</span>.<span class="comment">now();</span>
+
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>The request is for the busted url in no-cors mode to allow resources
+ from other origins.</p>
+      </td>
+      <td class="code">
+      <pre><code >      var <span class="built_in">request</span> = <span class="keyword">new</span> <span class="built_in">Request</span>(bustedUrl, { mode: <span class="comment">'no-cors' });</span>
+
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>But when caching, the cache is for the original URL.</p>
+      </td>
+      <td class="code">
+      <pre><code >      return fetch(request)<span class="preprocessor">.then</span>(cache<span class="preprocessor">.put</span><span class="preprocessor">.bind</span>(cache, resource<span class="preprocessor">.url</span>))<span class="comment">;</span>
+    }))<span class="comment">;</span>
   }
-};
+}<span class="comment">;</span>
 </code></pre>
       </td>
     </tr>
