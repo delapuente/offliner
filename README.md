@@ -25,7 +25,7 @@ And enter `demo/index.html` to see the demo in action. Try to shut the webserver
 
 ## Registering the worker
 
-The only thing you need in your web application code (apart of [writing the worker](), of course) is to add the `offliner-client.js` script:
+The only thing you need in your web application code (apart of [writing the worker](#writing-the-worker), of course) is to add the `offliner-client.js` script:
 
 ```html
 <script src="dist/offliner-client.js"></script>
@@ -40,7 +40,7 @@ Nothing happens yet. The script exports a global object `off` to communicate wit
 </script>
 ```
 
-Notice calling [`off.install()`]() will install a worker assuming it's called `offliner-worker.js` which is expected to be at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
+Notice calling [`off.install()`](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#method_install) will install a worker assuming it's called `offliner-worker.js` which is expected to be at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
 
 ```html
 <script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
@@ -96,7 +96,7 @@ From time to time you will need to update your application. The update process i
 
 To update consists only in to get the latest available version, to check if an update is needed and finally to evolve the current cache to get an updated version. After an update **the offline cache remains the same**. This way we ensure that we are not serving different versions of mixed files without your consentment.
 
-After an update, an [`activationPending`]() event is triggered in the [client](). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
+After an update, an [`activationPending`](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
 
 You can provide your own implementation for the update process by  using the [`update API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
 
