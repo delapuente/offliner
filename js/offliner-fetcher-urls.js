@@ -20,7 +20,15 @@ self.off.fetchers.urls = {
   // prefetching is done.
   prefetch: function (resources, cache) {
     return Promise.all(resources.map(function (resource) {
-      var request = new Request(resource.url, { mode: 'no-cors' });
+      // The HTTP cache is still working when leavin the service worker via
+      // `fetch()` so it's neccessary to bust the URL to recover a fresh copy.
+      var bustedUrl = resource.url + '?__b=' + Date.now();
+
+      // The request is for the busted url in no-cors mode to allow resources
+      // from other origins.
+      var request = new Request(bustedUrl, { mode: 'no-cors' });
+
+      // But when caching, the cache is for the original URL.
       return fetch(request).then(cache.put.bind(cache, resource.url));
     }));
   }

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>main.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;main.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <p><strong>The client code</strong></p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-2">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <p>When adding the script <code>offliner-client.js</code>, the module <code>off</code> is exported.
+ If you find this collisions with one of your modules, call <code>off.restore()</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code >
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Calling <code>.on()</code> you can start listening for some events. This case, the
+ event <code>activationPending</code> is triggered each time an update is completed
+ to leave the client the responsibility of switching to the new version.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="transposed_variable">off.</span>on(<span class="string">'activationPending'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+  var confirmation = confirm(<span class="string">'There is a new version available. '</span> +
+                             <span class="string">'Do you want to update?'</span>);
+  <span class="keyword">if</span> (confirmation) <span class="cell">{
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>Calling <code>activate()</code> you ask offliner to switch to the cache containing
+ the new version. Commonly, the client reloads after activating.</p>
+      </td>
+      <td class="code">
+      <pre><code >    <span class="transposed_variable">off.</span>activate().then(<span class="function"><span class="keyword">function</span> <span class="params">(v)</span> {</span>
+      alert(<span class="string">'Updated to version '</span> + v + <span class="string">'\nReloading.'</span>);
+      <span class="transposed_variable">window.</span>location = <span class="transposed_variable">window.</span>location;
+    })
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>The <code>activate()</code> call can fail if there is no need for update. In this
+ case the reject handler is passed with <code>'no-activation-pending'</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code >    .<span class="keyword">catch</span>(
+      <span class="transposed_variable">console.</span><span class="transposed_variable">warn.</span>bind(console, <span class="string">'There was an error activating the update'</span>)
+    );
+  }
+});
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>This enables a manual update. Notice the update strategy does not allow
+ less-than-a-minute updates.</p>
+      </td>
+      <td class="code">
+      <pre><code ><span class="transposed_variable">document.</span>getElementById(<span class="string">'manual-update'</span>).onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>You call <code>update()</code> so offliner starts by checking if there is an update.
+ If so, it downloads the new version and install it <strong>without switching to
+ it</strong>, this switching is called <strong>activation</strong>.</p>
+      </td>
+      <td class="code">
+      <pre><code >  off.<span class="operator"><span class="keyword">update</span>()
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>If there update process concludes properly, the promise Resolves to
+ the new version.</p>
+      </td>
+      <td class="code">
+      <pre><code >    .<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span> <span class="params">(v)</span></span> {
+      alert(<span class="string">'New version '</span> + v + <span class="string">' ready to be installed.'</span>);
+    })
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-9">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-9">#</a>
+        </div>
+      <p>If there is a failure or if there is no new version, the promise rejects.
+ The reason passed will be <code>'no-update-needed'</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code >    .<span class="keyword">catch</span>(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+      alert(<span class="string">'No new version available...'</span>);
+    });
+};
+
+<span class="transposed_variable">off.</span>install();
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+

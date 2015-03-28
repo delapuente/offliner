@@ -5,7 +5,7 @@
     self[method] = console[method].bind(console);
   });
 
-  var DEFAULT_VERSION = '$zero$';
+  var DEFAULT_VERSION = '-offliner:v0';
   var CONFIG_CACHE = '__offliner-config';
 
   /**
@@ -116,9 +116,15 @@
     }.bind(this));
 
     self.addEventListener('activate', function (e) {
+      var ok = function () {
+        log('Offliner activated!');
+      };
       e.waitUntil(
-        this._activateNextCache()
-          .then(function () { log('Offliner activated!'); })
+        this.get('activation-pending')
+          .then(function (isActivationPending) {
+            if (isActivationPending) { this._sendActivationPending(); }
+          }.bind(this))
+          .then(ok, ok)
       );
     }.bind(this));
 
@@ -145,24 +151,87 @@
    * @private
    */
   Offliner.prototype._processMessage = function (msg) {
-    switch (msg) {
-      case 'activate':
-        this._activateNextCache();
-        break;
-      case 'update':
-        this._update();
-        break;
-      case 'requestActivationStatus':
-        this.get('activation-pending').then(function (isActivationPending) {
-          if (isActivationPending) {
-            this._sendActivationPending();
-          }
-        }.bind(this));
+    switch (msg.type) {
+      case 'crossPromise':
+        this._receiveCrossPromise(msg.id, msg.order);
         break;
       default:
         warn('Message not recognized:', msg);
         break;
     }
+  };
+
+  /**
+   * Executes the promise implementation.
+   *
+   * @method _receiveCrossPromise
+   * @param id {String} The unique id for the cross promise.
+   * @param order {String} The order to be executed.
+   * @private
+   */
+  Offliner.prototype._receiveCrossPromise = function (id, order) {
+    switch (order) {
+      case 'update':
+        var fromInstall = false;
+        this._update().then(
+          this._resolve.bind(this, id),
+          this._reject.bind(this, id)
+        );
+        break;
+      case 'activate':
+        this._activateNextCache().then(
+          this._resolve.bind(this, id),
+          this._reject.bind(this, id)
+        );
+        break;
+      default:
+        warn('Cross Promise implementation not recognized:', order);
+        break;
+    }
+  };
+
+  /**
+   * Resolves a cross promise.
+   *
+   * @method _resolve
+   * @param id {String} The unique id for the cross promise.
+   * @param value {Any} The value to resolve the promise with.
+   * @private
+   */
+  Offliner.prototype._resolve = function (id, value) {
+    this._resolvePromise(id, 'resolved', value);
+  };
+
+  /**
+   * Rejects a cross promise.
+   *
+   * @method _reject
+   * @param id {String} The unique id for the cross promise.
+   * @param reason {Any} The value to reject the promise with.
+   * @private
+   */
+  Offliner.prototype._reject = function (id, reason) {
+    this._resolvePromise(id, 'rejected', reason);
+  };
+
+  /**
+   * Broadcast a message to the clients informing the cross promise to be
+   * solved in which status and with which value.
+   *
+   * @method _resolvePromise
+   * @param id {String} The unique id for the cross promise.
+   * @param status {String} The status at which the promise will solve to.
+   * Can be `'rejected'` or `'solved'`.
+   * @param value {Any} The value for the cross promise.
+   * @private
+   */
+  Offliner.prototype._resolvePromise = function (id, status, value) {
+    this._broadcastMessage({
+      type: 'crossPromise',
+      id: id,
+      status: status,
+      value: value
+    });
   };
 
   /**
@@ -252,7 +321,9 @@
    * @method _update
    * @param {Boolean} fromInstall Indicates if the call comes from the
    * {{#crossLink "Offliner/_install:method"}}{{/crossLink}} method.
-   *  @private
+   * @return {Promise} A Promise resolving in the vertion to update or rejecting
+   * if there is no update needed (`reason = 'no-update-needed'`).
+   * @private
    */
   Offliner.prototype._update = function (fromInstall) {
     // XXX: Only one update process is allowed at a time.
@@ -267,10 +338,7 @@
         }.bind(this))
         .then(this._getLatestVersion.bind(this))
         .then(this._checkIfNewVersion.bind(this))
-        .then(updateCache)
-        .then(endUpdateProcess)  // XXX:
-        .catch(error)            //
-        .then(endUpdateProcess); // equivalent to .finally();
+        .then(updateCache);
     }
     return this._updateControl.inProgressProcess;
 
@@ -280,13 +348,22 @@
           .then(caches.open.bind(caches))
           .then(that._evolveCache.bind(that))
           .then(that.set.bind(that, 'activation-pending', true))
-          .then(that._sendActivationPending.bind(that));
+          .then(that._sendActivationPending.bind(that))
+          .then(function () {
+            endUpdateProcess(); // XXX: Notice this call before ending!
+            return Promise.resolve(newVersion);
+          });
       }
+      endUpdateProcess(); // XXX: Notice this call before ending!
+      return Promise.reject('no-update-needed');
     }
 
-    function endUpdateProcess() {
+    function endUpdateProcess(reason) {
       that._updateControl.alreadyRunOnce = true;
       that._updateControl.inProgressProcess = null;
+      if (reason === 'no-update-needed') {
+        return Promise.reject(reason);
+      }
     }
   };
 
@@ -298,7 +375,14 @@
    * @private
    */
   Offliner.prototype._sendActivationPending = function () {
-    this._broadcastMessage({ type: 'offliner:activationPending' });
+    /**
+     * Event emitted on worker activation or under request to point out there
+     * is a new version activation pending.
+     *
+     * @event activationPending
+     * @for OfflinerClient
+     */
+    this._broadcastMessage({ type: 'activationPending' });
   };
 
   /**
@@ -309,7 +393,7 @@
    * @private
    */
   Offliner.prototype._sendActivationDone = function () {
-    this._broadcastMessage({ type: 'offliner:activationDone' });
+    this._broadcastMessage({ type: 'activationDone' });
   };
 
   /**
@@ -320,17 +404,21 @@
    * @private
    */
   Offliner.prototype._sendActivationFailed = function () {
-    this._broadcastMessage({ type: 'offliner:activationFailed' });
+    this._broadcastMessage({ type: 'activationFailed' });
   };
 
   /**
-   * Broadcast a message in the clients.
+   * Broadcast a message in the clients. The method will add the `offliner:`
+   * prefix to the type of the events but this is stripped out automatically by
+   * the {{#crossLink OfflinerClient/_installMessageHandlers:method}}{{/crossLink}}
+   * client side.
    *
    * @method _broadcastMessage
    * @param msg {Any} the message to be broadcasted.
    * @private
    */
   Offliner.prototype._broadcastMessage = function (msg) {
+    msg.type = 'offliner:' + msg.type;
     if (typeof BroadcastChannel === 'function') {
       var channel = new BroadcastChannel('offliner-channel');
       channel.postMessage(msg);
@@ -414,22 +502,22 @@
    * current one by using the update middleware.
    *
    * @method _checkIfNewVersion
-   * @return {Promise<String>} remoteVersion The new version tag is returned
+   * @return {Promise<String>} latestVersion The new version tag is returned
    * if there is a new version or `null` otherwise.
    * @private
    */
-  Offliner.prototype._checkIfNewVersion = function (remoteVersion) {
-    return this.get('current-version').then(function (localVersion) {
+  Offliner.prototype._checkIfNewVersion = function (latestVersion) {
+    return this.get('current-version').then(function (currentVersion) {
       var isNewVersion =
-        this.update.isNewVersion(localVersion, remoteVersion);
+        this.update.isNewVersion(currentVersion, latestVersion);
 
       if (isNewVersion) {
-        log('New version ' + remoteVersion + ' found!');
-        if (localVersion) { log('Updating from version ' + localVersion); }
+        log('New version ' + latestVersion + ' found!');
+        if (currentVersion) { log('Updating from version ' + currentVersion); }
         else { log('First update'); }
 
-        return this.set('next-version', remoteVersion)
-          .then(function () { return remoteVersion; });
+        return this.set('next-version', latestVersion)
+          .then(function () { return latestVersion; });
       }
       else {
         log('No update needed');
@@ -468,16 +556,17 @@
    * active cache has been updated, the former one is lost.
    *
    * @method _activateNextCache
+   * @return {Promise} A Promise resolving in the new version or rejecting
+   * if there is no pending activation.
    * @private
    */
   Offliner.prototype._activateNextCache = function () {
     return this.get('activation-pending').then(function (isActivationPending) {
       if (isActivationPending) {
         return this._swapCaches()
-          .then(this._updateCurrentVersion.bind(this))
-          .then(this._sendActivationDone.bind(this))
-          .catch(this._sendActivationFailed.bind(this));
+          .then(this._updateCurrentVersion.bind(this));
       }
+      return Promise.reject('no-activation-pending');
     }.bind(this));
   };
 
@@ -534,9 +623,11 @@
    * @private
    */
   Offliner.prototype._updateCurrentVersion = function () {
-    return this.get('next-version')
+    var nextVersion = this.get('next-version');
+    return nextVersion
       .then(this.set.bind(this, 'current-version'))
-      .then(this.set.bind(this, 'activation-pending', false));
+      .then(this.set.bind(this, 'activation-pending', false))
+      .then(function () { return nextVersion; });
   };
 
   /**
@@ -799,8 +890,9 @@
    *
    * @method isNewVersion
    */
-  UpdateConfig.prototype.isNewVersion = function (localVersion, remoteVersion) {
-    return this._impl.isNewVersion(localVersion, remoteVersion);
+  UpdateConfig.prototype.isNewVersion =
+  function (currentVersion, latestVersion) {
+    return this._impl.isNewVersion(currentVersion, latestVersion);
   };
 
   /**
