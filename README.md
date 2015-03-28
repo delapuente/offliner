@@ -98,6 +98,16 @@ To update consists only in to get the latest available version, to check if an u
 
 After an update, an [`activationPending`](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
 
+```html
+<script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
+<script>
+  off.install();
+  off.on('activationPending', function () {
+    off.activate().then(function () { window.location = window.location; });
+  });
+</script>
+```
+
 You can provide your own implementation for the update process by  using the [`update API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
 
 ```js

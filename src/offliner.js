@@ -120,7 +120,11 @@
         log('Offliner activated!');
       };
       e.waitUntil(
-        this._activateNextCache().then(ok, ok)
+        this.get('activation-pending')
+          .then(function (isActivationPending) {
+            if (isActivationPending) { this._sendActivationPending(); }
+          }.bind(this))
+          .then(ok, ok)
       );
     }.bind(this));
 
