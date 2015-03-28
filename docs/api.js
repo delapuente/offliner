@@ -4,6 +4,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "FetchConfig",
         "Fetcher",
         "Offliner",
+        "OfflinerClient",
         "PrefetchConfig",
         "Resource",
         "SourceHandler",

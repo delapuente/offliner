@@ -47,6 +47,8 @@
             
                 <li><a href="../classes/Offliner.html">Offliner</a></li>
             
+                <li><a href="../classes/OfflinerClient.html">OfflinerClient</a></li>
+            
                 <li><a href="../classes/PrefetchConfig.html">PrefetchConfig</a></li>
             
                 <li><a href="../classes/Resource.html">Resource</a></li>
@@ -228,7 +230,9 @@
     }.bind(this));
 
     self.addEventListener(&#x27;activate&#x27;, function (e) {
-      var ok = function () { log(&#x27;Offliner activated!&#x27;); };
+      var ok = function () {
+        log(&#x27;Offliner activated!&#x27;);
+      };
       e.waitUntil(
         this._activateNextCache().then(ok, ok)
       );
@@ -257,9 +261,9 @@
    * @private
    */
   Offliner.prototype._processMessage = function (msg) {
-    switch (msg) {
+    switch (msg.type) {
       case &#x27;crossPromise&#x27;:
-        this._receiveCrossPromise(msg);
+        this._receiveCrossPromise(msg.id, msg.order);
         break;
       default:
         warn(&#x27;Message not recognized:&#x27;, msg);
@@ -305,7 +309,7 @@
    * @private
    */
   Offliner.prototype._resolve = function (id, value) {
-    this._solvePromise(&#x27;resolved&#x27;, id, value);
+    this._resolvePromise(id, &#x27;resolved&#x27;, value);
   };
 
   /**
@@ -317,23 +321,24 @@
    * @private
    */
   Offliner.prototype._reject = function (id, reason) {
-    this._solvePromise(&#x27;rejected&#x27;, id, reason);
+    this._resolvePromise(id, &#x27;rejected&#x27;, reason);
   };
 
   /**
    * Broadcast a message to the clients informing the cross promise to be
    * solved in which status and with which value.
    *
-   * @method _solvePromise
+   * @method _resolvePromise
    * @param id {String} The unique id for the cross promise.
    * @param status {String} The status at which the promise will solve to.
    * Can be &#x60;&#x27;rejected&#x27;&#x60; or &#x60;&#x27;solved&#x27;&#x60;.
    * @param value {Any} The value for the cross promise.
    * @private
    */
-  Offliner.prototype._solvePromise = function (id, status, value) {
+  Offliner.prototype._resolvePromise = function (id, status, value) {
     this._broadcastMessage({
       type: &#x27;crossPromise&#x27;,
+      id: id,
       status: status,
       value: value
     });
@@ -443,7 +448,7 @@
         }.bind(this))
         .then(this._getLatestVersion.bind(this))
         .then(this._checkIfNewVersion.bind(this))
-        .then(updateCache, endUpdateProcess);
+        .then(updateCache);
     }
     return this._updateControl.inProgressProcess;
 
@@ -459,6 +464,7 @@
             return Promise.resolve(newVersion);
           });
       }
+      endUpdateProcess(); // XXX: Notice this call before ending!
       return Promise.reject(&#x27;no-update-needed&#x27;);
     }
 
@@ -479,6 +485,13 @@
    * @private
    */
   Offliner.prototype._sendActivationPending = function () {
+    /**
+     * Event emitted on worker activation or under request to point out there
+     * is a new version activation pending.
+     *
+     * @event activationPending
+     * @for OfflinerClient
+     */
     this._broadcastMessage({ type: &#x27;activationPending&#x27; });
   };
 
@@ -505,7 +518,10 @@
   };
 
   /**
-   * Broadcast a message in the clients.
+   * Broadcast a message in the clients. The method will add the &#x60;offliner:&#x60;
+   * prefix to the type of the events but this is stripped out automatically by
+   * the {{#crossLink OfflinerClient/_installMessageHandlers:method}}{{/crossLink}}
+   * client side.
    *
    * @method _broadcastMessage
    * @param msg {Any} the message to be broadcasted.
@@ -611,7 +627,7 @@
         else { log(&#x27;First update&#x27;); }
 
         return this.set(&#x27;next-version&#x27;, latestVersion)
-          .then(Promise.resolve(latestVersion));
+          .then(function () { return latestVersion; });
       }
       else {
         log(&#x27;No update needed&#x27;);
@@ -721,7 +737,7 @@
     return nextVersion
       .then(this.set.bind(this, &#x27;current-version&#x27;))
       .then(this.set.bind(this, &#x27;activation-pending&#x27;, false))
-      .then(nextVersion);
+      .then(function () { return nextVersion; });
   };
 
   /**

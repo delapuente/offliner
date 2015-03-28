@@ -195,7 +195,7 @@
    * @private
    */
   Offliner.prototype._resolve = function (id, value) {
-    this._solvePromise(id, 'resolved', value);
+    this._resolvePromise(id, 'resolved', value);
   };
 
   /**
@@ -207,21 +207,21 @@
    * @private
    */
   Offliner.prototype._reject = function (id, reason) {
-    this._solvePromise(id, 'rejected', reason);
+    this._resolvePromise(id, 'rejected', reason);
   };
 
   /**
    * Broadcast a message to the clients informing the cross promise to be
    * solved in which status and with which value.
    *
-   * @method _solvePromise
+   * @method _resolvePromise
    * @param id {String} The unique id for the cross promise.
    * @param status {String} The status at which the promise will solve to.
    * Can be `'rejected'` or `'solved'`.
    * @param value {Any} The value for the cross promise.
    * @private
    */
-  Offliner.prototype._solvePromise = function (id, status, value) {
+  Offliner.prototype._resolvePromise = function (id, status, value) {
     this._broadcastMessage({
       type: 'crossPromise',
       id: id,
@@ -371,6 +371,13 @@
    * @private
    */
   Offliner.prototype._sendActivationPending = function () {
+    /**
+     * Event emitted on worker activation or under request to point out there
+     * is a new version activation pending.
+     *
+     * @event activationPending
+     * @for OfflinerClient
+     */
     this._broadcastMessage({ type: 'activationPending' });
   };
 
@@ -397,7 +404,10 @@
   };
 
   /**
-   * Broadcast a message in the clients.
+   * Broadcast a message in the clients. The method will add the `offliner:`
+   * prefix to the type of the events but this is stripped out automatically by
+   * the {{#crossLink OfflinerClient/_installMessageHandlers:method}}{{/crossLink}}
+   * client side.
    *
    * @method _broadcastMessage
    * @param msg {Any} the message to be broadcasted.
@@ -613,7 +623,7 @@
     return nextVersion
       .then(this.set.bind(this, 'current-version'))
       .then(this.set.bind(this, 'activation-pending', false))
-      .then(nextVersion);
+      .then(function () { return nextVersion; });
   };
 
   /**

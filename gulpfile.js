@@ -10,13 +10,26 @@ var jshint = require('gulp-jshint');
 var watch = require('gulp-watch');
 
 gulp.task('dist', function() {
-  gulp.src('src/offliner.js')
-      .pipe(uglify())
-      .pipe(rename('offliner.min.js'))
-      .pipe(gulp.dest('./dist'));
+  [
+    'offliner-client.js',
+    'offliner.js'
+  ].forEach(function (source) {
+    var path = 'src/' + source;
+    gulp.src(path)
+        .pipe(uglify())
+        .pipe(rename(minName(source)))
+        .pipe(gulp.dest('./dist'));
 
-  gulp.src('src/offliner-setup.js')
-    .pipe(gulp.dest('./dist'));
+    gulp.src(path)
+        .pipe(uglify({ mangle: false }))
+        .pipe(gulp.dest('./dist'));
+  });
+
+  function minName(path) {
+    var tokens = path.split('.');
+    tokens.splice(tokens.length - 1, 0, 'min');
+    return tokens.join('.');
+  }
 });
 
 gulp.task('docs', function() {
