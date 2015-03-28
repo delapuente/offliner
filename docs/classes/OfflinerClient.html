@@ -186,13 +186,6 @@ the offliner worker in charge.</p>
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method__crossPromise">_crossPromise</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method private">
                                 <a href="#method__doPrefetch">_doPrefetch</a>
 
@@ -313,7 +306,21 @@ the offliner worker in charge.</p>
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method__xpromise">_xpromise</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_activate">activate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_connect">connect</a>
 
                                 
                                 
@@ -438,7 +445,7 @@ the offliner worker in charge.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l550"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:550</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l627"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:627</code></a>
         
         </p>
 
@@ -521,7 +528,7 @@ if there is no pending activation.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l406"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:406</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l478"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:478</code></a>
         
         </p>
 
@@ -609,7 +616,7 @@ client side.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l496"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:496</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l573"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:573</code></a>
         
         </p>
 
@@ -638,117 +645,6 @@ current one by using the update middleware.</p>
                     
                     <p>latestVersion The new version tag is returned
 if there is a new version or <code>null</code> otherwise.</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method__crossPromise" class="method item">
-    <h3 class="name"><code>_crossPromise</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>order</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Promise</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l215"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:215</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Creates a cross promise registration. A <em>cross promise</em> or xpromise
-is a special kind of promise that is generated in the client but whose
-implementation is in a worker.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">order</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The string for the implementation part to select
-the implementation to run.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Promise</span>:
-                    
-                    <p>A promise delegating its implementation in some code
-running in a worker.</p>
 
                 
             </div>
@@ -803,7 +699,7 @@ running in a worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l453"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:453</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l530"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:530</code></a>
         
         </p>
 
@@ -894,7 +790,7 @@ running in a worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l525"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:525</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l602"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:602</code></a>
         
         </p>
 
@@ -985,7 +881,7 @@ running in a worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l629"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:629</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l706"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:706</code></a>
         
         </p>
 
@@ -1080,7 +976,7 @@ running in a worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l430"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:430</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l507"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:507</code></a>
         
         </p>
 
@@ -1180,7 +1076,7 @@ version.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l484"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:484</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l561"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:561</code></a>
         
         </p>
 
@@ -1266,7 +1162,7 @@ be used as suffix for the new cache.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l176"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:176</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l187"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:187</code></a>
         
         </p>
 
@@ -1390,7 +1286,7 @@ simply trigger the default dispatching algorithm.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l196"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:196</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l207"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:207</code></a>
         
         </p>
 
@@ -1513,7 +1409,7 @@ will be called with.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l147"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:147</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l158"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:158</code></a>
         
         </p>
 
@@ -1575,7 +1471,7 @@ and the client code.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l539"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:539</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l616"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:616</code></a>
         
         </p>
 
@@ -1646,7 +1542,7 @@ and the client code.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l443"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:443</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l520"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:520</code></a>
         
         </p>
 
@@ -1711,7 +1607,7 @@ and the client code.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l248"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:248</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l259"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:259</code></a>
         
         </p>
 
@@ -1807,7 +1703,7 @@ implementation in the worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l130"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:130</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l141"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:141</code></a>
         
         </p>
 
@@ -1913,7 +1809,7 @@ be run.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l239"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:239</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l250"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:250</code></a>
         
         </p>
 
@@ -1994,7 +1890,7 @@ be run.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l384"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:384</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l456"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:456</code></a>
         
         </p>
 
@@ -2052,7 +1948,7 @@ new version ended properly.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l395"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:395</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l467"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:467</code></a>
         
         </p>
 
@@ -2110,7 +2006,7 @@ activating the update.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l569"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:569</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l646"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:646</code></a>
         
         </p>
 
@@ -2168,7 +2064,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l615"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:615</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l692"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:692</code></a>
         
         </p>
 
@@ -2185,6 +2081,117 @@ update process. After swapping, the previous cache is lost.</p>
 
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method__xpromise" class="method item">
+    <h3 class="name"><code>_xpromise</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>order</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l226"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:226</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Creates a cross promise registration. A <em>cross promise</em> or xpromise
+is a special kind of promise that is generated in the client but whose
+implementation is in a worker.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">order</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The string for the implementation part to select
+the implementation to run.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise delegating its implementation in some code
+running in a worker.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -2227,7 +2234,7 @@ update process. After swapping, the previous cache is lost.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l117"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:117</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l128"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:128</code></a>
         
         </p>
 
@@ -2261,6 +2268,63 @@ rejected with <code>no-activation-pending</code> if there was not an activation.
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_connect" class="method item">
+    <h3 class="name"><code>connect</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l88"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:88</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If you are using offliner as a serviceworkerware middleware, instead
+of calling ,
+call <code>connect()</code> to avoid registering the worker.</p>
+
+    </div>
+
+    
+
     
 
     
@@ -2405,7 +2469,7 @@ the <code>data-worker</code> attribute.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l88"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:88</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l99"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:99</code></a>
         
         </p>
 
@@ -2595,7 +2659,7 @@ global variable and return the <code>OfflinerClient</code>.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l103"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:103</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner-client.js.html#l114"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner-client.js:114</code></a>
         
         </p>
 
@@ -2771,7 +2835,7 @@ rejected with <code>no-update-needed</code> reason.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l374"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:374</code></a>
+        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l446"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:446</code></a>
         
         </p>
 

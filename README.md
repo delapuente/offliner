@@ -84,7 +84,7 @@ offliner.prefetch
 
 Prefetch happens only once in your application lifecycle, when the worker is installed for the first time. Prefetch process will populate an offline cache for serving files.
 
-## GETing resources
+### GETing resources
 
 How the web resources are served is configurable by using the [`fetch API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/FetchConfig.html):
 
@@ -97,7 +97,7 @@ offliner.fetch
 
 Fetching is something that happens every time the web requires a resource.
 
-## Updating the application
+### Updating the application
 
 From time to time you will need to update your application. The update process is split into two:
 
@@ -127,7 +127,7 @@ offliner.update
 
 You have a [complete and running worker](https://github.com/lodr/offliner/blob/concept/demo/worker.js) inside the `/demo` folder with examples of fetchers, sources and an update strategy inside [`/demo/js`](https://github.com/lodr/offliner/tree/concept/demo/js).
 
-### Running multiple instances of offliner
+## Running multiple instances of offliner
 
 If you need more than one offliner instance or maybe you're trying different projects, all under localhost, you can pass a unique string to the constructor to avoid the persistent state of the workers to interfere.
 
@@ -137,7 +137,32 @@ var awesomeapp = new off.Offliner('myawesomeapp.com');
 var terrificapp = new off.Offliner('myterrificapp.com');
 ```
 
-### Documentation
+## Using offliner as serviceworkerware middleware
+
+[serviceworkerware](https://github.com/arcturus/serviceworkerware) is an API to write your own ServiceWorker in a declarative fashion. It allows you to control the worker responses for any method and not tie you to use an offline cache. It is intended to be extensible with the same philosophy as the [express framework](http://expressjs.com/) in node.
+
+offliner can be pluged in as an specific middleware for controlling offline availability and the update cycle.
+
+In the worker, you write something like:
+
+```js
+importScripts('lib/sww.js');
+importScripts('dist/offliner.js');
+
+var worker = new self.ServiceWorkerWare();
+/* now configure worker */
+
+var offliner = new self.off.Offliner();
+/* now configure offliner */
+
+// And finally connect both. Don't call offliner.standalone() after calling
+// offliner.asMiddleware() or it will throw an exception.
+worker.use(offliner.asMiddleware());
+```
+
+In your client code, instead of calling `off.install()`, call `off.connect()` to avoid registering the worker again.
+
+## Documentation
 
 Read the complete (private and public interfaces) [documentation online](https://rawgit.com/lodr/offliner/concept/docs/index.html).
 

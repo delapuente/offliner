@@ -55,56 +55,88 @@
     /**
      * Prevent the worker to be installed twice.
      *
-     * @type boolean
      * @property _isStarted
+     * @type boolean
+     * @default false
      * @private
      */
     this._isStarted = false;
 
     /**
-     * The global update control.
+     * Mark the instance to be used as middleware.
      *
-     * @type UpdateControl
-     * @property _updateControl
+     * @property _isMiddleware
+     * @type boolean
+     * @default false
      * @private
      */
-    this._updateControl = {
+    this._isMiddleware = false;
+
+    /**
+     * The middleware implementation for serviceworkerware.
+     *
+     * @property _middleware;
+     * @type Object
+     * @default null
+     * @private
+     */
+    this._middleware = null;
+
+    /**
+     * The global update control.
+     *
+     * @property _updateControl
+     * @type UpdateControl
+     * @readonly
+     * @private
+     */
+    Object.defineProperty(this, '_updateControl', { value: {
       scheduled: false,
       alreadyRunOnce: false,
       intervalId: null,
       inProgressProcess: null
-    };
+    }});
 
     /**
      * API to configure the fetching pipeline.
      *
-     * @type FetchConfig
      * @property fetch
+     * @type FetchConfig
+     * @readonly
      */
-    this.fetch = new FetchConfig();
+    Object.defineProperty(this, 'fetch', { value: new FetchConfig() });
 
     /**
      * API to configure the prefetch process.
      *
      * @type PrefetchConfig
      * @property prefetch
+     * @readonly
      */
-    this.prefetch = new PrefetchConfig();
+    Object.defineProperty(this, 'prefetch', { value: new PrefetchConfig() });
 
     /**
      * API to configure the update process.
      *
      * @type UpdateConfig
      * @property update
+     * @readonly
      */
-    this.update = new UpdateConfig();
+    Object.defineProperty(this, 'update', { value: new UpdateConfig() });
   }
 
   /**
    * Installs the service worker in stand-alone mode.
    * @method standalone
+   * @throws {Error} offliner throws when trying to install it in standalone
+   * mode if it was already used as middleware by calling
+   * {{#crossLink Offliner/asMiddleware:method}}{{/crossLink}}.
    */
   Offliner.prototype.standalone = function () {
+
+    if (this._isMiddleware) {
+      throw new Error('offliner has been already started as a middleware.');
+    }
 
     if (this._isStarted) { return; }
 
@@ -120,11 +152,7 @@
         log('Offliner activated!');
       };
       e.waitUntil(
-        this.get('activation-pending')
-          .then(function (isActivationPending) {
-            if (isActivationPending) { this._sendActivationPending(); }
-          }.bind(this))
-          .then(ok, ok)
+        this._activate().then(ok, ok)
       );
     }.bind(this));
 
@@ -145,6 +173,46 @@
   };
 
   /**
+   * Returns an object to be used with [serviceworkerware](https://github.com/arcturus/serviceworkerware).
+   * Once the method is called once, the method will allways return the same
+   * object.
+   *
+   * @method asMiddleware
+   * @return {Object} A serviceworkerware middleware.
+   * @throws {Error} offliner will throw if you try to use it as middleware
+   * after calling {{#crossLink Offliner/standalone:method}}{{/crossLink}}.
+   */
+  Offliner.prototype.asMiddleware = function () {
+    if (this._isStarted) {
+      throw new Error('offliner has been already installed in standalone mode');
+    }
+
+    if (!this._middleware) {
+      this._middleware = {
+        onInstall: this._install.bind(this),
+        onActivate: this._activate.bind(this),
+        onFetch: function (request, response) {
+          if (response || request.method !== 'GET') {
+            return Promise.resolve(response);
+          }
+          this._fetch(request);
+        }.bind(this),
+        onMessage: function (e) { this._processMessage(e.data); }.bind(this)
+      };
+    }
+
+    this._isMiddleware = true;
+    return this._middleware;
+  };
+
+  Offliner.prototype._activate = function () {
+    return this.get('activation-pending')
+      .then(function (isActivationPending) {
+        if (isActivationPending) { this._sendActivationPending(); }
+      }.bind(this));
+  };
+
+  /**
    * Process the different messages that can receive the worker.
    *
    * @method _processMessage
@@ -152,7 +220,7 @@
    */
   Offliner.prototype._processMessage = function (msg) {
     switch (msg.type) {
-      case 'crossPromise':
+      case 'xpromise':
         this._receiveCrossPromise(msg.id, msg.order);
         break;
       default:
@@ -227,7 +295,7 @@
    */
   Offliner.prototype._resolvePromise = function (id, status, value) {
     this._broadcastMessage({
-      type: 'crossPromise',
+      type: 'xpromise',
       id: id,
       status: status,
       value: value
@@ -419,15 +487,20 @@
    */
   Offliner.prototype._broadcastMessage = function (msg) {
     msg.type = 'offliner:' + msg.type;
-    if (typeof BroadcastChannel === 'function') {
-      var channel = new BroadcastChannel('offliner-channel');
-      channel.postMessage(msg);
-      channel.close();
+    if (this._isMiddleware) {
+      this.asMiddleware().broadcastMessage(msg, 'offliner-channel');
     }
     else {
-      clients.matchAll().then(function (controlled) {
-        controlled.forEach(function (client) { client.postMessage(msg); });
-      });
+      if (typeof BroadcastChannel === 'function') {
+        var channel = new BroadcastChannel('offliner-channel');
+        channel.postMessage(msg);
+        channel.close();
+      }
+      else {
+        clients.matchAll().then(function (controlled) {
+          controlled.forEach(function (client) { client.postMessage(msg); });
+        });
+      }
     }
   };
 
