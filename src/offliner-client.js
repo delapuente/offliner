@@ -274,4 +274,4 @@
     }
   };
 
-}(this));
+}(this.exports || this));

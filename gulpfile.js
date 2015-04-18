@@ -8,6 +8,14 @@ var uglify = require('gulp-uglify');
 var webserver = require('gulp-webserver');
 var jshint = require('gulp-jshint');
 var watch = require('gulp-watch');
+var karma = require('karma').server;
+
+gulp.task('tests', function () {
+  karma.start({
+    configFile: __dirname + '/testing/karma.conf.js',
+    singleRun: true
+  });
+});
 
 gulp.task('dist', function() {
   [
