@@ -1,6 +1,6 @@
 
 # Offliner
-Offliner is a configurable [service worker](http://www.html5rocks.com/en/tutorials/service-worker/introduction/?redirect_from_locale=ja) that brings offline capabilities to your web applications.
+Offliner is a library for [service workers](http://www.html5rocks.com/en/tutorials/service-worker/introduction/?redirect_from_locale=ja) providing and lifecycle for your web applications.
 
 ## Remember
 
@@ -11,7 +11,13 @@ This technology can be used in the following browsers:
 
 For Nightly and Firefox OS you need to [configure some things](https://blog.wanderview.com/blog/2015/03/24/service-workers-in-firefox-nightly/) before using.
 
-Pay attention to the [progression of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
+Pay attention to the [progress of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](http://www.w3.org/TR/2014/WD-service-workers-20141118/) for more information.
+
+## The Web App lifecycle
+
+When you think about making your application to work offline you realize your web application has a life-cycle: you need it to get **installed**, then to be **served** and from time to time, to be **updated**. Offliner is a plugable framework to implement this life-cycle.
+
+Install refers to make **all the resources available offline for the first time**. Serve means to **provide those resources** and update consists on **replacing the serving resources with newer versions**.
 
 ## Demo
 
