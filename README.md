@@ -15,11 +15,13 @@ Pay attention to the [progression of Service Workers implementations](https://ja
 
 ## Demo
 
-You have a documented demo in the `/demo` folder. Run
+You have a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. Run
 
 ```bash
 $ gulp webserver
 ```
+
+The problem with the link before is _GitHub_ changes the protocol to **http** as soon as you access the page and you need to change it again to **https** for the demo to work.
 
 And enter `demo/index.html` to see the demo in action. Try to shut the webserver down after visiting `index.html` and enter to some file explanation to make the **offliner** act.
 
