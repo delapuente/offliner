@@ -17,6 +17,13 @@ gulp.task('tests', function () {
   });
 });
 
+gulp.task('sw-tests', function () {
+  karma.start({
+    configFile: __dirname + '/testing/karma-sw.conf.js',
+    singleRun: true
+  });
+});
+
 gulp.task('dist', function() {
   [
     'offliner-client.js',

@@ -127,6 +127,26 @@ offliner.update
 
 You have a [complete and running worker](https://github.com/lodr/offliner/blob/concept/demo/worker.js) inside the `/demo` folder with examples of fetchers, sources and an update strategy inside [`/demo/js`](https://github.com/lodr/offliner/tree/concept/demo/js).
 
+## Testing
+
+For passing the tests, try: 
+
+```bash
+$ gulp tests
+```
+
+And for service worker testing:
+
+```bash
+$ gulp sw-tests
+```
+
+As you need Nightly to pass the tests for Firefox, fix the browser path with:
+
+```bash
+$ FIREFOX_BIN=firefox-nightly gulp sw-tests
+```
+
 ## Running multiple instances of offliner
 
 If you need more than one offliner instance or maybe you're trying different projects, all under localhost, you can pass a unique string to the constructor to avoid the persistent state of the workers to interfere.
