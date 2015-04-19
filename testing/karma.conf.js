@@ -69,7 +69,9 @@ module.exports = function(config) {
           'browser.displayedE10SNotice': 4,
           // Disable electrolisis (e10s)
           'browser.tabs.remote': false,
-          'browser.tabs.remote.autostart': false
+          'browser.tabs.remote.autostart': false,
+          'browser.tabs.remote.autostart.2': false,
+          'browser.tabs.remote.desktopbehavior': false
         }
       }
     },

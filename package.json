@@ -38,10 +38,10 @@
     "karma": "^0.12.31",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.1.8",
-    "karma-firefox-launcher": "^0.1.4",
-    "karma-mocha": "^0.1.10",
+    "karma-firefox-launcher": "lodr/karma-firefox-launcher#add-flags",
+    "karma-sw-mocha": "lodr/karma-sw-mocha#master",
     "karma-sinon": "^1.0.4",
-    "mocha": "^2.2.4",
+    "mocha": "lodr/mocha#sw",
     "sinon": "^1.14.1"
   }
 }
