@@ -36,7 +36,6 @@ gulp.task('dist', function() {
         .pipe(gulp.dest('./dist'));
 
     gulp.src(path)
-        .pipe(uglify({ mangle: false }))
         .pipe(gulp.dest('./dist'));
   });
 
