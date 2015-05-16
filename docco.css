@@ -123,7 +123,7 @@ table td {border: 0; outline: 0}
 }
 
 .docs p code {
-  background: red;
+  background: #f7fff7;
   border: 1px solid #dedede;
   font-size: 12px;
   padding: 0 0.2em;
