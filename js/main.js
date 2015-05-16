@@ -24,9 +24,12 @@ off.on('activationPending', function () {
   }
 });
 
-// While in the main page, an update check is performed every minute.
-checkUpdate();
-setInterval(checkUpdate, 60000);
+// Now install the worker and once installed, program periodic updates.
+off.install().then(function () {
+  checkUpdate();
+  // An update check will be performed every minute.
+  setInterval(checkUpdate, 60000);
+});
 
 function checkUpdate() {
   // You call `update()` so offliner starts by checking if there is an update.
@@ -45,4 +48,3 @@ function checkUpdate() {
     });
 }
 
-off.install();
