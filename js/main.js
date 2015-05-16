@@ -26,6 +26,9 @@ off.on('activationPending', function () {
 
 // Now install the worker and once installed, program periodic updates.
 off.install().then(function () {
+  if (!navigator.serviceWorker.controller) {
+    return window.location.reload();
+  }
   checkUpdate();
   // An update check will be performed every minute.
   setInterval(checkUpdate, 60000);
