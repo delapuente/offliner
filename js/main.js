@@ -43,8 +43,8 @@ function checkUpdate() {
     })
     // If there is a failure or if there is no new version, the promise rejects.
     // The reason passed will be `'no-update-needed'`.
-    .catch(function () {
-      alert('No new version available...');
-    });
+    .catch(
+      console.log.bind(console, 'No new version available...')
+    );
 }
 
