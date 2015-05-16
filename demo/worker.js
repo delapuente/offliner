@@ -34,6 +34,8 @@ offliner.prefetch
     './',
     './docco.css',
     './index.html',
+    './js/main.js',
+    './js/main.js.html',
     './js/offliner-fetcher-urls.js.html',
     './js/offliner-source-cache.js.html',
     './js/offliner-source-network.js.html',

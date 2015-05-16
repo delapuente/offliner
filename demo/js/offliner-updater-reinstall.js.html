@@ -72,14 +72,15 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-4">#</a>
         </div>
-      <p>This case we always return a new version but in the real life. We could
- ask a server for the latest version.</p>
+      <p>For this demo we are checking the hash of the HEAD of gh-pages branch
+ on GitHub. We will use the free GitHub API for that end.</p>
       </td>
       <td class="code">
-      <pre><code >    <span class="keyword">return</span> Promise<span class="variable">.resolve</span>(<span class="string">'v'</span> + Date<span class="variable">.now</span>());
-  },
-
-  </code></pre>
+      <pre><code >    <span class="title">var</span> ghInfo = this.getGHInfoFromGHPages(self.location);
+    <span class="title">var</span> path = [
+      <span class="string">'repos'</span>, ghInfo.username, ghInfo.repo, <span class="string">'commits'</span>, <span class="string">'gh-pages'</span>
+    ].join(<span class="string">'/'</span>);
+    <span class="title">var</span> updateChannel = <span class="string">'https:</code></pre>
       </td>
     </tr>
     
@@ -89,12 +90,10 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-5">#</a>
         </div>
-      <p>Should check if the version from the step above is a new version given the
- current one. Notice <strong>offliner</strong> is not aware about the meaning of your
- versions but you could write middleware understanding semver for instance.</p>
+      <p>api.github.com/' + path;</p>
       </td>
       <td class="code">
-      <pre><code >  isNewVersion: <span class="function"><span class="keyword">function</span> <span class="params">(current, latest)</span> {</span>
+      <pre><code >
     </code></pre>
       </td>
     </tr>
@@ -105,11 +104,20 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-6">#</a>
         </div>
-      <p>Let's avoid less-than-a-minute updates</p>
+      <p>Once we know the API URL, simply fetch and extract the hash field from
+ the response.</p>
       </td>
       <td class="code">
-      <pre><code >    <span class="keyword">return</span> <span class="keyword">this</span><span class="variable">.flags</span><span class="variable">.isFirstUpdate</span> ||
-           parseInt(latest<span class="variable">.substr</span>(<span class="number">1</span>)) &gt; (parseInt(current<span class="variable">.substr</span>(<span class="number">1</span>)) + <span class="number">60000</span>);
+      <pre><code >    <span class="keyword">return</span> fetch(updateChannel).then(<span class="function"><span class="keyword">function</span> <span class="params">(response)</span> {</span>
+      <span class="keyword">if</span> (response.status === <span class="number">200</span>) {
+        <span class="keyword">return</span> response.json().then(<span class="function"><span class="keyword">function</span> <span class="params">(body)</span> {</span>
+          <span class="keyword">return</span> Promise.resolve(<span class="string">'v'</span> + body.sha);
+        });
+      }
+      <span class="keyword">else</span> {
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Can not check for new version: '</span> + response.status);
+      }
+    });
   },
 
   </code></pre>
@@ -122,10 +130,12 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-7">#</a>
         </div>
-      <p>Should implement how to update the current cache.</p>
+      <p>Should check if the version from the step above is a new version given the
+ current one. Notice <strong>offliner</strong> is not aware about the meaning of your
+ versions but you could write middleware understanding semver for instance.</p>
       </td>
       <td class="code">
-      <pre><code >  evolve: <span class="function"><span class="keyword">function</span> <span class="params">(previousCache, newCache, reinstall)</span> {</span>
+      <pre><code >  isNewVersion: <span class="function"><span class="keyword">function</span> <span class="params">(current, latest)</span> {</span>
     </code></pre>
       </td>
     </tr>
@@ -137,12 +147,12 @@
           <a class="octothorpe" href="#section-8">#</a>
         </div>
       <p>The update process set some flags you can check in the <code>flags</code> property.
- Flag <code>isCalledFromInstall</code> indicates the worker was already installed
- but changed.</p>
+ Flag <code>isFirstUpdate</code> indicates the worker has triggered the update
+ strategy for the first time.</p>
       </td>
       <td class="code">
-      <pre><code >    <span class="keyword">if</span> (!<span class="keyword">this</span><span class="variable">.flags</span><span class="variable">.isCalledFromInstall</span> || <span class="keyword">this</span><span class="variable">._onInstallOnly</span>) {
-      </code></pre>
+      <pre><code >    <span class="keyword">return</span> <span class="keyword">this</span><span class="variable">.flags</span><span class="variable">.isFirstUpdate</span> ||
+           </code></pre>
       </td>
     </tr>
     
@@ -152,14 +162,10 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-9">#</a>
         </div>
-      <p>The callback <code>reinstall</code> is provided to roughly trigger a prefetch
- on the new cache. Several times, the only thing you need to update
- is to reinstall all again.</p>
+      <p>We have a new version every time the hash changes.</p>
       </td>
       <td class="code">
-      <pre><code >      <span class="keyword">return</span> reinstall();
-    }
-    <span class="keyword">return</span> Promise<span class="variable">.resolve</span>();
+      <pre><code >           current !== latest<span class="comment">;</span>
   },
 
   </code></pre>
@@ -172,14 +178,48 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-10">#</a>
         </div>
+      <p>Should implement how to update the current cache.</p>
+      </td>
+      <td class="code">
+      <pre><code >  evolve: <span class="function"><span class="keyword">function</span> <span class="params">(previousCache, newCache, reinstall)</span> {</span>
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-11">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-11">#</a>
+        </div>
+      <p>The callback <code>reinstall</code> is provided to trigger a prefetch directly
+ on the new cache. Several times, the only thing you need to do in order
+ to update is to reinstall all again.</p>
+      </td>
+      <td class="code">
+      <pre><code >    <span class="keyword">return</span> reinstall();
+  },
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-12">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-12">#</a>
+        </div>
       <p>Of course you can provide as many extra functions as you need.</p>
       </td>
       <td class="code">
-      <pre><code >  onInstallOnly: <span class="function"><span class="keyword">function</span> <span class="params">(isSet)</span> {</span>
-    <span class="keyword">this</span>._onInstallOnly = <span class="keyword">isSet</span>;
-    <span class="keyword">return</span> <span class="keyword">this</span>;
+      <pre><code >  getGHInfoFromGHPages: function (url) {
+    return {
+      username: url<span class="preprocessor">.host</span><span class="preprocessor">.split</span>(<span class="string">'.'</span>)[<span class="number">0</span>],
+      repo: url<span class="preprocessor">.pathname</span><span class="preprocessor">.split</span>(<span class="string">'/'</span>)[<span class="number">1</span>]
+    }<span class="comment">;</span>
   }
-};
+}<span class="comment">;</span>
 </code></pre>
       </td>
     </tr>

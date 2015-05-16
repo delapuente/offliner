@@ -113,11 +113,13 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-6">#</a>
         </div>
-      <p>This enables a manual update. Notice the update strategy does not allow
- less-than-a-minute updates.</p>
+      <p>While in the main page, an update check is performed every minute.</p>
       </td>
       <td class="code">
-      <pre><code ><span class="transposed_variable">document.</span>getElementById(<span class="string">'manual-update'</span>).onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+      <pre><code ><span class="function"><span class="title">checkUpdate</span><span class="params">()</span>;
+<span class="title">setInterval</span><span class="params">(check<span class="variable">Update</span>, <span class="number">60000</span>)</span>;
+
+<span class="title">function</span> <span class="title">checkUpdate</span><span class="params">()</span> {
   </code></pre>
       </td>
     </tr>
@@ -144,7 +146,7 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-8">#</a>
         </div>
-      <p>If there update process concludes properly, the promise Resolves to
+      <p>If the update process concludes properly, the promise Resolves to
  the new version.</p>
       </td>
       <td class="code">
@@ -168,7 +170,7 @@
       <pre><code >    .<span class="keyword">catch</span>(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
       alert(<span class="string">'No new version available...'</span>);
     });
-};
+}
 
 <span class="transposed_variable">off.</span>install();
 </code></pre>
