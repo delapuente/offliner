@@ -1,6 +1,6 @@
 // First import the offliner library. This import exports the namespaces `off`
 // to the global. `off` has three submodules, empty by default.
-importScripts('./src/offliner.js');
+importScripts('../src/offliner.js');
 
 // By convention, fetchers are put inside the `off.fetchers` submodule.
 importScripts('./js/offliner-fetcher-urls.js');
@@ -34,6 +34,8 @@ offliner.prefetch
     './',
     './docco.css',
     './index.html',
+    './js/main.js',
+    './js/main.js.html',
     './js/offliner-fetcher-urls.js.html',
     './js/offliner-source-cache.js.html',
     './js/offliner-source-network.js.html',

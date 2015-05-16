@@ -24,14 +24,16 @@ off.on('activationPending', function () {
   }
 });
 
-// This enables a manual update. Notice the update strategy does not allow
-// less-than-a-minute updates.
-document.getElementById('manual-update').onclick = function () {
+// While in the main page, an update check is performed every minute.
+checkUpdate();
+setInterval(checkUpdate, 60000);
+
+function checkUpdate() {
   // You call `update()` so offliner starts by checking if there is an update.
   // If so, it downloads the new version and install it **without switching to
   // it**, this switching is called **activation**.
   off.update()
-    // If there update process concludes properly, the promise Resolves to
+    // If the update process concludes properly, the promise Resolves to
     // the new version.
     .then(function (v) {
       alert('New version ' + v + ' ready to be installed.');
@@ -41,6 +43,6 @@ document.getElementById('manual-update').onclick = function () {
     .catch(function () {
       alert('No new version available...');
     });
-};
+}
 
 off.install();
