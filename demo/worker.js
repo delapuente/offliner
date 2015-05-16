@@ -77,7 +77,7 @@ offliner.update
 
   // You call `use()` to register the update implementation providing the
   // convinient hooks. Calling use implies calling `option('enabled', true)`.
-  .use(off.updaters.reinstall.onInstallOnly(true));
+  .use(off.updaters.reinstall);
 
   // With `onInstallOnly(true)` you need to alter the worker to trigger
   // the update. Adding a comment will suffice. If you set it to `false`
