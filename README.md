@@ -15,7 +15,7 @@ Pay attention to the [progress of Service Workers implementations](https://jakea
 
 #### Demo
 
-There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder.  *Note: You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)*
+There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)*
 
 To run locally, clone this repo and run an `npm install` from the root directory. Then start a webserver with:
 
@@ -40,7 +40,7 @@ Enabling an offline experience for your web application requires a few different
   2. **Download** the update - populate a new cache to replace the current resources
   3. **Activate** the update - replace the current cache with the new cache populated in the download step
 
-More information on how to implement this lifecycle with offliner is available below in the [Getting Started](https://github.com/brittanystoroz/offliner/tree/concept#getting-started) section.
+More information on how to implement this lifecycle with offliner is available below in the [Getting Started](#getting-started) section.
 
 
 ## Getting Started
@@ -62,7 +62,7 @@ Nothing happens yet. The script exports a global object `off` to communicate wit
 </script>
 ```
 
-Calling [`off.install()`](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#method_install) expects a worker called `offliner-worker.js` at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
+Calling [`off.install()`](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#method_install) expects a worker called `offliner-worker.js` at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
 
 ```html
 <script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
@@ -87,7 +87,7 @@ var offliner = new off.Offliner();
 
 ### Implementing the application lifecycle
 #### Installing
-To configure the installation, you use the [`prefetch API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/PrefetchConfig.html):
+To configure the installation, you use the [`prefetch API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/PrefetchConfig.html):
 
 ```js
 offliner.prefetch
@@ -98,7 +98,7 @@ offliner.prefetch
 Prefetch happens only once in your application lifecycle, when the worker is installed for the first time. Prefetch process will populate an offline cache for serving files.
 
 #### Serving
-How the web resources are served is configurable by using the [`fetch API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/FetchConfig.html):
+How the web resources are served is configurable by using the [`fetch API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/FetchConfig.html):
 
 ```js
 offliner.fetch
@@ -118,7 +118,7 @@ From time to time you will need to update your application. The update process i
 
 An update will check the latest available version of your application against the currently installed version. If it is determined that an update is needed, offliner will evolve the current cache to create an updated version. It's important to note that after an update, **the offline cache remains the same**. This is to ensure that we are not serving different versions of mixed files without your consent.
 
-After downloading an update, the [`activationPending`](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](https://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
+After downloading an update, the [`activationPending`](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
 
 ```html
 <script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
@@ -130,7 +130,7 @@ After downloading an update, the [`activationPending`](https://rawgit.com/lodr/o
 </script>
 ```
 
-You can provide your own implementation for the update process by using the [`update API`](https://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
+You can provide your own implementation for the update process by using the [`update API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
 
 ```js
 offliner.update
@@ -150,9 +150,9 @@ var awesomeapp = new off.Offliner('myawesomeapp.com');
 var terrificapp = new off.Offliner('myterrificapp.com');
 ```
 
-#### Using offliner as serviceworkerware middleware
+#### Using offliner as serviceworkerware middleware (experimental)
 
-[serviceworkerware](https://github.com/arcturus/serviceworkerware) is an API to write your own wervice worker in a declarative fashion. It allows you to control the worker responses for any method, and does not force you to use an offline cache. It is designed to be extendable in the same fashion as the [express framework](http://expressjs.com/) in node.
+[serviceworkerware](https://github.com/arcturus/serviceworkerware) is an API to write your own wervice worker in a declarative fashion. It allows you to control the worker responses for any method, and does not force you to use an offline cache. It is designed to be extendable in the same fashion as the [express framework](http://expressjs.com/) in node. serviceworkerware is still being frequently iterated on, so compatibility cannot always be guaranteed at the moment.
 
 offliner can be plugged in as an specific middleware for controlling offline availability and the update cycle.
 
