@@ -42,9 +42,9 @@ offliner.prefetch
   ]);
 
 // Offliner has a plugable fetch strategy based on fallbacks. When a resource
-// is fetched, it traverse all the source pipeline until one is able to provide
+// is fetched, it traverses all the source pipeline until one is able to provide
 // a response. If the source returns a rejected promise or throws an exception,
-// the request pass to the next source until reaching the end of the pipeline.
+// the request is passed to the next source until reaching the end of the pipeline.
 offliner.fetch
 
   // You call `use()` to add a source to the pipeline.
