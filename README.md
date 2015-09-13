@@ -15,7 +15,7 @@ Pay attention to the [progress of Service Workers implementations](https://jakea
 
 #### Demo
 
-There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)*
+There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)
 
 To run locally, clone this repo and run an `npm install` from the root directory. Then start a webserver with:
 

@@ -1,13 +1,13 @@
 {
   "name": "offliner",
-  "version": "0.2.0",
-  "description": "A configurable ServiceWorker to bring offline capabilities to web applications.",
+  "version": "1.0.0",
+  "description": "Enable your web app to be installed, work offline and be always up to date.",
   "main": "dist/offliner.min.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp sw-tests"
   },
   "repository": {
     "type": "git",

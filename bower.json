@@ -1,0 +1,25 @@
+{
+  "name": "offliner",
+  "version": "1.0.0",
+  "description": "Enable your web app to be installed, work offline and be always up to date.",
+  "homepage": "https://github.com/lodr/offliner",
+  "authors": [
+    "Salvador de la Puente <salva@unoyunodiez.com>"
+  ],
+  "main": "dist/offliner.min.js",
+  "keywords": [
+    "offline",
+    "lifecycle",
+    "service",
+    "workers",
+    "pluggable"
+  ],
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
