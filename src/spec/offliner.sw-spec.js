@@ -20,7 +20,7 @@ describe('Offliner instances', function () {
       ]);
     })
     .then(function (values) {
-      expect(values[0]).to.equal('value for namespace');
+      expect(values[0]).to.equal('value for namespace1');
       expect(values[1]).to.equal('value for namespace2');
       done();
     })
