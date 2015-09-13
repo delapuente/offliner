@@ -1,5 +1,5 @@
 {
-  "name": "offliner",
+  "name": "offliner.js",
   "version": "1.0.0",
   "description": "Enable your web app to be installed, work offline and be always up to date.",
   "main": "dist/offliner.min.js",
