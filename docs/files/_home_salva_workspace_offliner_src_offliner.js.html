@@ -247,7 +247,6 @@
    * {{#crossLink Offliner/asMiddleware:method}}{{/crossLink}}.
    */
   Offliner.prototype.standalone = function () {
-
     if (this._isMiddleware) {
       throw new Error(&#x27;offliner has been already started as a middleware.&#x27;);
     }
@@ -257,13 +256,19 @@
     self.addEventListener(&#x27;install&#x27;, function (e) {
       e.waitUntil(
         this._install()
-          .then(function () { log(&#x27;Offliner installed&#x27;); })
+          .then(function () {
+            log(&#x27;Offliner installed&#x27;);
+            return typeof self.skipWaiting === &#x27;function&#x27; ?
+                   self.skipWaiting() : Promise.resolve();
+          })
       );
     }.bind(this));
 
     self.addEventListener(&#x27;activate&#x27;, function (e) {
       var ok = function () {
         log(&#x27;Offliner activated!&#x27;);
+        return typeof self.clients.claim === &#x27;function&#x27; ?
+               self.clients.claim() : Promise.resolve();
       };
       e.waitUntil(
         this._activate().then(ok, ok)
@@ -540,12 +545,9 @@
       return Promise.reject(&#x27;no-update-needed&#x27;);
     }
 
-    function endUpdateProcess(reason) {
+    function endUpdateProcess() {
       that._updateControl.alreadyRunOnce = true;
       that._updateControl.inProgressProcess = null;
-      if (reason === &#x27;no-update-needed&#x27;) {
-        return Promise.reject(reason);
-      }
     }
   };
 
@@ -612,7 +614,9 @@
       }
       else {
         clients.matchAll().then(function (controlled) {
-          controlled.forEach(function (client) { client.postMessage(msg); });
+          controlled.forEach(function (client) {
+            client.postMessage(msg);
+          });
         });
       }
     }
