@@ -133,7 +133,6 @@
    * {{#crossLink Offliner/asMiddleware:method}}{{/crossLink}}.
    */
   Offliner.prototype.standalone = function () {
-
     if (this._isMiddleware) {
       throw new Error('offliner has been already started as a middleware.');
     }
@@ -143,13 +142,19 @@
     self.addEventListener('install', function (e) {
       e.waitUntil(
         this._install()
-          .then(function () { log('Offliner installed'); })
+          .then(function () {
+            log('Offliner installed');
+            return typeof self.skipWaiting === 'function' ?
+                   self.skipWaiting() : Promise.resolve();
+          })
       );
     }.bind(this));
 
     self.addEventListener('activate', function (e) {
       var ok = function () {
         log('Offliner activated!');
+        return typeof self.clients.claim === 'function' ?
+               self.clients.claim() : Promise.resolve();
       };
       e.waitUntil(
         this._activate().then(ok, ok)
@@ -426,12 +431,9 @@
       return Promise.reject('no-update-needed');
     }
 
-    function endUpdateProcess(reason) {
+    function endUpdateProcess() {
       that._updateControl.alreadyRunOnce = true;
       that._updateControl.inProgressProcess = null;
-      if (reason === 'no-update-needed') {
-        return Promise.reject(reason);
-      }
     }
   };
 
@@ -498,7 +500,9 @@
       }
       else {
         clients.matchAll().then(function (controlled) {
-          controlled.forEach(function (client) { client.postMessage(msg); });
+          controlled.forEach(function (client) {
+            client.postMessage(msg);
+          });
         });
       }
     }
