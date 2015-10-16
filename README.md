@@ -185,7 +185,7 @@ In your client code, instead of calling `off.install()`, call `off.connect()` to
 
 ## Documentation
 
-Read the complete (private and public interfaces) [documentation online](https://rawgit.com/lodr/offliner/concept/docs/index.html).
+Read the complete (private and public interfaces) [documentation online](http://rawgit.com/lodr/offliner/concept/docs/index.html).
 
 ## Credits
 
