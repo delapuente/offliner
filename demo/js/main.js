@@ -11,16 +11,21 @@ off.on('activationPending', function () {
                              'Do you want to update?');
   if (confirmation) {
     // Calling `activate()` you ask offliner to switch to the cache containing
-    // the new version. Commonly, the client reloads after activating.
+    // the new version. Commonly, the client should reload after activating.
     off.activate().then(function (v) {
       alert('Updated to version ' + v + '\nReloading.');
       window.location = window.location;
     })
     // The `activate()` call can fail if there is no need for update. In this
     // case the reject handler is passed with `'no-activation-pending'`.
-    .catch(
-      console.warn.bind(console, 'There was an error activating the update')
-    );
+    .catch(function (reason) {
+      if (reason.message === 'no-activation-pending') {
+        console.warn('There was an error activating the update');
+      }
+      else {
+        throw reason;
+      }
+    });
   }
 });
 
@@ -31,16 +36,22 @@ document.getElementById('manual-update').onclick = function () {
   // If so, it downloads the new version and install it **without switching to
   // it**, this switching is called **activation**.
   off.update()
-    // If there update process concludes properly, the promise Resolves to
+    // If the update process concludes properly, the promise Resolves to
     // the new version.
     .then(function (v) {
       alert('New version ' + v + ' ready to be installed.');
     })
     // If there is a failure or if there is no new version, the promise rejects.
     // The reason passed will be `'no-update-needed'`.
-    .catch(function () {
-      alert('No new version available...');
+    .catch(function (reason) {
+      if (reason.message === 'no-update-needed') {
+        alert('No new version available...');
+      }
+      else {
+        throw reason;
+      }
     });
 };
 
+// After set-up, it only remains to install the service worker.
 off.install();

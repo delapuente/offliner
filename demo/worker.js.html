@@ -167,9 +167,9 @@
           <a class="octothorpe" href="#section-9">#</a>
         </div>
       <p>Offliner has a plugable fetch strategy based on fallbacks. When a resource
- is fetched, it traverse all the source pipeline until one is able to provide
+ is fetched, it traverses all the source pipeline until one is able to provide
  a response. If the source returns a rejected promise or throws an exception,
- the request pass to the next source until reaching the end of the pipeline.</p>
+ the request is passed to the next source until reaching the end of the pipeline.</p>
       </td>
       <td class="code">
       <pre><code ><span class="filename">offliner.fetch
@@ -234,12 +234,14 @@
         </div>
       <p>Last but not least, Offliner offers a generic update strategy. It is based
  on the following steps:
- 1. Get the latest version. [hook]
- 2. Determine if it is a new version. [hook]
- 3. Prepare a new offline cache.
- 4. Populate the new cache updating the old one. [hook]
- 5. After the service worker is stopped and before the next <em>first fetch</em>,
-    activate the new cache.
+  <ol>
+  <li>Get the latest version. [hook]</li>
+  <li>Determine if it is a new version. [hook]</li>
+  <li>Prepare a new offline cache.</li>
+  <li>Populate the new cache updating the old one. [hook]</li>
+  <li>After the service worker is stopped and before the next <em>first fetch</em>,
+   activate the new cache.</li>
+  </ol>
  As you can see, there are three [hook] marks indicating which steps can be
  customized. These steps must be provided by the update implementation.</p>
       </td>
@@ -257,7 +259,7 @@
           <a class="octothorpe" href="#section-14">#</a>
         </div>
       <p>You call <code>use()</code> to register the update implementation providing the
- convinient hooks. Calling use implies calling <code>option('enabled', true)</code>.</p>
+ convinient hooks. Calling <code>use()</code> implies calling <code>option('enabled', true)</code>.</p>
       </td>
       <td class="code">
       <pre><code >  <span class="variable">.use</span>(off<span class="variable">.updaters</span><span class="variable">.reinstall</span><span class="variable">.onInstallOnly</span>(<span class="literal">true</span>));

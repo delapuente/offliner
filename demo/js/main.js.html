@@ -76,7 +76,7 @@
           <a class="octothorpe" href="#section-4">#</a>
         </div>
       <p>Calling <code>activate()</code> you ask offliner to switch to the cache containing
- the new version. Commonly, the client reloads after activating.</p>
+ the new version. Commonly, the client should reload after activating.</p>
       </td>
       <td class="code">
       <pre><code >    <span class="transposed_variable">off.</span>activate().then(<span class="function"><span class="keyword">function</span> <span class="params">(v)</span> {</span>
@@ -144,7 +144,7 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-8">#</a>
         </div>
-      <p>If there update process concludes properly, the promise Resolves to
+      <p>If the update process concludes properly, the promise Resolves to
  the new version.</p>
       </td>
       <td class="code">
@@ -170,7 +170,20 @@
     });
 };
 
-<span class="transposed_variable">off.</span>install();
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-10">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-10">#</a>
+        </div>
+      <p>After set-up, it only remains to install the service worker.</p>
+      </td>
+      <td class="code">
+      <pre><code >off<span class="preprocessor">.install</span>()<span class="comment">;</span>
 </code></pre>
       </td>
     </tr>

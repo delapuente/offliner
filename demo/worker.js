@@ -62,19 +62,21 @@ offliner.fetch
 // Last but not least, Offliner offers a generic update strategy. It is based
 // on the following steps:
 //
-// 1. Get the latest version. [hook]
-// 2. Determine if it is a new version. [hook]
-// 3. Prepare a new offline cache.
-// 4. Populate the new cache updating the old one. [hook]
-// 5. After the service worker is stopped and before the next _first fetch_,
-//    activate the new cache.
+//  <ol>
+//  <li>Get the latest version. [hook]</li>
+//  <li>Determine if it is a new version. [hook]</li>
+//  <li>Prepare a new offline cache.</li>
+//  <li>Populate the new cache updating the old one. [hook]</li>
+//  <li>After the service worker is stopped and before the next _first fetch_,
+//   activate the new cache.</li>
+//  </ol>
 //
 // As you can see, there are three [hook] marks indicating which steps can be
 // customized. These steps must be provided by the update implementation.
 offliner.update
 
   // You call `use()` to register the update implementation providing the
-  // convinient hooks. Calling use implies calling `option('enabled', true)`.
+  // convinient hooks. Calling `use()` implies calling `option('enabled', true)`.
   .use(off.updaters.reinstall.onInstallOnly(true));
 
   // With `onInstallOnly(true)` you need to alter the worker to trigger

@@ -13,6 +13,14 @@ For Firefox OS you will need to [configure some things](https://blog.wanderview.
 Pay attention to the [progress of Service Workers implementations](https://jakearchibald.github.io/isserviceworkerready/) and [review the W3C draft](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/) for more information. Ongoing discussions that may affect the implementation of service workers can be followed in [github issues](https://github.com/slightlyoff/ServiceWorker/issues).
 
 
+#### Installing
+
+Install from bower or with:
+
+```
+$ bower install offliner.js
+```
+
 #### Demo
 
 There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)
