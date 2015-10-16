@@ -86,6 +86,17 @@
     },
 
     /**
+     * If you are using offliner as a serviceworkerware middleware, instead
+     * of calling {{#crossLink OfflinerClient/install:method}}{{/crossLink}},
+     * call `connect()` to avoid registering the worker.
+     *
+     * @method connect
+     */
+    connect: function () {
+      this._installMessageHandlers();
+    },
+
+    /**
      * Attaches a listener for a type of event.
      *
      * @method on
@@ -111,7 +122,7 @@
      * rejected with `no-update-needed` reason.
      */
     update: function () {
-      return this._crossPromise('update');
+      return this._xpromise('update');
     },
 
     /**
@@ -124,7 +135,7 @@
      * rejected with `no-activation-pending` if there was not an activation.
      */
     activate: function () {
-      return this._crossPromise('activate');
+      return this._xpromise('activate');
     },
 
     /**
@@ -158,7 +169,7 @@
           bc.onmessage = onmessage;
         }
         else {
-          window.addEventListener('message', onmessage);
+          navigator.serviceWorker.addEventListener('message', onmessage);
         }
         installMessageHandlers.done = true;
       }
@@ -174,7 +185,7 @@
     },
 
     /**
-     * Discriminates between {{#crossLink OfflinerClient/crossPromise:event}}{{/crossLink}}
+     * Discriminates between {{#crossLink OfflinerClient/xpromise:event}}{{/crossLink}}
      * events which are treated in a special way and the rest of the events that
      * simply trigger the default dispatching algorithm.
      *
@@ -185,7 +196,7 @@
      */
     _handleMessage: function (offlinerType, msg) {
       var sw = navigator.serviceWorker;
-      if (offlinerType === 'crossPromise') {
+      if (offlinerType === 'xpromise') {
         this._resolveCrossPromise(msg);
       }
       else {
@@ -217,22 +228,26 @@
      * is a special kind of promise that is generated in the client but whose
      * implementation is in a worker.
      *
-     * @method _crossPromise
+     * @method _xpromise
      * @param order {String} The string for the implementation part to select
      * the implementation to run.
      * @return {Promise} A promise delegating its implementation in some code
      * running in a worker.
      */
-    _crossPromise: function (order) {
+    _xpromise: function (order) {
       return new Promise(function (accept, reject) {
         var uniqueId = nextPromiseId++;
         var msg = {
-          type: 'crossPromise',
+          type: 'xpromise',
           id: uniqueId,
           order: order
         };
-        this._xpromises[uniqueId] = [accept, reject];
+        this._xpromises[uniqueId] = [accept, rejectWithError];
         this._send(msg);
+
+        function rejectWithError(errorKey) {
+          reject(new Error(errorKey)); // TODO: Add a OfflinerError type
+        }
       }.bind(this));
     },
 
@@ -242,7 +257,17 @@
      * @param msg {Any} The message to be sent.
      */
     _send: function (msg) {
-      navigator.serviceWorker.controller.postMessage(msg);
+      navigator.serviceWorker.getRegistration()
+        .then(function (registration) {
+          if (!registration || !registration.active) {
+            // TODO: Wait for the service worker to be active and try to
+            // resend.
+            warn('Not service worker active right now.');
+          }
+          else {
+            return registration.active.postMessage(msg);
+          }
+        });
     },
 
     /**
@@ -263,4 +288,4 @@
     }
   };
 
-}(this));
+}(this.exports || this));
