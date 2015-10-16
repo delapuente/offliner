@@ -113,13 +113,13 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-6">#</a>
         </div>
-      <p>While in the main page, an update check is performed every minute.</p>
+      <p>Now install the worker and once installed, program periodic updates.</p>
       </td>
       <td class="code">
-      <pre><code ><span class="function"><span class="title">checkUpdate</span><span class="params">()</span>;
-<span class="title">setInterval</span><span class="params">(check<span class="variable">Update</span>, <span class="number">60000</span>)</span>;
-
-<span class="title">function</span> <span class="title">checkUpdate</span><span class="params">()</span> {
+      <pre><code ><span class="transposed_variable">off.</span>install().then(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+  <span class="keyword">if</span> (!<span class="transposed_variable">navigator.</span><span class="transposed_variable">serviceWorker.</span>controller) <span class="cell">{
+  }</span>
+  checkUpdate();
   </code></pre>
       </td>
     </tr>
@@ -129,6 +129,23 @@
       <td class="docs">
         <div class="octowrap">
           <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>An update check will be performed every minute.</p>
+      </td>
+      <td class="code">
+      <pre><code >  setInterval(checkUpdate, <span class="number">60000</span>);
+});
+
+<span class="function"><span class="keyword">function</span> <span class="title">checkUpdate</span><span class="params">()</span> {</span>
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
         </div>
       <p>You call <code>update()</code> so offliner starts by checking if there is an update.
  If so, it downloads the new version and install it <strong>without switching to
@@ -141,10 +158,10 @@
     </tr>
     
     
-    <tr id="section-8">
+    <tr id="section-9">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-8">#</a>
+          <a class="octothorpe" href="#section-9">#</a>
         </div>
       <p>If the update process concludes properly, the promise Resolves to
  the new version.</p>
@@ -158,21 +175,20 @@
     </tr>
     
     
-    <tr id="section-9">
+    <tr id="section-10">
       <td class="docs">
         <div class="octowrap">
-          <a class="octothorpe" href="#section-9">#</a>
+          <a class="octothorpe" href="#section-10">#</a>
         </div>
       <p>If there is a failure or if there is no new version, the promise rejects.
  The reason passed will be <code>'no-update-needed'</code>.</p>
       </td>
       <td class="code">
-      <pre><code >    .<span class="keyword">catch</span>(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-      alert(<span class="string">'No new version available...'</span>);
-    });
-}
+      <pre><code >    <span class="string">.</span><span class="comment">catch(</span>
+      <span class="comment">console</span>.<span class="comment">log</span>.<span class="comment">bind(console</span>, <span class="comment">'No</span> <span class="comment">new</span> <span class="comment">version</span> <span class="comment">available</span>.<span class="string">.</span><span class="string">.</span><span class="comment">')</span>
+    <span class="comment">);</span>
+<span class="comment">}</span>
 
-<span class="transposed_variable">off.</span>install();
 </code></pre>
       </td>
     </tr>
