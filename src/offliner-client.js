@@ -169,7 +169,7 @@
           bc.onmessage = onmessage;
         }
         else {
-          window.addEventListener('message', onmessage);
+          navigator.serviceWorker.addEventListener('message', onmessage);
         }
         installMessageHandlers.done = true;
       }
@@ -242,8 +242,12 @@
           id: uniqueId,
           order: order
         };
-        this._xpromises[uniqueId] = [accept, reject];
+        this._xpromises[uniqueId] = [accept, rejectWithError];
         this._send(msg);
+
+        function rejectWithError(errorKey) {
+          reject(new Error(errorKey)); // TODO: Add a OfflinerError type
+        }
       }.bind(this));
     },
 
@@ -253,7 +257,17 @@
      * @param msg {Any} The message to be sent.
      */
     _send: function (msg) {
-      navigator.serviceWorker.controller.postMessage(msg);
+      navigator.serviceWorker.getRegistration()
+        .then(function (registration) {
+          if (!registration || !registration.active) {
+            // TODO: Wait for the service worker to be active and try to
+            // resend.
+            warn('Not service worker active right now.');
+          }
+          else {
+            return registration.active.postMessage(msg);
+          }
+        });
     },
 
     /**
