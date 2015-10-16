@@ -7,7 +7,7 @@ Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmai
 
 pre .comment,
 pre .template_comment,
-pre .diff .header,
+pre .diff .header,p
 pre .doctype,
 pre .pi,
 pre .lisp .string,
@@ -149,7 +149,7 @@ table td {border: 0; outline: 0}
   padding: 8px 8px 8px 30px;
   width: 100%;
   vertical-align: top;
-  background: orange;
+  background: #f5f5ff;
   border-left: 1px solid #e5e5ee;
 }
 .code pre {
