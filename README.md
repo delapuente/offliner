@@ -23,7 +23,7 @@ $ bower install offliner.js
 
 #### Demo
 
-There is a [documented demo](https://lodr.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)
+There is a [documented demo](https://delapuente.github.io/offliner) in the `/demo` folder. You will have to change the protocol to **https** in order for this demo link to work. (It automatically changes to **http** when you first access the link.)
 
 To run locally, clone this repo and run an `npm install` from the root directory. Then start a webserver with:
 
@@ -70,7 +70,7 @@ Nothing happens yet. The script exports a global object `off` to communicate wit
 </script>
 ```
 
-Calling [`off.install()`](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#method_install) expects a worker called `offliner-worker.js` at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
+Calling [`off.install()`](http://rawgit.com/delapuente/offliner/concept/docs/classes/OfflinerClient.html#method_install) expects a worker called `offliner-worker.js` at the root of your server. If this is not the case use `data-root` and `data-worker` to change the base directory where your worker is and the name of your worker. Remember the worker will be registerd with `data-root` as scope so it will control all the resources under this path.
 
 ```html
 <script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
@@ -95,7 +95,7 @@ var offliner = new off.Offliner();
 
 ### Implementing the application lifecycle
 #### Installing
-To configure the installation, you use the [`prefetch API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/PrefetchConfig.html):
+To configure the installation, you use the [`prefetch API`](http://cdn.rawgit.com/delapuente/offliner/concept/docs/classes/PrefetchConfig.html):
 
 ```js
 offliner.prefetch
@@ -106,7 +106,7 @@ offliner.prefetch
 Prefetch happens only once in your application lifecycle, when the worker is installed for the first time. Prefetch process will populate an offline cache for serving files.
 
 #### Serving
-How the web resources are served is configurable by using the [`fetch API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/FetchConfig.html):
+How the web resources are served is configurable by using the [`fetch API`](http://cdn.rawgit.com/delapuente/offliner/concept/docs/classes/FetchConfig.html):
 
 ```js
 offliner.fetch
@@ -126,7 +126,7 @@ From time to time you will need to update your application. The update process i
 
 An update will check the latest available version of your application against the currently installed version. If it is determined that an update is needed, offliner will evolve the current cache to create an updated version. It's important to note that after an update, **the offline cache remains the same**. This is to ensure that we are not serving different versions of mixed files without your consent.
 
-After downloading an update, the [`activationPending`](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](http://rawgit.com/lodr/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
+After downloading an update, the [`activationPending`](http://rawgit.com/delapuente/offliner/concept/docs/classes/OfflinerClient.html#event_activationPending) event is triggered in the [client](http://rawgit.com/delapuente/offliner/concept/docs/classes/OfflinerClient.html). You can listen for this event to ask offliner to activate the new version. Commonly, after a successful activation, the web application reloads.
 
 ```html
 <script src="dist/offliner-setup.js" data-root="demo" data-worker="worker.js"></script>
@@ -138,14 +138,14 @@ After downloading an update, the [`activationPending`](http://rawgit.com/lodr/of
 </script>
 ```
 
-You can provide your own implementation for the update process by using the [`update API`](http://cdn.rawgit.com/lodr/offliner/concept/docs/classes/UpdateConfig.html):
+You can provide your own implementation for the update process by using the [`update API`](http://cdn.rawgit.com/delapuente/offliner/concept/docs/classes/UpdateConfig.html):
 
 ```js
 offliner.update
   .use(/* ... */) // you will find update strategies in the off.updaters collection
 ```
 
-You have a [complete and running worker](https://github.com/lodr/offliner/blob/concept/demo/worker.js) inside the `/demo` folder with examples of fetchers, sources and an update strategy inside [`/demo/js`](https://github.com/lodr/offliner/tree/concept/demo/js).
+You have a [complete and running worker](https://github.com/delapuente/offliner/blob/concept/demo/worker.js) inside the `/demo` folder with examples of fetchers, sources and an update strategy inside [`/demo/js`](https://github.com/delapuente/offliner/tree/concept/demo/js).
 
 ## Additional ways to use Offliner
 #### Running multiple instances of offliner
@@ -185,7 +185,7 @@ In your client code, instead of calling `off.install()`, call `off.connect()` to
 
 ## Documentation
 
-Read the complete (private and public interfaces) [documentation online](http://rawgit.com/lodr/offliner/concept/docs/index.html).
+Read the complete (private and public interfaces) [documentation online](http://rawgit.com/delapuente/offliner/concept/docs/index.html).
 
 ## Credits
 

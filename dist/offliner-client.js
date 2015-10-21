@@ -65,10 +65,10 @@
      * the `data-worker` attribute.
      *
      * For instance, suppose your web application is running under:
-     * https://lodr.github.com/offliner
+     * https://delapuente.github.com/offliner
      *
      * And you have your worker at:
-     * https://lodr.github.com/offliner/worker.js
+     * https://delapuente.github.com/offliner/worker.js
      *
      * Then the script tag should looks like:
      * ```html

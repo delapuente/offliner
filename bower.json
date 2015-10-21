@@ -2,7 +2,7 @@
   "name": "offliner.js",
   "version": "1.1.1",
   "description": "Enable your web app to be installed, work offline and be always up to date.",
-  "homepage": "https://github.com/lodr/offliner",
+  "homepage": "https://github.com/delapuente/offliner",
   "authors": [
     "Salvador de la Puente <salva@unoyunodiez.com>"
   ],

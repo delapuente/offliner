@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://lodr@github.com/lodr/offliner.git"
+    "url": "https://delapuente@github.com/delapuente/offliner.git"
   },
   "keywords": [
     "serviceworker",
@@ -23,9 +23,9 @@
   "author": "Salvador de la Puente González <salva@unoyunodiez.com>",
   "license": "Apache2",
   "bugs": {
-    "url": "https://github.com/lodr/offliner/issues"
+    "url": "https://github.com/delapuente/offliner/issues"
   },
-  "homepage": "https://github.com/lodr/offliner",
+  "homepage": "https://github.com/delapuente/offliner",
   "devDependencies": {
     "chai": "^2.2.0",
     "gulp": "^3.8.11",
@@ -38,10 +38,10 @@
     "karma": "^0.12.31",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.1.8",
-    "karma-firefox-launcher": "lodr/karma-firefox-launcher#add-flags",
-    "karma-sw-mocha": "lodr/karma-sw-mocha#master",
+    "karma-firefox-launcher": "delapuente/karma-firefox-launcher#add-flags",
+    "karma-sw-mocha": "delapuente/karma-sw-mocha#master",
     "karma-sinon": "^1.0.4",
-    "mocha": "lodr/mocha#sw",
+    "mocha": "delapuente/mocha#sw",
     "sinon": "^1.14.1"
   }
 }
