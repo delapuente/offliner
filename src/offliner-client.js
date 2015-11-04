@@ -79,21 +79,78 @@
      * @return {Promise} A promise resolving if the installation success.
      */
     install: function () {
-      this._installMessageHandlers();
+      if (!('serviceWorker' in navigator)) {
+        return Promise.reject(new Error('serviceworkers-not-supported'));
+      }
+
       return navigator.serviceWorker.register(workerURL, {
         scope: root
-      });
+      }).then(function (registration) {
+        return this.connect().then(function () {
+          return registration;
+        });
+      }.bind(this));
     },
 
     /**
-     * If you are using offliner as a serviceworkerware middleware, instead
-     * of calling {{#crossLink OfflinerClient/install:method}}{{/crossLink}},
-     * call `connect()` to avoid registering the worker.
+     * Keeps the promise of connect.
+     *
+     * @property _connecting
+     * @type Promise
+     * @private
+     */
+    _connecting: null,
+
+    /**
+     * Connects the client with offliner allowing the client to control offliner
+     * and receive events.
      *
      * @method connect
+     * @return {Promise} A promise resolving once connection has been stablished
+     * with the worker and communication is possible.
      */
     connect: function () {
-      this._installMessageHandlers();
+      if (!this._connecting) { this._connecting = this._connect(); }
+      return this._connecting;
+    },
+
+    /**
+     * The actual implementation for {{#crossLink connect:method}}{{/crossLink}}
+     *
+     * @method _connect
+     * @return {Promise} A promise resolving once connection has been stablished
+     * with the worker and communication is possible.
+     * @private
+     */
+    _connect: function () {
+      if (!('serviceWorker' in navigator)) {
+        return Promise.reject(new Error('serviceworkers-not-supported'));
+      }
+
+      var installMessageHandlers = this._installMessageHandlers.bind(this);
+      var checkForActivationPending = this._checkForActivationPending.bind(this);
+      return new Promise(function (fulfill, reject) {
+        navigator.serviceWorker.getRegistration(root).then(function (registration) {
+          if (registration.active) {
+            installMessageHandlers();
+            checkForActivationPending();
+            return fulfill();
+          }
+
+          var installingWorker = registration.installing;
+          if (!installingWorker) {
+            return reject(new Error('impossible-to-connect'));
+          }
+
+          installingWorker.onstatechange = function () {
+            if (installingWorker.state === 'installed') {
+              installMessageHandlers();
+              checkForActivationPending();
+              fulfill();
+            }
+          };
+        });
+      });
     },
 
     /**
@@ -185,6 +242,19 @@
     },
 
     /**
+     * Make offliner to check for pending activations and dispatch
+     * {{#crossLink Offliner/activationPending:event}}{{/crossLink}}
+     * if so.
+     *
+     * @method _checkForActivationPending
+     * @private
+     */
+    _checkForActivationPending: function () {
+      // TODO: should we add a prefix for offliner messages?
+      this._send({ type: 'checkForActivationPending' });
+    },
+
+    /**
      * Discriminates between {{#crossLink OfflinerClient/xpromise:event}}{{/crossLink}}
      * events which are treated in a special way and the rest of the events that
      * simply trigger the default dispatching algorithm.
@@ -257,12 +327,12 @@
      * @param msg {Any} The message to be sent.
      */
     _send: function (msg) {
-      navigator.serviceWorker.getRegistration()
+      navigator.serviceWorker.getRegistration(root)
         .then(function (registration) {
           if (!registration || !registration.active) {
             // TODO: Wait for the service worker to be active and try to
             // resend.
-            warn('Not service worker active right now.');
+            console.warn('Not service worker active right now.');
           }
           else {
             return registration.active.postMessage(msg);

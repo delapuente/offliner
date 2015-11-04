@@ -228,6 +228,9 @@
       case 'xpromise':
         this._receiveCrossPromise(msg.id, msg.order);
         break;
+      case 'checkForActivationPending':
+        this._checkForActivationPending();
+        break;
       default:
         warn('Message not recognized:', msg);
         break;
@@ -261,6 +264,21 @@
         warn('Cross Promise implementation not recognized:', order);
         break;
     }
+  };
+
+  /**
+   * Check if there is an activation pending. If so, offliner dispatches an
+   * activation pending request.
+   *
+   * @method _checkForActivationPending
+   * @private
+   */
+  Offliner.prototype._checkForActivationPending = function () {
+    this.get('activation-pending').then(function (isActivationPending) {
+      if (isActivationPending) {
+        this._sendActivationPending();
+      }
+    }.bind(this));
   };
 
   /**
