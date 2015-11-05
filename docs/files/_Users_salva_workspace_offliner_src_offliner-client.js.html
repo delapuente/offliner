@@ -1,5 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/Users/salva/workspace/offliner/src/offliner-client.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/FetchConfig.html">FetchConfig</a></li>
+            
+                <li><a href="../classes/Fetcher.html">Fetcher</a></li>
+            
+                <li><a href="../classes/Offliner.html">Offliner</a></li>
+            
+                <li><a href="../classes/OfflinerClient.html">OfflinerClient</a></li>
+            
+                <li><a href="../classes/PrefetchConfig.html">PrefetchConfig</a></li>
+            
+                <li><a href="../classes/Resource.html">Resource</a></li>
+            
+                <li><a href="../classes/SourceHandler.html">SourceHandler</a></li>
+            
+                <li><a href="../classes/UpdateConfig.html">UpdateConfig</a></li>
+            
+                <li><a href="../classes/UpdateControl.html">UpdateControl</a></li>
+            
+                <li><a href="../classes/UpdateImplementation.html">UpdateImplementation</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/fetchers.html">fetchers</a></li>
+            
+                <li><a href="../modules/off.html">off</a></li>
+            
+                <li><a href="../modules/sources.html">sources</a></li>
+            
+                <li><a href="../modules/updaters.html">updaters</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: /Users/salva/workspace/offliner/src/offliner-client.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
 (function (exports) {
-  'use strict';
+  &#x27;use strict&#x27;;
 
   var nextPromiseId = 1;
 
@@ -7,17 +121,17 @@
 
   var root = (function () {
     var root = new URL(
-      document.currentScript.dataset.root || '',
+      document.currentScript.dataset.root || &#x27;&#x27;,
       window.location.origin
     ).href;
-    return root.endsWith('/') ? root : root + '/';
+    return root.endsWith(&#x27;/&#x27;) ? root : root + &#x27;/&#x27;;
   }());
 
   var workerURL =
-    root + (document.currentScript.dataset.worker || 'offliner-worker.js');
+    root + (document.currentScript.dataset.worker || &#x27;offliner-worker.js&#x27;);
 
   /**
-   * The exported global `off` object contains methods for communicating with
+   * The exported global &#x60;off&#x60; object contains methods for communicating with
    * the offliner worker in charge.
    *
    * @class OfflinerClient
@@ -43,9 +157,9 @@
     _xpromises: {},
 
     /**
-     * Call `restore()` when you want the `off` name in the global scope for
+     * Call &#x60;restore()&#x60; when you want the &#x60;off&#x60; name in the global scope for
      * other purposes. The method will restore the previous contents to the
-     * global variable and return the `OfflinerClient`.
+     * global variable and return the &#x60;OfflinerClient&#x60;.
      *
      * @method restore
      * @return {OfflinerClient} The current offliner client.
@@ -57,12 +171,12 @@
 
     /**
      * Register the offliner worker. The worker will be installed with
-     * root `/` [scope](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Syntax)
-     * unless you add the `data-root` attribute to the script tag.
+     * root &#x60;/&#x60; [scope](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Syntax)
+     * unless you add the &#x60;data-root&#x60; attribute to the script tag.
      *
      * In the same way, the client will look for a script in the specified root
-     * called `offliner-worker.js`. If you want to change this behaviour, use
-     * the `data-worker` attribute.
+     * called &#x60;offliner-worker.js&#x60;. If you want to change this behaviour, use
+     * the &#x60;data-worker&#x60; attribute.
      *
      * For instance, suppose your web application is running under:
      * https://delapuente.github.com/offliner
@@ -71,16 +185,16 @@
      * https://delapuente.github.com/offliner/worker.js
      *
      * Then the script tag should looks like:
-     * ```html
-     * <script src="js/offliner-client.js" data-root="offliner" data-worker="worker.js"></script>
-     * ```
+     * &#x60;&#x60;&#x60;html
+     * &lt;script src=&quot;js/offliner-client.js&quot; data-root=&quot;offliner&quot; data-worker=&quot;worker.js&quot;&gt;&lt;/script&gt;
+     * &#x60;&#x60;&#x60;
      *
      * @method install
      * @return {Promise} A promise resolving if the installation success.
      */
     install: function () {
-      if (!('serviceWorker' in navigator)) {
-        return Promise.reject(new Error('serviceworkers-not-supported'));
+      if (!(&#x27;serviceWorker&#x27; in navigator)) {
+        return Promise.reject(new Error(&#x27;serviceworkers-not-supported&#x27;));
       }
 
       return navigator.serviceWorker.register(workerURL, {
@@ -115,7 +229,7 @@
     },
 
     /**
-     * The actual implementation for {{#crossLink "connect:method"}}{{/crossLink}}
+     * The actual implementation for {{#crossLink &quot;connect:method&quot;}}{{/crossLink}}
      *
      * @method _connect
      * @return {Promise} A promise resolving once connection has been stablished
@@ -123,8 +237,8 @@
      * @private
      */
     _connect: function () {
-      if (!('serviceWorker' in navigator)) {
-        return Promise.reject(new Error('serviceworkers-not-supported'));
+      if (!(&#x27;serviceWorker&#x27; in navigator)) {
+        return Promise.reject(new Error(&#x27;serviceworkers-not-supported&#x27;));
       }
 
       var installMessageHandlers = this._installMessageHandlers.bind(this);
@@ -139,11 +253,11 @@
 
           var installingWorker = registration.installing;
           if (!installingWorker) {
-            return reject(new Error('impossible-to-connect'));
+            return reject(new Error(&#x27;impossible-to-connect&#x27;));
           }
 
           installingWorker.onstatechange = function () {
-            if (installingWorker.state === 'installed') {
+            if (installingWorker.state === &#x27;installed&#x27;) {
               installMessageHandlers();
               checkForActivationPending();
               fulfill();
@@ -159,7 +273,7 @@
      * @method on
      * @param type {String} The type of the event.
      * @param handler {Callback} The callback receiving the event.
-     * @param willBeThis {Object} The context object `this` for the `handler`.
+     * @param willBeThis {Object} The context object &#x60;this&#x60; for the &#x60;handler&#x60;.
      */
     on: function (type, handler, willBeThis) {
       if (!this._has(type, handler, willBeThis)) {
@@ -174,12 +288,12 @@
      * @method update
      * @return {Promise} If the update process is successful, the promise will
      * resolve to a new version and an
-     * {{#crossLink "OfflinerClient/activationPending:event"}}{{/crossLink}}
+     * {{#crossLink &quot;OfflinerClient/activationPending:event&quot;}}{{/crossLink}}
      * will be triggered. If the update is not needed, the promise will be
-     * rejected with `no-update-needed` reason.
+     * rejected with &#x60;no-update-needed&#x60; reason.
      */
     update: function () {
-      return this._xpromise('update');
+      return this._xpromise(&#x27;update&#x27;);
     },
 
     /**
@@ -189,10 +303,10 @@
      *
      * @method activate
      * @return {Promise} A promise resolving into the activated version or
-     * rejected with `no-activation-pending` if there was not an activation.
+     * rejected with &#x60;no-activation-pending&#x60; if there was not an activation.
      */
     activate: function () {
-      return this._xpromise('activate');
+      return this._xpromise(&#x27;activate&#x27;);
     },
 
     /**
@@ -223,21 +337,21 @@
     _installMessageHandlers: function installMessageHandlers() {
       var that = this;
       if (!installMessageHandlers.done) {
-        if (typeof BroadcastChannel === 'function') {
-          var bc = new BroadcastChannel('offliner-channel');
+        if (typeof BroadcastChannel === &#x27;function&#x27;) {
+          var bc = new BroadcastChannel(&#x27;offliner-channel&#x27;);
           bc.onmessage = onmessage;
         }
         else {
-          navigator.serviceWorker.addEventListener('message', onmessage);
+          navigator.serviceWorker.addEventListener(&#x27;message&#x27;, onmessage);
         }
         installMessageHandlers.done = true;
       }
 
       function onmessage(e) {
         var msg = e.data;
-        var type = msg ? msg.type : '';
-        var typeAndSubType = type.split(':');
-        if (typeAndSubType[0] === 'offliner') {
+        var type = msg ? msg.type : &#x27;&#x27;;
+        var typeAndSubType = type.split(&#x27;:&#x27;);
+        if (typeAndSubType[0] === &#x27;offliner&#x27;) {
           that._handleMessage(typeAndSubType[1], msg);
         }
       }
@@ -245,7 +359,7 @@
 
     /**
      * Make offliner to check for pending activations and dispatch
-     * {{#crossLink "OfflinerClient/activationPending:event"}}{{/crossLink}}
+     * {{#crossLink &quot;OfflinerClient/activationPending:event&quot;}}{{/crossLink}}
      * if so.
      *
      * @method _checkForActivationPending
@@ -253,23 +367,23 @@
      */
     _checkForActivationPending: function () {
       // TODO: should we add a prefix for offliner messages?
-      this._send({ type: 'checkForActivationPending' });
+      this._send({ type: &#x27;checkForActivationPending&#x27; });
     },
 
     /**
-     * Discriminates between {{#crossLink "OfflinerClient/xpromise:event"}}{{/crossLink}}
+     * Discriminates between {{#crossLink &quot;OfflinerClient/xpromise:event&quot;}}{{/crossLink}}
      * events which are treated in a special way and the rest of the events that
      * simply trigger the default dispatching algorithm.
      *
      * @method _handleMessage
      * @param offlinerType {String} The type of the message without the
-     * `offliner:` prefix.
+     * &#x60;offliner:&#x60; prefix.
      * @param msg {Any} The event.
      * @private
      */
     _handleMessage: function (offlinerType, msg) {
       var sw = navigator.serviceWorker;
-      if (offlinerType === 'xpromise') {
+      if (offlinerType === &#x27;xpromise&#x27;) {
         this._resolveCrossPromise(msg);
       }
       else {
@@ -281,15 +395,15 @@
      * @method _has
      * @param type {String} The type for the listener registration.
      * @param handler {Function} The listener.
-     * @param willBeThis {Object} The context object `this` which the function
+     * @param willBeThis {Object} The context object &#x60;this&#x60; which the function
      * will be called with.
-     * @return `true` if the listener registration already exists.
+     * @return &#x60;true&#x60; if the listener registration already exists.
      * @private
      */
     _has: function (type, handler, willBeThis) {
       var listeners = this._eventListeners[type] || [];
       for (var i = 0, listenerAndThis; (listenerAndThis = listeners[i]); i++) {
-        if (listenerAndThis[0] === handler &&
+        if (listenerAndThis[0] === handler &amp;&amp;
             listenerAndThis[1] === willBeThis) {
           return true;
         }
@@ -313,7 +427,7 @@
       return new Promise(function (accept, reject) {
         var uniqueId = nextPromiseId++;
         var msg = {
-          type: 'xpromise',
+          type: &#x27;xpromise&#x27;,
           id: uniqueId,
           order: order
         };
@@ -339,7 +453,7 @@
           if (!registration || !registration.active) {
             // TODO: Wait for the service worker to be active and try to
             // resend.
-            console.warn('Not service worker active right now.');
+            console.warn(&#x27;Not service worker active right now.&#x27;);
           }
           else {
             return registration.active.postMessage(msg);
@@ -358,12 +472,32 @@
     _resolveCrossPromise: function (msg) {
       var implementation = this._xpromises[msg.id];
       if (implementation) {
-        implementation[msg.status === 'rejected' ? 1 : 0](msg.value);
+        implementation[msg.status === &#x27;rejected&#x27; ? 1 : 0](msg.value);
       }
       else {
-        console.warn('Trying to resolve unexistent promise:', msg.id);
+        console.warn(&#x27;Trying to resolve unexistent promise:&#x27;, msg.id);
       }
     }
   };
 
 }(this.exports || this));
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -115,7 +115,7 @@
     },
 
     /**
-     * The actual implementation for {{#crossLink connect:method}}{{/crossLink}}
+     * The actual implementation for {{#crossLink "connect:method"}}{{/crossLink}}
      *
      * @method _connect
      * @return {Promise} A promise resolving once connection has been stablished
@@ -174,7 +174,7 @@
      * @method update
      * @return {Promise} If the update process is successful, the promise will
      * resolve to a new version and an
-     * {{#crossLink OfflinerClient/activationPending:event}}{{/crossLink}}
+     * {{#crossLink "OfflinerClient/activationPending:event"}}{{/crossLink}}
      * will be triggered. If the update is not needed, the promise will be
      * rejected with `no-update-needed` reason.
      */
@@ -202,6 +202,7 @@
      * @param type {String} The type of the events selecting the listeners to
      * be run.
      * @param evt {Object} The event contents.
+     * @private
      */
     _runListeners: function (type, evt) {
       var listeners = this._eventListeners[type] || [];
@@ -217,6 +218,7 @@
      * and the client code.
      *
      * @method _installMessageHandlers
+     * @private
      */
     _installMessageHandlers: function installMessageHandlers() {
       var that = this;
@@ -243,7 +245,7 @@
 
     /**
      * Make offliner to check for pending activations and dispatch
-     * {{#crossLink Offliner/activationPending:event}}{{/crossLink}}
+     * {{#crossLink "OfflinerClient/activationPending:event"}}{{/crossLink}}
      * if so.
      *
      * @method _checkForActivationPending
@@ -255,7 +257,7 @@
     },
 
     /**
-     * Discriminates between {{#crossLink OfflinerClient/xpromise:event}}{{/crossLink}}
+     * Discriminates between {{#crossLink "OfflinerClient/xpromise:event"}}{{/crossLink}}
      * events which are treated in a special way and the rest of the events that
      * simply trigger the default dispatching algorithm.
      *
@@ -263,6 +265,7 @@
      * @param offlinerType {String} The type of the message without the
      * `offliner:` prefix.
      * @param msg {Any} The event.
+     * @private
      */
     _handleMessage: function (offlinerType, msg) {
       var sw = navigator.serviceWorker;
@@ -281,6 +284,7 @@
      * @param willBeThis {Object} The context object `this` which the function
      * will be called with.
      * @return `true` if the listener registration already exists.
+     * @private
      */
     _has: function (type, handler, willBeThis) {
       var listeners = this._eventListeners[type] || [];
@@ -303,6 +307,7 @@
      * the implementation to run.
      * @return {Promise} A promise delegating its implementation in some code
      * running in a worker.
+     * @private
      */
     _xpromise: function (order) {
       return new Promise(function (accept, reject) {
@@ -323,8 +328,10 @@
 
     /**
      * Sends a message to the worker.
+     *
      * @method _send
      * @param msg {Any} The message to be sent.
+     * @private
      */
     _send: function (msg) {
       navigator.serviceWorker.getRegistration(root)
@@ -346,6 +353,7 @@
      *
      * @method _resolveCrossPromise
      * @param msg {Object} An object with the proper data to resolve a xpromise.
+     * @private
      */
     _resolveCrossPromise: function (msg) {
       var implementation = this._xpromises[msg.id];

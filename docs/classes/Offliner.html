@@ -116,7 +116,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l41"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:41</code></a>
+            Defined in: <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l41"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:41</code></a>
         </div>
     
 
@@ -163,7 +163,70 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method private">
+                                <a href="#method__activateNextCache">_activateNextCache</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__broadcastMessage">_broadcastMessage</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__checkForActivationPending">_checkForActivationPending</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__checkIfNewVersion">_checkIfNewVersion</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__doPrefetch">_doPrefetch</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__evolveCache">_evolveCache</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__fetch">_fetch</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__getCacheNameForVersion">_getCacheNameForVersion</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method__getConfigURL">_getConfigURL</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__getLatestVersion">_getLatestVersion</a>
 
                                 
                                 
@@ -178,6 +241,20 @@
                         
                             <li class="index-item method private">
                                 <a href="#method__install">_install</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__openActiveCache">_openActiveCache</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__prefetch">_prefetch</a>
 
                                 
                                 
@@ -219,6 +296,20 @@
                             </li>
                         
                             <li class="index-item method private">
+                                <a href="#method__sendActivationDone">_sendActivationDone</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__sendActivationFailed">_sendActivationFailed</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method__sendActivationPending">_sendActivationPending</a>
 
                                 
@@ -226,7 +317,21 @@
                             </li>
                         
                             <li class="index-item method private">
+                                <a href="#method__swapCaches">_swapCaches</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method__update">_update</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__updateCurrentVersion">_updateCurrentVersion</a>
 
                                 
                                 
@@ -333,6 +438,695 @@
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method__activateNextCache" class="method item private">
+    <h3 class="name"><code>_activateNextCache</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l650"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:650</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Change the active cache to be the evolved cache if available. Once the
+active cache has been updated, the former one is lost.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A Promise resolving in the new version or rejecting
+if there is no pending activation.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method__broadcastMessage" class="method item private">
+    <h3 class="name"><code>_broadcastMessage</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>msg</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l499"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:499</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Broadcast a message in the clients. The method will add the <code>offliner:</code>
+prefix to the type of the events but this is stripped out automatically by
+the <a href="../classes/OfflinerClient.html#method__installMessageHandlers" class="crosslink">_installMessageHandlers</a>
+client side.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">msg</code>
+                        <span class="type">Any</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the message to be broadcasted.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__checkForActivationPending" class="method item private">
+    <h3 class="name"><code>_checkForActivationPending</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l269"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:269</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if there is an activation pending. If so, offliner dispatches an
+activation pending request.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__checkIfNewVersion" class="method item private">
+    <h3 class="name"><code>_checkIfNewVersion</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise<String></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l596"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:596</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Determine if there is a new version based on the latest version and the
+current one by using the update middleware.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise<String></span>:
+                    
+                    <p>latestVersion The new version tag is returned
+if there is a new version or <code>null</code> otherwise.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method__doPrefetch" class="method item private">
+    <h3 class="name"><code>_doPrefetch</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cache</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l553"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:553</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Processes prefetch declared resources using the registered middlewares.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cache</code>
+                        <span class="type">Cache</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The cache for the middlewares to populate.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__evolveCache" class="method item private">
+    <h3 class="name"><code>_evolveCache</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>newCache</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l625"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:625</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Evolves the current cache to the new cache by using the update middleware.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">newCache</code>
+                        <span class="type">Cache</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The new cache.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__fetch" class="method item private">
+    <h3 class="name"><code>_fetch</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>request</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l729"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:729</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Use configured middlewares to perform the fetch process.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">request</code>
+                        <span class="type">Request</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The request to be fetched.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__getCacheNameForVersion" class="method item private">
+    <h3 class="name"><code>_getCacheNameForVersion</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>version</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise<String></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l530"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:530</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Return the CACHE name for a version given.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">version</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The version to calculate the name for.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise<String></span>:
+                    
+                    <p>A promise resolving with the name for the
+version.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method__getConfigURL" class="method item private">
     <h3 class="name"><code>_getConfigURL</code></h3>
 
@@ -381,7 +1175,7 @@
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l343"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:343</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l361"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:361</code></a>
         
         </p>
 
@@ -440,6 +1234,82 @@
 </div>
 
                 
+                    <div id="method__getLatestVersion" class="method item private">
+    <h3 class="name"><code>_getLatestVersion</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise<String></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l584"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:584</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Obtains the latest version using the update middleware.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise<String></span>:
+                    
+                    <p>Tag representing the latest version. The tag will
+be used as suffix for the new cache.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method__initialize" class="method item private">
     <h3 class="name"><code>_initialize</code></h3>
 
@@ -474,7 +1344,7 @@
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l373"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:373</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l391"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:391</code></a>
         
         </p>
 
@@ -531,7 +1401,7 @@
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l355"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:355</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l373"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:373</code></a>
         
         </p>
 
@@ -544,6 +1414,138 @@
     <div class="description">
         <p>Determine if the worker should prefetch or update after (re)installing the
 service worker.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__openActiveCache" class="method item private">
+    <h3 class="name"><code>_openActiveCache</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise<Cache></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l639"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:639</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Uses dynamic information to open the active CACHE.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise<Cache></span>:
+                    
+                    <p>A promise resolving to the active cache.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method__prefetch" class="method item private">
+    <h3 class="name"><code>_prefetch</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l543"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:543</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Opens current active cache and starts prefetch.</p>
 
     </div>
 
@@ -589,7 +1591,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l220"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:220</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l220"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:220</code></a>
         
         </p>
 
@@ -662,7 +1664,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l237"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:237</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l240"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:240</code></a>
         
         </p>
 
@@ -775,7 +1777,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l278"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:278</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l296"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:296</code></a>
         
         </p>
 
@@ -888,7 +1890,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l266"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:266</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l284"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:284</code></a>
         
         </p>
 
@@ -1007,7 +2009,7 @@ service worker.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l290"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:290</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l308"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:308</code></a>
         
         </p>
 
@@ -1088,6 +2090,122 @@ Can be <code>&#39;rejected&#39;</code> or <code>&#39;solved&#39;</code>.</p>
 </div>
 
                 
+                    <div id="method__sendActivationDone" class="method item private">
+    <h3 class="name"><code>_sendActivationDone</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l476"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:476</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Broadcast a message to all clients to indicate the activation of the
+new version ended properly.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__sendActivationFailed" class="method item private">
+    <h3 class="name"><code>_sendActivationFailed</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l488"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:488</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Broadcast a message to all clients to indicate there was a failure while
+activating the update.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method__sendActivationPending" class="method item private">
     <h3 class="name"><code>_sendActivationPending</code></h3>
 
@@ -1122,7 +2240,7 @@ Can be <code>&#39;rejected&#39;</code> or <code>&#39;solved&#39;</code>.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l440"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:440</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l458"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:458</code></a>
         
         </p>
 
@@ -1135,6 +2253,64 @@ Can be <code>&#39;rejected&#39;</code> or <code>&#39;solved&#39;</code>.</p>
     <div class="description">
         <p>Broadcast a message to all clients to indicate there is an update
 activation ready.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__swapCaches" class="method item private">
+    <h3 class="name"><code>_swapCaches</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l669"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:669</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Makes active cache to be the next-version cache populated during a past
+update process. After swapping, the previous cache is lost.</p>
 
     </div>
 
@@ -1194,7 +2370,7 @@ activation ready.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l386"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:386</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l404"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:404</code></a>
         
         </p>
 
@@ -1263,6 +2439,63 @@ if there is no update needed (<code>reason = &#39;no-update-needed&#39;</code>).
 </div>
 
                 
+                    <div id="method__updateCurrentVersion" class="method item private">
+    <h3 class="name"><code>_updateCurrentVersion</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l715"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:715</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates the current version.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_asMiddleware" class="method item">
     <h3 class="name"><code>asMiddleware</code></h3>
 
@@ -1299,7 +2532,7 @@ if there is no update needed (<code>reason = &#39;no-update-needed&#39;</code>).
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l180"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:180</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l180"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:180</code></a>
         
         </p>
 
@@ -1382,7 +2615,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l310"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:310</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l328"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:328</code></a>
         
         </p>
 
@@ -1479,7 +2712,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l327"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:327</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l345"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:345</code></a>
         
         </p>
 
@@ -1574,7 +2807,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l128"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:128</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l128"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:128</code></a>
         
         </p>
 
@@ -1630,7 +2863,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l65"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:65</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l65"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:65</code></a>
         
         </p>
 
@@ -1679,7 +2912,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l55"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:55</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l55"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:55</code></a>
         
         </p>
 
@@ -1728,7 +2961,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l75"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:75</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l75"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:75</code></a>
         
         </p>
 
@@ -1777,7 +3010,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l85"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:85</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l85"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:85</code></a>
         
         </p>
 
@@ -1822,7 +3055,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l100"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:100</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l100"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:100</code></a>
         
         </p>
 
@@ -1867,7 +3100,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l109"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:109</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l109"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:109</code></a>
         
         </p>
 
@@ -1912,7 +3145,7 @@ object.</p>
             
         
         
-        <a href="../files/_home_salva_workspace_offliner_src_offliner.js.html#l118"><code>&#x2F;home&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:118</code></a>
+        <a href="../files/_Users_salva_workspace_offliner_src_offliner.js.html#l118"><code>&#x2F;Users&#x2F;salva&#x2F;workspace&#x2F;offliner&#x2F;src&#x2F;offliner.js:118</code></a>
         
         </p>
 

@@ -1,12 +1,126 @@
-(function (self) {
-  'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/Users/salva/workspace/offliner/src/offliner.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
 
-  ['log', 'warn', 'error'].forEach(function (method) {
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/FetchConfig.html">FetchConfig</a></li>
+            
+                <li><a href="../classes/Fetcher.html">Fetcher</a></li>
+            
+                <li><a href="../classes/Offliner.html">Offliner</a></li>
+            
+                <li><a href="../classes/OfflinerClient.html">OfflinerClient</a></li>
+            
+                <li><a href="../classes/PrefetchConfig.html">PrefetchConfig</a></li>
+            
+                <li><a href="../classes/Resource.html">Resource</a></li>
+            
+                <li><a href="../classes/SourceHandler.html">SourceHandler</a></li>
+            
+                <li><a href="../classes/UpdateConfig.html">UpdateConfig</a></li>
+            
+                <li><a href="../classes/UpdateControl.html">UpdateControl</a></li>
+            
+                <li><a href="../classes/UpdateImplementation.html">UpdateImplementation</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/fetchers.html">fetchers</a></li>
+            
+                <li><a href="../modules/off.html">off</a></li>
+            
+                <li><a href="../modules/sources.html">sources</a></li>
+            
+                <li><a href="../modules/updaters.html">updaters</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: /Users/salva/workspace/offliner/src/offliner.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+(function (self) {
+  &#x27;use strict&#x27;;
+
+  [&#x27;log&#x27;, &#x27;warn&#x27;, &#x27;error&#x27;].forEach(function (method) {
     self[method] = console[method].bind(console);
   });
 
-  var DEFAULT_VERSION = '-offliner:v0';
-  var CONFIG_CACHE = '__offliner-config';
+  var DEFAULT_VERSION = &#x27;-offliner:v0&#x27;;
+  var CONFIG_CACHE = &#x27;__offliner-config&#x27;;
 
   /**
    * @class UpdateControl
@@ -20,7 +134,7 @@
    */
 
   /**
-   * Set to `true` when the update has run once.
+   * Set to &#x60;true&#x60; when the update has run once.
    * @property alreadyRunOnce
    * @type boolean
    */
@@ -48,8 +162,8 @@
    * @class Offliner
    */
   function Offliner(uniquename) {
-    Object.defineProperty(this, '_uniquename', {
-      get: function () { return uniquename ? uniquename + ':' : ''; }
+    Object.defineProperty(this, &#x27;_uniquename&#x27;, {
+      get: function () { return uniquename ? uniquename + &#x27;:&#x27; : &#x27;&#x27;; }
     });
 
     /**
@@ -90,7 +204,7 @@
      * @readonly
      * @private
      */
-    Object.defineProperty(this, '_updateControl', { value: {
+    Object.defineProperty(this, &#x27;_updateControl&#x27;, { value: {
       scheduled: false,
       alreadyRunOnce: false,
       intervalId: null,
@@ -104,7 +218,7 @@
      * @type FetchConfig
      * @readonly
      */
-    Object.defineProperty(this, 'fetch', { value: new FetchConfig() });
+    Object.defineProperty(this, &#x27;fetch&#x27;, { value: new FetchConfig() });
 
     /**
      * API to configure the prefetch process.
@@ -113,7 +227,7 @@
      * @property prefetch
      * @readonly
      */
-    Object.defineProperty(this, 'prefetch', { value: new PrefetchConfig() });
+    Object.defineProperty(this, &#x27;prefetch&#x27;, { value: new PrefetchConfig() });
 
     /**
      * API to configure the update process.
@@ -122,7 +236,7 @@
      * @property update
      * @readonly
      */
-    Object.defineProperty(this, 'update', { value: new UpdateConfig() });
+    Object.defineProperty(this, &#x27;update&#x27;, { value: new UpdateConfig() });
   }
 
   /**
@@ -130,30 +244,30 @@
    * @method standalone
    * @throws {Error} offliner throws when trying to install it in standalone
    * mode if it was already used as middleware by calling
-   * {{#crossLink "Offliner/asMiddleware:method"}}{{/crossLink}}.
+   * {{#crossLink &quot;Offliner/asMiddleware:method&quot;}}{{/crossLink}}.
    */
   Offliner.prototype.standalone = function () {
     if (this._isMiddleware) {
-      throw new Error('offliner has been already started as a middleware.');
+      throw new Error(&#x27;offliner has been already started as a middleware.&#x27;);
     }
 
     if (this._isStarted) { return; }
 
-    self.addEventListener('install', function (e) {
+    self.addEventListener(&#x27;install&#x27;, function (e) {
       e.waitUntil(
         this._install()
           .then(function () {
-            log('Offliner installed');
-            return typeof self.skipWaiting === 'function' ?
+            log(&#x27;Offliner installed&#x27;);
+            return typeof self.skipWaiting === &#x27;function&#x27; ?
                    self.skipWaiting() : Promise.resolve();
           })
       );
     }.bind(this));
 
-    self.addEventListener('activate', function (e) {
+    self.addEventListener(&#x27;activate&#x27;, function (e) {
       var ok = function () {
-        log('Offliner activated!');
-        return typeof self.clients.claim === 'function' ?
+        log(&#x27;Offliner activated!&#x27;);
+        return typeof self.clients.claim === &#x27;function&#x27; ?
                self.clients.claim() : Promise.resolve();
       };
       e.waitUntil(
@@ -161,8 +275,8 @@
       );
     }.bind(this));
 
-    self.addEventListener('fetch', function (e)  {
-      if (e.request.method !== 'GET') {
+    self.addEventListener(&#x27;fetch&#x27;, function (e)  {
+      if (e.request.method !== &#x27;GET&#x27;) {
         e.respondWith(fetch(e.request));
       }
       else {
@@ -170,7 +284,7 @@
       }
     }.bind(this));
 
-    self.addEventListener('message', function (e) {
+    self.addEventListener(&#x27;message&#x27;, function (e) {
       this._processMessage(e.data);
     }.bind(this));
 
@@ -185,11 +299,11 @@
    * @method asMiddleware
    * @return {Object} A serviceworkerware middleware.
    * @throws {Error} offliner will throw if you try to use it as middleware
-   * after calling {{#crossLink "Offliner/standalone:method"}}{{/crossLink}}.
+   * after calling {{#crossLink &quot;Offliner/standalone:method&quot;}}{{/crossLink}}.
    */
   Offliner.prototype.asMiddleware = function () {
     if (this._isStarted) {
-      throw new Error('offliner has been already installed in standalone mode');
+      throw new Error(&#x27;offliner has been already installed in standalone mode&#x27;);
     }
 
     if (!this._middleware) {
@@ -197,7 +311,7 @@
         onInstall: this._install.bind(this),
         onActivate: this._activate.bind(this),
         onFetch: function (request, response) {
-          if (response || request.method !== 'GET') {
+          if (response || request.method !== &#x27;GET&#x27;) {
             return Promise.resolve(response);
           }
           this._fetch(request);
@@ -211,7 +325,7 @@
   };
 
   Offliner.prototype._activate = function () {
-    return this.get('activation-pending')
+    return this.get(&#x27;activation-pending&#x27;)
       .then(function (isActivationPending) {
         if (isActivationPending) { this._sendActivationPending(); }
       }.bind(this));
@@ -225,14 +339,14 @@
    */
   Offliner.prototype._processMessage = function (msg) {
     switch (msg.type) {
-      case 'xpromise':
+      case &#x27;xpromise&#x27;:
         this._receiveCrossPromise(msg.id, msg.order);
         break;
-      case 'checkForActivationPending':
+      case &#x27;checkForActivationPending&#x27;:
         this._checkForActivationPending();
         break;
       default:
-        warn('Message not recognized:', msg);
+        warn(&#x27;Message not recognized:&#x27;, msg);
         break;
     }
   };
@@ -247,21 +361,21 @@
    */
   Offliner.prototype._receiveCrossPromise = function (id, order) {
     switch (order) {
-      case 'update':
+      case &#x27;update&#x27;:
         var fromInstall = false;
         this._update().then(
           this._resolve.bind(this, id),
           this._reject.bind(this, id)
         );
         break;
-      case 'activate':
+      case &#x27;activate&#x27;:
         this._activateNextCache().then(
           this._resolve.bind(this, id),
           this._reject.bind(this, id)
         );
         break;
       default:
-        warn('Cross Promise implementation not recognized:', order);
+        warn(&#x27;Cross Promise implementation not recognized:&#x27;, order);
         break;
     }
   };
@@ -274,7 +388,7 @@
    * @private
    */
   Offliner.prototype._checkForActivationPending = function () {
-    this.get('activation-pending').then(function (isActivationPending) {
+    this.get(&#x27;activation-pending&#x27;).then(function (isActivationPending) {
       if (isActivationPending) {
         this._sendActivationPending();
       }
@@ -290,7 +404,7 @@
    * @private
    */
   Offliner.prototype._resolve = function (id, value) {
-    this._resolvePromise(id, 'resolved', value);
+    this._resolvePromise(id, &#x27;resolved&#x27;, value);
   };
 
   /**
@@ -302,7 +416,7 @@
    * @private
    */
   Offliner.prototype._reject = function (id, reason) {
-    this._resolvePromise(id, 'rejected', reason);
+    this._resolvePromise(id, &#x27;rejected&#x27;, reason);
   };
 
   /**
@@ -312,13 +426,13 @@
    * @method _resolvePromise
    * @param id {String} The unique id for the cross promise.
    * @param status {String} The status at which the promise will solve to.
-   * Can be `'rejected'` or `'solved'`.
+   * Can be &#x60;&#x27;rejected&#x27;&#x60; or &#x60;&#x27;solved&#x27;&#x60;.
    * @param value {Any} The value for the cross promise.
    * @private
    */
   Offliner.prototype._resolvePromise = function (id, status, value) {
     this._broadcastMessage({
-      type: 'xpromise',
+      type: &#x27;xpromise&#x27;,
       id: id,
       status: status,
       value: value
@@ -367,7 +481,7 @@
    * @private
    */
   Offliner.prototype._getConfigURL = function (key) {
-    return 'http://config/' + this._uniquename + key;
+    return &#x27;http://config/&#x27; + this._uniquename + key;
   };
 
   /**
@@ -379,8 +493,8 @@
    */
   Offliner.prototype._install = function () {
     var fromInstall = true;
-    return this.get('current-version').then(function (currentVersion) {
-      var isUpdateEnabled = this.update.option('enabled');
+    return this.get(&#x27;current-version&#x27;).then(function (currentVersion) {
+      var isUpdateEnabled = this.update.option(&#x27;enabled&#x27;);
       if (currentVersion) {
         return isUpdateEnabled ? this._update(fromInstall) : Promise.resolve();
       }
@@ -396,9 +510,9 @@
    */
   Offliner.prototype._initialize = function () {
     return this._getCacheNameForVersion(DEFAULT_VERSION)
-      .then(this.set.bind(this, 'active-cache'))
-      .then(this.set.bind(this, 'current-version', DEFAULT_VERSION))
-      .then(this.set.bind(this, 'activation-pending', false));
+      .then(this.set.bind(this, &#x27;active-cache&#x27;))
+      .then(this.set.bind(this, &#x27;current-version&#x27;, DEFAULT_VERSION))
+      .then(this.set.bind(this, &#x27;activation-pending&#x27;, false));
   };
 
   /**
@@ -411,16 +525,16 @@
    *
    * @method _update
    * @param {Boolean} fromInstall Indicates if the call comes from the
-   * {{#crossLink "Offliner/_install:method"}}{{/crossLink}} method.
+   * {{#crossLink &quot;Offliner/_install:method&quot;}}{{/crossLink}} method.
    * @return {Promise} A Promise resolving in the vertion to update or rejecting
-   * if there is no update needed (`reason = 'no-update-needed'`).
+   * if there is no update needed (&#x60;reason = &#x27;no-update-needed&#x27;&#x60;).
    * @private
    */
   Offliner.prototype._update = function (fromInstall) {
     // XXX: Only one update process is allowed at a time.
     var that = this;
     if (!this._updateControl.inProgressProcess) {
-      this._updateControl.inProgressProcess = this.get('current-version')
+      this._updateControl.inProgressProcess = this.get(&#x27;current-version&#x27;)
         .then(function (currentVersion) {
           this.update.flags = {
             isCalledFromInstall: fromInstall,
@@ -438,7 +552,7 @@
         return that._getCacheNameForVersion(newVersion)
           .then(caches.open.bind(caches))
           .then(that._evolveCache.bind(that))
-          .then(that.set.bind(that, 'activation-pending', true))
+          .then(that.set.bind(that, &#x27;activation-pending&#x27;, true))
           .then(that._sendActivationPending.bind(that))
           .then(function () {
             endUpdateProcess(); // XXX: Notice this call before ending!
@@ -446,7 +560,7 @@
           });
       }
       endUpdateProcess(); // XXX: Notice this call before ending!
-      return Promise.reject('no-update-needed');
+      return Promise.reject(&#x27;no-update-needed&#x27;);
     }
 
     function endUpdateProcess() {
@@ -470,7 +584,7 @@
      * @event activationPending
      * @for OfflinerClient
      */
-    this._broadcastMessage({ type: 'activationPending' });
+    this._broadcastMessage({ type: &#x27;activationPending&#x27; });
   };
 
   /**
@@ -482,7 +596,7 @@
    * @for Offliner
    */
   Offliner.prototype._sendActivationDone = function () {
-    this._broadcastMessage({ type: 'activationDone' });
+    this._broadcastMessage({ type: &#x27;activationDone&#x27; });
   };
 
   /**
@@ -493,13 +607,13 @@
    * @private
    */
   Offliner.prototype._sendActivationFailed = function () {
-    this._broadcastMessage({ type: 'activationFailed' });
+    this._broadcastMessage({ type: &#x27;activationFailed&#x27; });
   };
 
   /**
-   * Broadcast a message in the clients. The method will add the `offliner:`
+   * Broadcast a message in the clients. The method will add the &#x60;offliner:&#x60;
    * prefix to the type of the events but this is stripped out automatically by
-   * the {{#crossLink "OfflinerClient/_installMessageHandlers:method"}}{{/crossLink}}
+   * the {{#crossLink &quot;OfflinerClient/_installMessageHandlers:method&quot;}}{{/crossLink}}
    * client side.
    *
    * @method _broadcastMessage
@@ -507,13 +621,13 @@
    * @private
    */
   Offliner.prototype._broadcastMessage = function (msg) {
-    msg.type = 'offliner:' + msg.type;
+    msg.type = &#x27;offliner:&#x27; + msg.type;
     if (this._isMiddleware) {
-      this.asMiddleware().broadcastMessage(msg, 'offliner-channel');
+      this.asMiddleware().broadcastMessage(msg, &#x27;offliner-channel&#x27;);
     }
     else {
-      if (typeof BroadcastChannel === 'function') {
-        var channel = new BroadcastChannel('offliner-channel');
+      if (typeof BroadcastChannel === &#x27;function&#x27;) {
+        var channel = new BroadcastChannel(&#x27;offliner-channel&#x27;);
         channel.postMessage(msg);
         channel.close();
       }
@@ -532,12 +646,12 @@
    *
    * @method _getCacheNameForVersion
    * @param {String} version The version to calculate the name for.
-   * @return {Promise<String>} A promise resolving with the name for the
+   * @return {Promise&lt;String&gt;} A promise resolving with the name for the
    * version.
    * @private
    */
   Offliner.prototype._getCacheNameForVersion = function (version) {
-    return Promise.resolve(this._uniquename + 'cache-' + version);
+    return Promise.resolve(this._uniquename + &#x27;cache-&#x27; + version);
   };
 
   /**
@@ -585,7 +699,7 @@
    * Obtains the latest version using the update middleware.
    *
    * @method _getLatestVersion
-   * @return {Promise<String>} Tag representing the latest version. The tag will
+   * @return {Promise&lt;String&gt;} Tag representing the latest version. The tag will
    * be used as suffix for the new cache.
    * @private
    */
@@ -598,25 +712,25 @@
    * current one by using the update middleware.
    *
    * @method _checkIfNewVersion
-   * @return {Promise<String>} latestVersion The new version tag is returned
-   * if there is a new version or `null` otherwise.
+   * @return {Promise&lt;String&gt;} latestVersion The new version tag is returned
+   * if there is a new version or &#x60;null&#x60; otherwise.
    * @private
    */
   Offliner.prototype._checkIfNewVersion = function (latestVersion) {
-    return this.get('current-version').then(function (currentVersion) {
+    return this.get(&#x27;current-version&#x27;).then(function (currentVersion) {
       var isNewVersion =
         this.update.isNewVersion(currentVersion, latestVersion);
 
       if (isNewVersion) {
-        log('New version ' + latestVersion + ' found!');
-        if (currentVersion) { log('Updating from version ' + currentVersion); }
-        else { log('First update'); }
+        log(&#x27;New version &#x27; + latestVersion + &#x27; found!&#x27;);
+        if (currentVersion) { log(&#x27;Updating from version &#x27; + currentVersion); }
+        else { log(&#x27;First update&#x27;); }
 
-        return this.set('next-version', latestVersion)
+        return this.set(&#x27;next-version&#x27;, latestVersion)
           .then(function () { return latestVersion; });
       }
       else {
-        log('No update needed');
+        log(&#x27;No update needed&#x27;);
       }
       return null;
     }.bind(this));
@@ -640,11 +754,11 @@
    * Uses dynamic information to open the active CACHE.
    *
    * @method _openActiveCache
-   * @return {Promise<Cache>} A promise resolving to the active cache.
+   * @return {Promise&lt;Cache&gt;} A promise resolving to the active cache.
    * @private
    */
   Offliner.prototype._openActiveCache = function () {
-    return this.get('active-cache').then(caches.open.bind(caches));
+    return this.get(&#x27;active-cache&#x27;).then(caches.open.bind(caches));
   };
 
   /**
@@ -657,12 +771,12 @@
    * @private
    */
   Offliner.prototype._activateNextCache = function () {
-    return this.get('activation-pending').then(function (isActivationPending) {
+    return this.get(&#x27;activation-pending&#x27;).then(function (isActivationPending) {
       if (isActivationPending) {
         return this._swapCaches()
           .then(this._updateCurrentVersion.bind(this));
       }
-      return Promise.reject('no-activation-pending');
+      return Promise.reject(&#x27;no-activation-pending&#x27;);
     }.bind(this));
   };
 
@@ -681,18 +795,18 @@
     ]).then(swap);
 
     function getCurrentCache() {
-      return that.get('active-cache');
+      return that.get(&#x27;active-cache&#x27;);
     }
 
     function getNextCache() {
-      return that.get('next-version')
+      return that.get(&#x27;next-version&#x27;)
         .then(that._getCacheNameForVersion.bind(that));
     }
 
     function swap(names) {
       var currentCache = names[0],
           nextCache = names[1];
-      return that.set('active-cache', nextCache)
+      return that.set(&#x27;active-cache&#x27;, nextCache)
         .then(deleteOtherCaches([nextCache, CONFIG_CACHE]));
     }
 
@@ -701,7 +815,7 @@
           return caches.keys().then(function (cacheNames) {
             return Promise.all(
               cacheNames.filter(function (cacheName) {
-                return exclude.indexOf(cacheName) < 0;
+                return exclude.indexOf(cacheName) &lt; 0;
               })
               .map(function (cacheName) {
                 return caches.delete(cacheName);
@@ -719,10 +833,10 @@
    * @private
    */
   Offliner.prototype._updateCurrentVersion = function () {
-    var nextVersion = this.get('next-version');
+    var nextVersion = this.get(&#x27;next-version&#x27;);
     return nextVersion
-      .then(this.set.bind(this, 'current-version'))
-      .then(this.set.bind(this, 'activation-pending', false))
+      .then(this.set.bind(this, &#x27;current-version&#x27;))
+      .then(this.set.bind(this, &#x27;activation-pending&#x27;, false))
       .then(function () { return nextVersion; });
   };
 
@@ -755,13 +869,13 @@
 
   /**
    * A resource is an object with a type and other fields to be retrieved by
-   * the {{#crossLink "Fetcher"}}{{/crossLink}} with the same type.
+   * the {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}} with the same type.
    * @class Resource
    */
 
   /**
    * The type to associate the resource with an specific
-   * {{#crossLink "Fetcher"}}{{/crossLink}}.
+   * {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}}.
    *
    * @property type
    * @type String
@@ -770,7 +884,7 @@
 
   /**
    * A fetcher is an object for handling resouces during the prefetching
-   * prefetch process. A fetcher must include a `type` and normalize and
+   * prefetch process. A fetcher must include a &#x60;type&#x60; and normalize and
    * prefetch implementations.
    *
    * @class Fetcher
@@ -778,8 +892,8 @@
    */
 
   /**
-   * While prefetching resources, each resource has a `type`. The resource
-   * is handled by the fetcher whose `type` match it.
+   * While prefetching resources, each resource has a &#x60;type&#x60;. The resource
+   * is handled by the fetcher whose &#x60;type&#x60; match it.
    *
    * @property type
    * @type String
@@ -787,7 +901,7 @@
    */
 
   /**
-   * Normalizes a resource not following the {{#crossLink "Resource"}}
+   * Normalizes a resource not following the {{#crossLink &quot;Resource&quot;}}
    * {{/crossLink}} convention.
    *
    * @method normalize
@@ -805,8 +919,8 @@
   /**
    * Prefetch process consists into recovering from the Web those
    * resources configured in offliner. To do so, you call
-   * {{#crossLink "PrefetchConfig/use:method"}}{{/crossLink}}, then list the
-   * resources by calling {{#crossLink "PrefetchConfig/resources:method"}}
+   * {{#crossLink &quot;PrefetchConfig/use:method&quot;}}{{/crossLink}}, then list the
+   * resources by calling {{#crossLink &quot;PrefetchConfig/resources:method&quot;}}
    * {{/crossLink}}.
    *
    * @class PrefetchConfig
@@ -817,11 +931,11 @@
   }
 
   /**
-   * Register a {{#crossLink "Fetcher"}}{{/crossLink}}. The fetcher will be used
-   * to retrieve the resources of the fetcher's type.
+   * Register a {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}}. The fetcher will be used
+   * to retrieve the resources of the fetcher&#x27;s type.
    *
    * @method use
-   * @param {Fetcher} fetcher The fetcher to be used for resources of fetcher's
+   * @param {Fetcher} fetcher The fetcher to be used for resources of fetcher&#x27;s
    * type.
    * @chainable
    */
@@ -846,14 +960,14 @@
     if (!Array.isArray(resources)) { resources = [resources]; }
     for (var i = 0, resource; (resource = resources[i]); i++) {
       var normalized;
-      if (typeof resource !== 'object' || !resource || !resource.type) {
+      if (typeof resource !== &#x27;object&#x27; || !resource || !resource.type) {
         try {
           normalized = this._activeFetcher.normalize(resource);
         }
         catch (e) {}
       }
       if (!normalized) {
-        warn(resource, 'can not be normalized by', this._activeFetcher.type);
+        warn(resource, &#x27;can not be normalized by&#x27;, this._activeFetcher.type);
       }
       else {
         this._resources.push(normalized);
@@ -883,7 +997,7 @@
    * Checks for a new version.
    *
    * @method check
-   * @return {Promise<String>} A promise resolving in the new version.
+   * @return {Promise&lt;String&gt;} A promise resolving in the new version.
    */
 
   /**
@@ -892,7 +1006,7 @@
    * @method isNewVersion
    * @param {String} currentVersion The current version.
    * @param {String} latestVersion The version from
-   * {{#crossLink "UpdateImplementation/check:method"}}{{/crossLink}}.
+   * {{#crossLink &quot;UpdateImplementation/check:method&quot;}}{{/crossLink}}.
    * @return {Boolean}
    */
 
@@ -906,15 +1020,15 @@
    * @param {Function} reinstall A function to trigger the prefetch process. Some
    * update algorithms just want to prefetch again.
    * @return {Promise} A promise resolving after finishing the update process.
-   * If you simply wants to simply reinstall, return the value from `reinstall`
+   * If you simply wants to simply reinstall, return the value from &#x60;reinstall&#x60;
    * invocation.
    */
 
   /**
    * Update consists into determine if there is a new version and
    * then evolve the current cache to be up to date. To register an update
-   * algorithm you provide a {{#crossLink "UpdateImplementation"}}
-   * {{/crossLink}} instance by using {{#crossLink "UpdateConfig/use:method"}}
+   * algorithm you provide a {{#crossLink &quot;UpdateImplementation&quot;}}
+   * {{/crossLink}} instance by using {{#crossLink &quot;UpdateConfig/use:method&quot;}}
    * {{/crossLink}}.
    *
    * @class UpdateConfig
@@ -950,7 +1064,7 @@
    * @chainable
    */
   UpdateConfig.prototype.use = function (impl) {
-    this.option('enabled', true);
+    this.option(&#x27;enabled&#x27;, true);
     this._impl = impl;
     return this;
   };
@@ -961,7 +1075,7 @@
    * @property flags
    * @type UpdateFlags
    */
-  Object.defineProperty(UpdateConfig.prototype, 'flags', {
+  Object.defineProperty(UpdateConfig.prototype, &#x27;flags&#x27;, {
     set: function (value) {
       this._impl.flags = value;
     },
@@ -971,17 +1085,17 @@
   });
 
   /**
-   * Triggers the {{#crossLink "UpdateImplementation/check:method"}}
+   * Triggers the {{#crossLink &quot;UpdateImplementation/check:method&quot;}}
    * {{/crossLink}} algorithm of the registered update implementation.
    *
    * @method check
    */
   UpdateConfig.prototype.check = function () {
-    return this._impl && this._impl.check();
+    return this._impl &amp;&amp; this._impl.check();
   };
 
   /**
-   * Calls the {{#crossLink "UpdateImplementation/isNewVersion:method"}}
+   * Calls the {{#crossLink &quot;UpdateImplementation/isNewVersion:method&quot;}}
    * {{/crossLink}} check of the registered update implementation.
    *
    * @method isNewVersion
@@ -992,7 +1106,7 @@
   };
 
   /**
-   * Performs the {{#crossLink "UpdateImplementation/evolve:method"}}
+   * Performs the {{#crossLink &quot;UpdateImplementation/evolve:method&quot;}}
    * {{/crossLink}} process of the registered update implementation.
    *
    * @method evolve
@@ -1003,18 +1117,18 @@
 
   /**
    * A source handler is a **function** that accepts a request and the
-   * active cache and return a Promise resolving into the proper Response. It's
-   * used with {{#crossLink "FetchConfig/use:method"}}{{/crossLink}} of
-   * {{#crossLink "FetchConfig"}}{{/crossLink}}.
+   * active cache and return a Promise resolving into the proper Response. It&#x27;s
+   * used with {{#crossLink &quot;FetchConfig/use:method&quot;}}{{/crossLink}} of
+   * {{#crossLink &quot;FetchConfig&quot;}}{{/crossLink}}.
    *
-   * `sourceHandler(request, activeCache)`
+   * &#x60;sourceHandler(request, activeCache)&#x60;
    *
    * @class SourceHandler
    */
 
   /**
    * The fetch process consists into pass the request along a list
-   * of source handlers. You call {{#crossLink "FetchConfig/use:method"}}
+   * of source handlers. You call {{#crossLink &quot;FetchConfig/use:method&quot;}}
    * {{/crossLink}} to add a new source handler to the pipeline.
    *
    * @class FetchConfig
@@ -1024,7 +1138,7 @@
   }
 
   /**
-   * Adds a new {{#crossLink "SourceHandler"}}{{/crossLink}} to the fetching
+   * Adds a new {{#crossLink &quot;SourceHandler&quot;}}{{/crossLink}} to the fetching
    * pipeline.
    *
    * @method use
@@ -1053,7 +1167,7 @@
    */
   FetchConfig.prototype.orFail = function () {
     this.use(function () {
-      return Promise.reject(new Error('End of fetch pipeline!'));
+      return Promise.reject(new Error(&#x27;End of fetch pipeline!&#x27;));
     });
   };
 
@@ -1066,25 +1180,45 @@
   self.off.Offliner = Offliner;
 
   /**
-   * A collection of {{#crossLink "SourceHandler"}}{{/crossLink}}
+   * A collection of {{#crossLink &quot;SourceHandler&quot;}}{{/crossLink}}
    * constructors to configure offliner.
    * @submodule sources
    */
   self.off.sources = {};
 
   /**
-   * A collection of {{#crossLink "Fetcher"}}{{/crossLink}} constructors to
+   * A collection of {{#crossLink &quot;Fetcher&quot;}}{{/crossLink}} constructors to
    * configure offliner.
    * @submodule fetchers
    */
   self.off.fetchers = {};
 
   /**
-   * A collection of {{#crossLink "UpdateImplementation"}}{{/crossLink}}
+   * A collection of {{#crossLink &quot;UpdateImplementation&quot;}}{{/crossLink}}
    * constructors to configure offliner.
    * @submodule updaters
    */
   self.off.updaters = {};
 
-}(typeof self === 'undefined' ? this : self));
+}(typeof self === &#x27;undefined&#x27; ? this : self));
 
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
